@@ -1,3 +1,5 @@
+using CareerExplorer.Infrastructure;
+
 namespace CareerExplorer.Web
 {
     public class Program
@@ -8,6 +10,9 @@ namespace CareerExplorer.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext(connectionString);
 
             var app = builder.Build();
 
