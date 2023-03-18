@@ -10,12 +10,19 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Identity;
+using CareerExplorer.Core.Entities;
+using CareerExplorer.Core.Enums;
+using CareerExplorer.Infrastructure.Data;
+using CareerExplorer.Infrastructure.Migrations;
+using CareerExplorer.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
@@ -29,13 +36,17 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly AppDbContext _context;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager,
+            AppDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -43,6 +54,8 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
+            _context = context;
         }
 
         /// <summary>
@@ -97,13 +110,28 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            public string Name { get; set; }
+            [Required]
+            public string Surname { get; set; }
+            public string Role { get; set; } 
         }
 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            //adding roles if they don't exist
+            //if one of them doesn't exist then we need to add all roles
+            if (!_roleManager.RoleExistsAsync(StaticDetails.RoleRecruiter).GetAwaiter().GetResult())
+            {
+                _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleRecruiter)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(StaticDetails.RoleJobSeeker)).GetAwaiter().GetResult();
+            }
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -116,13 +144,51 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.Name = Input.Name;
+                user.Surname= Input.Surname;
+                user.UserType = Input.Role == StaticDetails.RoleRecruiter ? UserType.Recruiter : UserType.JobSeeker;
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
+                //todo: replace queries to context with repository queries
                 if (result.Succeeded)
                 {
+                    var userId = await _userManager.GetUserIdAsync(user);
                     _logger.LogInformation("User created a new account with password.");
 
-                    var userId = await _userManager.GetUserIdAsync(user);
+                    if(Input.Role == null)
+                    {
+                        await _userManager.AddToRoleAsync(user, StaticDetails.RoleJobSeeker);
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, Input.Role);
+                    }
+                    //checking if user recruiter or jobseeker and creating profile 
+                    if (user.UserType == UserType.JobSeeker)
+                    {
+                        await _context.JobSeekers.AddAsync(new JobSeeker
+                        {
+                            UserId = userId
+                        });
+                        await _context.SaveChangesAsync();
+                        var currentUser = _context.AppUsers.FirstOrDefault(x => x.Id == userId);
+                        currentUser.JobSeekerProfileId = _context.JobSeekers.FirstOrDefault(x => x.UserId == userId).Id;
+                        await _context.SaveChangesAsync();
+                    }
+                    else if (user.UserType == UserType.Recruiter)
+                    {
+                        await _context.Recruiters.AddAsync(new Recruiter
+                        {
+                            UserId = userId
+                        });
+                        await _context.SaveChangesAsync();
+                        var currentUser = _context.AppUsers.FirstOrDefault(x => x.Id == userId);
+                        currentUser.RecruiterProfileId = _context.Recruiters.FirstOrDefault(x => x.UserId == userId).Id;
+                        await _context.SaveChangesAsync();
+                    }
+
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
@@ -154,11 +220,11 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private AppUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<AppUser>();
             }
             catch
             {

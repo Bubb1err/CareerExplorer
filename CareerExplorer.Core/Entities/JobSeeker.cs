@@ -9,11 +9,11 @@ namespace CareerExplorer.Core.Entities
     public class JobSeeker
     {
         public int Id { get; set; }
-        public string Phone { get; set; }
-        public string GitHub { get; set; }
-        public string Experience { get; set; }
-        public int Views { get; set; }
-        public int UserId { get; set; }
+        public string? Phone { get; set; }
+        public string? GitHub { get; set; }
+        public string? Experience { get; set; }
+        public int? Views { get; set; }
+        public string UserId { get; set; }
         public AppUser AppUser { get; set; }
     }
 }

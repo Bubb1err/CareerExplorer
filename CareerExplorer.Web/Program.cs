@@ -15,7 +15,7 @@ namespace CareerExplorer.Web
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddMvc();
             builder.Services.AddRazorPages();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

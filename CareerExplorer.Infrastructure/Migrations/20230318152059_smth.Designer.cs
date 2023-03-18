@@ -4,6 +4,7 @@ using CareerExplorer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CareerExplorer.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230318152059_smth")]
+    partial class smth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,12 +55,15 @@ namespace CareerExplorer.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Experience")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GitHub")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
@@ -80,14 +86,16 @@ namespace CareerExplorer.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("Recruiters");
                 });
@@ -360,18 +368,22 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[JobSeekerProfileId] IS NOT NULL");
 
+                    b.HasIndex("RecruiterProfileId")
+                        .IsUnique()
+                        .HasFilter("[RecruiterProfileId] IS NOT NULL");
+
                     b.HasDiscriminator().HasValue("AppUser");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Recruiter", b =>
                 {
-                    b.HasOne("CareerExplorer.Core.Entities.AppUser", "AppUser")
-                        .WithOne("RecruiterProfile")
-                        .HasForeignKey("CareerExplorer.Core.Entities.Recruiter", "UserId")
+                    b.HasOne("CareerExplorer.Core.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AppUser");
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Vacancy", b =>
@@ -442,7 +454,13 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .WithOne("AppUser")
                         .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "JobSeekerProfileId");
 
+                    b.HasOne("CareerExplorer.Core.Entities.Recruiter", "RecruiterProfile")
+                        .WithOne("AppUser")
+                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "RecruiterProfileId");
+
                     b.Navigation("JobSeekerProfile");
+
+                    b.Navigation("RecruiterProfile");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Company", b =>
@@ -458,13 +476,10 @@ namespace CareerExplorer.Infrastructure.Migrations
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Recruiter", b =>
                 {
-                    b.Navigation("Vacancies");
-                });
-
-            modelBuilder.Entity("CareerExplorer.Core.Entities.AppUser", b =>
-                {
-                    b.Navigation("RecruiterProfile")
+                    b.Navigation("AppUser")
                         .IsRequired();
+
+                    b.Navigation("Vacancies");
                 });
 #pragma warning restore 612, 618
         }
