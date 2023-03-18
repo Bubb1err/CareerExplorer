@@ -1,4 +1,10 @@
 using CareerExplorer.Infrastructure;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using CareerExplorer.Infrastructure.Data;
+using CareerExplorer.Core.Entities;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using CareerExplorer.Shared;
 
 namespace CareerExplorer.Web
 {
@@ -10,9 +16,16 @@ namespace CareerExplorer.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext(connectionString);
+
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<AppDbContext>();
+
+            builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
             var app = builder.Build();
 
@@ -29,7 +42,9 @@ namespace CareerExplorer.Web
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+            app.MapRazorPages();
 
             app.MapControllerRoute(
                 name: "default",
