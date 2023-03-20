@@ -14,7 +14,6 @@ using Azure.Identity;
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Enums;
 using CareerExplorer.Infrastructure.Data;
-using CareerExplorer.Infrastructure.Migrations;
 using CareerExplorer.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -111,10 +110,6 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            [Required]
-            public string Name { get; set; }
-            [Required]
-            public string Surname { get; set; }
             public string Role { get; set; } 
         }
 
@@ -144,8 +139,6 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                user.Name = Input.Name;
-                user.Surname= Input.Surname;
                 user.UserType = Input.Role == StaticDetails.RoleRecruiter ? UserType.Recruiter : UserType.JobSeeker;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);

@@ -5,6 +5,8 @@ using CareerExplorer.Infrastructure.Data;
 using CareerExplorer.Core.Entities;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using CareerExplorer.Shared;
+using CareerExplorer.Core.Interfaces;
+using CareerExplorer.Infrastructure.Repository;
 
 namespace CareerExplorer.Web
 {
@@ -26,6 +28,7 @@ namespace CareerExplorer.Web
                 .AddEntityFrameworkStores<AppDbContext>();
 
             builder.Services.AddSingleton<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 

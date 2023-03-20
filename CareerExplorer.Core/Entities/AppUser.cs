@@ -10,8 +10,6 @@ namespace CareerExplorer.Core.Entities
 {
     public class AppUser : IdentityUser
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
         public UserType UserType { get; set; }
         public int? JobSeekerProfileId { get; set; }
         public JobSeeker JobSeekerProfile { get; set; }

@@ -1,0 +1,37 @@
+﻿@using CareerExplorer.Core.Entities;
+@model JobSeeker
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="post" asp-action="GetProfile">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input asp-for="Id" hidden />
+            <input asp-for="UserId" hidden />
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" placeholder="Enter your name" />
+                <label asp-for="Name" class="form-label"></label>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Surname" class="form-control" placeholder="Enter your surname" />
+                <label asp-for="Surname" class="form-label"></label>
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Phone" class="form-control" placeholder="Please enter your phone number." />
+                <label asp-for="Phone" class="form-label"></label>
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+            <div class=" mb-3">
+                    <label asp-for="Experience">Experience</label>
+                    <textarea asp-for="Experience" class="form-control"></textarea>
+                    <span asp-validation-for="Experience" class="text-danger"></span>
+                </div>
+            <div class="form-floating mb-3">
+                <input asp-for="GitHub" class="form-control" placeholder="Enter link to your GitHub profile." />
+                <label asp-for="GitHub" class="form-label"></label>
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+            <button asp-controller="JobSeekerProfile" asp-action="GetProfile" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+        </form>
+    </div>
+</div>
