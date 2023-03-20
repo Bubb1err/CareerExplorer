@@ -30,6 +30,9 @@ namespace CareerExplorer.Web
             builder.Services.AddSingleton<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext(connectionString);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

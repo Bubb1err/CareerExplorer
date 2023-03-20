@@ -15,14 +15,5 @@ namespace CareerExplorer.Infrastructure.Data
             : base(options)
         {
         }
-        public DbSet<Company> Companies { get; set; }
-        public DbSet<JobSeeker> JobSeekers { get; set; }
-        public DbSet<Recruiter> Recruiters { get; set;}
-        public DbSet<Vacancy> Vacancies { get; set; }
-        public DbSet<AppUser> AppUsers { get; set; }
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-        }
     }
 }
