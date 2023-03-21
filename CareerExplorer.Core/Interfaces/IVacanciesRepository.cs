@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CareerExplorer.Core.Interfaces
 {
-    public interface IRecruiterProfileRepository : IRepository<Recruiter>
+    public interface IVacanciesRepository : IRepository<Vacancy>
     {
 
     }

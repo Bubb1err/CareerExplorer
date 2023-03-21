@@ -11,12 +11,10 @@ namespace CareerExplorer.Core.Entities
     public class Recruiter 
     {
         public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? Surname { get; set; }
-        //[ForeignKey("Company")]
-        //public int CompanyId { get; set; }
-        //public Company Company { get; set; }
-        [ForeignKey("AppUser")]
+        public string Name { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+        public string Company { get; set; } = string.Empty;
+        public string CompanyDescription { get; set; } = string.Empty;
         public string UserId { get; set; }
         public AppUser AppUser { get; set; }
         public List<Vacancy> Vacancies { get; set; } = new List<Vacancy>();

@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Repository
 {
-    public class JobSeekerRepository : Repository<JobSeeker>, IJobSeekerProfileRepository
+    public class VacanciesRepository : Repository<Vacancy>, IVacanciesRepository
     {
         private AppDbContext _context;
-        public JobSeekerRepository(AppDbContext context) : base(context) 
+        public VacanciesRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
-
     }
 }

@@ -16,10 +16,5 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
-
-        public void Update(Recruiter recruiter)
-        {
-            _context.Recruiters.Update(recruiter);
-        }
     }
 }

@@ -4,6 +4,7 @@ using CareerExplorer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CareerExplorer.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230320193728_chanchingRecr")]
+    partial class chanchingRecr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,15 +73,10 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("VacancyId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("Views")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("VacancyId");
 
                     b.ToTable("JobSeekers");
                 });
@@ -109,9 +107,12 @@ namespace CareerExplorer.Infrastructure.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Recruiters");
                 });
@@ -124,13 +125,10 @@ namespace CareerExplorer.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("Candidates")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatorId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -140,6 +138,9 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("RecruiterId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -148,7 +149,7 @@ namespace CareerExplorer.Infrastructure.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.HasIndex("CreatorId");
+                    b.HasIndex("RecruiterId");
 
                     b.ToTable("Vacancies");
                 });
@@ -376,18 +377,18 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[JobSeekerProfileId] IS NOT NULL");
 
-                    b.HasIndex("RecruiterProfileId")
-                        .IsUnique()
-                        .HasFilter("[RecruiterProfileId] IS NOT NULL");
-
                     b.HasDiscriminator().HasValue("AppUser");
                 });
 
-            modelBuilder.Entity("CareerExplorer.Core.Entities.JobSeeker", b =>
+            modelBuilder.Entity("CareerExplorer.Core.Entities.Recruiter", b =>
                 {
-                    b.HasOne("CareerExplorer.Core.Entities.Vacancy", null)
-                        .WithMany("Candidates")
-                        .HasForeignKey("VacancyId");
+                    b.HasOne("CareerExplorer.Core.Entities.AppUser", "AppUser")
+                        .WithOne("RecruiterProfile")
+                        .HasForeignKey("CareerExplorer.Core.Entities.Recruiter", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Vacancy", b =>
@@ -396,13 +397,9 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .WithMany("Vacancies")
                         .HasForeignKey("CompanyId");
 
-                    b.HasOne("CareerExplorer.Core.Entities.Recruiter", "Creator")
+                    b.HasOne("CareerExplorer.Core.Entities.Recruiter", null)
                         .WithMany("Vacancies")
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Creator");
+                        .HasForeignKey("RecruiterId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -462,13 +459,7 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .WithOne("AppUser")
                         .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "JobSeekerProfileId");
 
-                    b.HasOne("CareerExplorer.Core.Entities.Recruiter", "RecruiterProfile")
-                        .WithOne("AppUser")
-                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "RecruiterProfileId");
-
                     b.Navigation("JobSeekerProfile");
-
-                    b.Navigation("RecruiterProfile");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Company", b =>
@@ -484,15 +475,13 @@ namespace CareerExplorer.Infrastructure.Migrations
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Recruiter", b =>
                 {
-                    b.Navigation("AppUser")
-                        .IsRequired();
-
                     b.Navigation("Vacancies");
                 });
 
-            modelBuilder.Entity("CareerExplorer.Core.Entities.Vacancy", b =>
+            modelBuilder.Entity("CareerExplorer.Core.Entities.AppUser", b =>
                 {
-                    b.Navigation("Candidates");
+                    b.Navigation("RecruiterProfile")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

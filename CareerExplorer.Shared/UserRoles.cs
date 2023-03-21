@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CareerExplorer.Shared
 {
-    public class StaticDetails
+    public sealed class UserRoles
     {
         public const string RoleRecruiter = "Recruiter";
         public const string RoleJobSeeker = "JobSeeker";

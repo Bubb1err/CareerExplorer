@@ -1,0 +1,38 @@
+﻿@model IEnumerable<CareerExplorer.Web.DTO.VacancyDTO>
+
+<div class="row">
+    <div class="col-md-2">
+        <partial name="_RecrMenuPartial" />
+    </div>
+    <div class="col-md-10">
+        <a class="btn btn-primary" asp-controller="Vacancy" asp-action="Create">Create new</a>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Available</th>
+                    <th scope="col">Creation Date</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vacancy in Model)
+                {
+                    <tr>
+                        <th>@vacancy.Title</th>
+                        <th>@(vacancy.IsAvailable ? "Yes" : "No")</th>
+                        <th>@vacancy.CreatedDate.ToShortDateString()</th>
+                        <th>
+                            <div class="w-50 btn-group" role="group">
+                                <a asp-controller="Vacancy" asp-action="Edit" asp-route-id="@vacancy.Id" class="btn btn-primary me-3">Edit</a>
+                                <a asp-controller="Vacancy" asp-action="Delete" asp-route-id="@vacancy.Id" class="btn btn-primary"> <i class="bi bi-trash3-fill"></i> &nbsp;Delete</a>
+                            </div>
+                        </th>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

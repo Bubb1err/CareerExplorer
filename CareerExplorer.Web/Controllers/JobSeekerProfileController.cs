@@ -19,16 +19,18 @@ namespace CareerExplorer.Web.Controllers
         [HttpGet]
         public IActionResult GetProfile()
         {
+            var jobseekRep = _unitOfWork.GetRepository<JobSeeker>();
             var currentUserId = _userManager.GetUserId(User);
-            var userProfile = _unitOfWork.JobSeekerProfile.GetFirstOrDefault(x => x.UserId == currentUserId);
+            var userProfile = jobseekRep.GetFirstOrDefault(x => x.UserId == currentUserId);
             return View(userProfile);
         }
         [HttpPost] 
         public IActionResult GetProfile(JobSeeker jobSeeker)
         {
-            _unitOfWork.JobSeekerProfile.Update(jobSeeker);
-            _unitOfWork.Save();
-            return RedirectToAction("GetProfile");
+            var jobseekRep = _unitOfWork.GetRepository<JobSeeker>();
+            jobseekRep.Update(jobSeeker);
+            _unitOfWork.SaveAsync();
+            return RedirectToAction(nameof(GetProfile));
         }
     }
 }
