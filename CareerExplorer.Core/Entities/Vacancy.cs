@@ -13,9 +13,9 @@ namespace CareerExplorer.Core.Entities
         public string Title { get; set; }
         public string Description { get; set; }
         public bool IsAvailable { get; set; }
+        public ICollection<JobSeekerVacancy> Applicants { get; set; } 
         public int CreatorId { get; set; }
         public Recruiter Creator { get; set; }
         public DateTime CreatedDate { get; set; }
-        public ICollection<JobSeeker> Candidates { get; set;  } = new List<JobSeeker>();
     }
 }

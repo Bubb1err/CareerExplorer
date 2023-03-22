@@ -1,0 +1,65 @@
+﻿@using CareerExplorer.Web.DTO;
+@using Microsoft.AspNetCore.Identity;
+@using CareerExplorer.Shared;
+@model VacancyDTO
+
+@inject UserManager<IdentityUser> UserManager
+
+<div class="container-md">
+    <div class="row">
+        <div class="col-md-8">
+
+            <h1>@Model.Title</h1>
+            <span>@UserManager.GetUserName(User)</span>
+            <p>@Model.Description</p>
+            <span>Published: @Model.CreatedDate.ToShortDateString()</span>
+            @if (User.IsInRole(UserRoles.RoleJobSeeker))
+            {
+                <div id="apply-container">
+                    <button class="btn btn-primary mt-3" id="apply-button">Apply</button>
+                    <form id="application-form" style="display:none;">
+                        <input type="file" id="file-input">
+                        <textarea id="message-input" rows="3"></textarea>
+                        <button id="apply-btn" type="post">Submit</button>
+                    </form>
+                </div>
+                @*<a style="display:block;width:25%" class="btn btn-primary mt-3" asp-controller="#" asp-action="#">Apply</a>*@
+            }
+        </div>
+        <div class="col-md-4">
+
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#apply-button").click(function () {
+             $("#application-form").show();
+        });
+    });
+    
+    $(document).ready(function () {
+        $('#apply-btn').click(function (e) {
+            e.preventDefault();
+            var formData = new FormData();
+            formData.append('file', $('#file-input')[0].files[0]);
+            formData.append('message', $('#message-input').val());
+    $.ajax({
+        url: '/JobSeekerProfile/Apply',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            // handle the response
+        },
+        error: function () {
+            // handle the error
+        }
+    });
+  });
+});
+</script>
+
+

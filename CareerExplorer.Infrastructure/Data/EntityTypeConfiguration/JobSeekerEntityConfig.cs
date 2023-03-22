@@ -1,4 +1,5 @@
 ﻿using CareerExplorer.Core.Entities;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -9,13 +10,14 @@ using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
 {
-    internal class VacancyEntityConfig : IEntityTypeConfiguration<Vacancy>
+    internal class JobSeekerEntityConfig : IEntityTypeConfiguration<JobSeeker>
     {
-        public void Configure(EntityTypeBuilder<Vacancy> builder)
+        public void Configure(EntityTypeBuilder<JobSeeker> builder)
         {
-          //builder.HasOne(x => x.Creator)
-          //      .WithMany(x => x.Vacancies)
-          //      .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.AppUser)
+                .WithOne(x => x.JobSeekerProfile)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
         }
     }
 }

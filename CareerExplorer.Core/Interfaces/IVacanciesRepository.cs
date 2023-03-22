@@ -9,6 +9,8 @@ namespace CareerExplorer.Core.Interfaces
 {
     public interface IVacanciesRepository : IRepository<Vacancy>
     {
+        IEnumerable<Vacancy> GetCreatedVacancies(string userId);
+        IEnumerable<Vacancy> GetAvailableVacancies();
         void Update(Vacancy entity);
     }
 }

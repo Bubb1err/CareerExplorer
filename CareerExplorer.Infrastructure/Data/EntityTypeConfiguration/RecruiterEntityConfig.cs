@@ -20,6 +20,7 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
                 .OnDelete(DeleteBehavior.NoAction);
             builder.HasMany(x => x.Vacancies)
                 .WithOne(x => x.Creator)
+                .HasForeignKey(x => x.CreatorId)
                 .OnDelete(DeleteBehavior.ClientCascade);
         }
     }

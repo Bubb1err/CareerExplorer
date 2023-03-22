@@ -22,7 +22,7 @@ namespace CareerExplorer.Web.Controllers
         public ActionResult GetAll()
         {
             var vacRep = _unitOfWork.GetVacanciesRepository();
-            var vacancies = vacRep.GetAll(x => x.IsAvailable == true);
+            var vacancies = vacRep.GetAvailableVacancies().ToList();
             var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
             return View(vacanciesDto);
         }
@@ -31,9 +31,8 @@ namespace CareerExplorer.Web.Controllers
         {
             var vacRep = _unitOfWork.GetVacanciesRepository();
             var currentRecrId = _userManager.GetUserId(User);
-            var recRep = _unitOfWork.GetRecruiterRepository();
-            var creatorId = recRep.GetFirstOrDefault(x => x.UserId== currentRecrId).Id;
-            var vacancies = vacRep.GetAll(x => x.CreatorId == creatorId).ToList();
+
+            var vacancies = vacRep.GetCreatedVacancies(currentRecrId).ToList();
             var vacanciesDTO = _mapper.Map<List<VacancyDTO>>(vacancies);
             return View(vacanciesDTO);
 
@@ -105,6 +104,16 @@ namespace CareerExplorer.Web.Controllers
             vacRep.Remove(vacancy);
             _unitOfWork.SaveAsync();
             return RedirectToAction(nameof(CreatedVacancies));
+        }
+        [HttpGet]
+        public ActionResult GetVacancy(int? id)
+        {
+            if(id == null) 
+                return BadRequest();
+            var vacRep = _unitOfWork.GetVacanciesRepository();
+            var vacancy = vacRep.GetFirstOrDefault(x => x.Id == id);
+            var vacancyDto = _mapper.Map<VacancyDTO>(vacancy); 
+            return View(vacancyDto);
         }
 
     }

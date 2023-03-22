@@ -8,6 +8,7 @@ using CareerExplorer.Shared;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Repository;
 using CareerExplorer.Infrastructure.Services;
+using CareerExplorer.Core.IServices;
 
 namespace CareerExplorer.Web
 {
@@ -33,6 +34,7 @@ namespace CareerExplorer.Web
             builder.Services.AddScoped<IJobSeekerProfileRepository, JobSeekerRepository>();
             builder.Services.AddScoped<IRecruiterProfileRepository, RecruiterProfileRepository>();
             builder.Services.AddScoped<IVacanciesRepository, VacanciesRepository>();
+            builder.Services.AddScoped<IApplyOnVacancyService, ApplyOnVacancyService>();
             builder.Services.AddAutoMapper(typeof(MappingConfig));
 
             var app = builder.Build();
