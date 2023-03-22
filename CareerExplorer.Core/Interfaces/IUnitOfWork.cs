@@ -8,8 +8,9 @@ namespace CareerExplorer.Core.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        //IJobSeekerProfileRepository JobSeekerProfile { get; }
-        //IRecruiterProfileRepository RecruiterProfile { get; }
+        IVacanciesRepository GetVacanciesRepository();
+        IJobSeekerProfileRepository GetJobSeekerRepository();
+        IRecruiterProfileRepository GetRecruiterRepository();
         IRepository<T> GetRepository<T>() where T : class;
         Task SaveAsync();
     }

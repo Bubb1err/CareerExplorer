@@ -66,11 +66,6 @@ namespace CareerExplorer.Infrastructure.Repository
             dbSet.RemoveRange(entity);
         }
 
-        public void Update(T entity)
-        {
-            dbSet.Update(entity);
-        }
-
         private T Filtering(IQueryable<T> query, Expression<Func<T, bool>> filter, string? includeProperties)
         {
 

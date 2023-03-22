@@ -16,5 +16,10 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
+
+        public void Update(Vacancy entity)
+        {
+            _context.Vacancies.Update(entity);
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace CareerExplorer.Web.Controllers
         [HttpGet]
         public IActionResult GetProfile()
         {
-            var recrRep = _unitOfWork.GetRepository<Recruiter>();
+            var recrRep = _unitOfWork.GetRecruiterRepository();
             var currentRecrId = _userManager.GetUserId(User);
             var recrProfile = recrRep.GetFirstOrDefault(x => x.UserId == currentRecrId);
             var recrProfileDTO = _mapper.Map<RecruiterProfileDTO>(recrProfile);
@@ -35,7 +35,7 @@ namespace CareerExplorer.Web.Controllers
         {
             if(ModelState.IsValid)
             {
-                var recrRep = _unitOfWork.GetRepository<Recruiter>();
+                var recrRep = _unitOfWork.GetRecruiterRepository();
                 var recruiter = _mapper.Map<Recruiter>(recruiterDTO);
                 recrRep.Update(recruiter);
                 _unitOfWork.SaveAsync();

@@ -30,9 +30,9 @@ namespace CareerExplorer.Web
 
             builder.Services.AddSingleton<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IRepository<JobSeeker>, JobSeekerRepository>();
-            builder.Services.AddScoped<IRepository<Recruiter>, RecruiterProfileRepository>();
-            builder.Services.AddScoped<IRepository<Vacancy>, VacanciesRepository>();
+            builder.Services.AddScoped<IJobSeekerProfileRepository, JobSeekerRepository>();
+            builder.Services.AddScoped<IRecruiterProfileRepository, RecruiterProfileRepository>();
+            builder.Services.AddScoped<IVacanciesRepository, VacanciesRepository>();
             builder.Services.AddAutoMapper(typeof(MappingConfig));
 
             var app = builder.Build();

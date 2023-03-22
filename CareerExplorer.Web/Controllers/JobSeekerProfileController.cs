@@ -19,7 +19,7 @@ namespace CareerExplorer.Web.Controllers
         [HttpGet]
         public IActionResult GetProfile()
         {
-            var jobseekRep = _unitOfWork.GetRepository<JobSeeker>();
+            var jobseekRep = _unitOfWork.GetJobSeekerRepository();
             var currentUserId = _userManager.GetUserId(User);
             var userProfile = jobseekRep.GetFirstOrDefault(x => x.UserId == currentUserId);
             return View(userProfile);
@@ -27,7 +27,7 @@ namespace CareerExplorer.Web.Controllers
         [HttpPost] 
         public IActionResult GetProfile(JobSeeker jobSeeker)
         {
-            var jobseekRep = _unitOfWork.GetRepository<JobSeeker>();
+            var jobseekRep = _unitOfWork.GetJobSeekerRepository();
             jobseekRep.Update(jobSeeker);
             _unitOfWork.SaveAsync();
             return RedirectToAction(nameof(GetProfile));

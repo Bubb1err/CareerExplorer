@@ -1,0 +1,32 @@
+﻿@using CareerExplorer.Web.DTO
+@using Microsoft.AspNetCore.Identity;
+@using CareerExplorer.Shared;
+
+@model IEnumerable<VacancyDTO>
+@inject UserManager<IdentityUser> UserManager
+@inject UserManager<IdentityUser> UserManager
+<div class="row">
+    <div class="col-md-8">
+        @foreach (var vacancy in Model)
+        {
+            <div class="card bg-secondary mb-3">
+                <div class="card-header">@vacancy.Title</div>
+                <div class="card-body">
+                    <p class="card-text">@vacancy.Description</p>
+                </div>
+                <div class="card-footer">
+                    <span>@UserManager.GetUserName(User)</span>
+                    @if (User.IsInRole(UserRoles.RoleJobSeeker))
+                    {
+                        <a class="btn btn-primary" asp-controller="#" asp-action="#">Apply</a>
+                    }
+                </div>
+
+            </div>
+
+        }
+    </div>
+    <div class="col-md-4">
+
+    </div>
+</div>

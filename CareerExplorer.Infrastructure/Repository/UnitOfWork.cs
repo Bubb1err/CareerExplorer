@@ -22,11 +22,7 @@ namespace CareerExplorer.Infrastructure.Repository
             _db = db;
             _serviceProvider = serviceProvider;
             _repositories = new Dictionary<Type, object>();
-            //JobSeekerProfile = new JobSeekerRepository(db);
-            //RecruiterProfile = new RecruiterProfileRepository(db);
         }
-        //public IJobSeekerProfileRepository JobSeekerProfile { get; private set; }
-        //public IRecruiterProfileRepository RecruiterProfile { get; private set; }
         public IRepository<T> GetRepository<T>() where T : class
         {
             if (_repositories.ContainsKey(typeof(T)))
@@ -36,6 +32,21 @@ namespace CareerExplorer.Infrastructure.Repository
 
             var repository = _serviceProvider.GetService<IRepository<T>>();
             _repositories.Add(typeof(T), repository);
+            return repository;
+        }
+        public IJobSeekerProfileRepository GetJobSeekerRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<IJobSeekerProfileRepository>();
+            return repository; 
+        }
+        public IRecruiterProfileRepository GetRecruiterRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<IRecruiterProfileRepository>();
+            return repository;
+        }
+        public IVacanciesRepository GetVacanciesRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<IVacanciesRepository>();
             return repository;
         }
         public void Dispose()

@@ -16,6 +16,6 @@ namespace CareerExplorer.Core.Interfaces
         void Add(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);
-        void Update(T entity);
+        
     }
 }

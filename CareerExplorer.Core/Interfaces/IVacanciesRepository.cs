@@ -9,6 +9,6 @@ namespace CareerExplorer.Core.Interfaces
 {
     public interface IVacanciesRepository : IRepository<Vacancy>
     {
-
+        void Update(Vacancy entity);
     }
 }
