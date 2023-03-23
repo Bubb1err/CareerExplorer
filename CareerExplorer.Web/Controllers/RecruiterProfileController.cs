@@ -13,19 +13,20 @@ namespace CareerExplorer.Web.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IRecruiterProfileRepository _recruiterRepository;
         public RecruiterProfileController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork,
             IMapper mapper)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
         }
         [HttpGet]
         public IActionResult GetProfile()
         {
-            var recrRep = _unitOfWork.GetRecruiterRepository();
             var currentRecrId = _userManager.GetUserId(User);
-            var recrProfile = recrRep.GetFirstOrDefault(x => x.UserId == currentRecrId);
+            var recrProfile = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecrId);
             var recrProfileDTO = _mapper.Map<RecruiterProfileDTO>(recrProfile);
 
             return View(recrProfileDTO);
@@ -35,9 +36,8 @@ namespace CareerExplorer.Web.Controllers
         {
             if(ModelState.IsValid)
             {
-                var recrRep = _unitOfWork.GetRecruiterRepository();
                 var recruiter = _mapper.Map<Recruiter>(recruiterDTO);
-                recrRep.Update(recruiter);
+                _recruiterRepository.Update(recruiter);
                 _unitOfWork.SaveAsync();
                 return RedirectToAction(nameof(GetProfile));
             }

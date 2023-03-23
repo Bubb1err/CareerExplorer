@@ -15,15 +15,23 @@
             <span>Published: @Model.CreatedDate.ToShortDateString()</span>
             @if (User.IsInRole(UserRoles.RoleJobSeeker))
             {
-                <div id="apply-container">
-                    <button class="btn btn-primary mt-3" id="apply-button">Apply</button>
+                @if(!Model.IsApplied)
+                {
+                    <div id="apply-container">
+                    <button class="btn btn-primary mt-3 mb-3" id="apply-button">Apply</button>
                     <form id="application-form" style="display:none;">
-                        <input type="file" id="file-input">
-                        <textarea id="message-input" rows="3"></textarea>
-                        <button id="apply-btn" type="post">Submit</button>
+                        <input id="id-input" name="vacancyId" value="@Model.Id" type="hidden">
+                            <label for="file-input" class="form-label mt-4">Attach your CV (.pdf, .docx)</label>
+                            <input class="form-control" type="file" id="file-input">
+                            <button style="display:block" class="btn btn-primary mt-3" id="apply-btn" type="post">Submit</button>
                     </form>
-                </div>
-                @*<a style="display:block;width:25%" class="btn btn-primary mt-3" asp-controller="#" asp-action="#">Apply</a>*@
+                    </div>
+                }
+                else
+                {
+                    <button style="display:block" class="btn btn-primary mt-3" disabled>Applied</button>
+                }
+                
             }
         </div>
         <div class="col-md-4">
@@ -35,31 +43,44 @@
 <script>
     $(document).ready(function () {
         $("#apply-button").click(function () {
-             $("#application-form").show();
+            $("#application-form").show();
         });
     });
-    
+
     $(document).ready(function () {
         $('#apply-btn').click(function (e) {
             e.preventDefault();
             var formData = new FormData();
-            formData.append('file', $('#file-input')[0].files[0]);
-            formData.append('message', $('#message-input').val());
-    $.ajax({
-        url: '/JobSeekerProfile/Apply',
-        type: 'POST',
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function (response) {
-            // handle the response
-        },
-        error: function () {
-            // handle the error
-        }
+            var fileInput = $('#file-input')[0];
+            var file = fileInput.files[0];
+            var allowedExtensions = ['pdf', 'docx'];
+
+            if (file && file.size > 0) {
+                var extension = file.name.split('.').pop().toLowerCase();
+                if (allowedExtensions.indexOf(extension) === -1) {
+                    alert('Invalid file extension. Please select a PDF or DOCX file.');
+                    return;
+                }
+                formData.append('file', file);
+                formData.append('vacancyId', document.getElementById('id-input').value);
+                $.ajax({
+                    url: '/JobSeekerProfile/Apply',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        $('#apply-btn').text('Sent');
+                    },
+                    error: function () {
+                        alert('An error occurred while submitting your application. Please try again later.');
+                    }
+                });
+            } else {
+                alert('Please select a file to upload.');
+            }
+        });
     });
-  });
-});
 </script>
 
 

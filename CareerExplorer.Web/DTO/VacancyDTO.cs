@@ -14,5 +14,6 @@ namespace CareerExplorer.Web.DTO
         public int CreatorId { get; set; }
         public Recruiter Creator { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public bool IsApplied { get; set; }
     }
 }

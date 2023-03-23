@@ -49,6 +49,11 @@ namespace CareerExplorer.Infrastructure.Repository
             var repository = _serviceProvider.GetRequiredService<IVacanciesRepository>();
             return repository;
         }
+        public ICvPathsRepository GetCvPathsRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<ICvPathsRepository>();
+            return repository;
+        }
         public void Dispose()
         {
             _db.Dispose();
