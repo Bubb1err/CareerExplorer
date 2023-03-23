@@ -9,6 +9,6 @@ namespace CareerExplorer.Core.Interfaces
 {
     public interface IRecruiterProfileRepository : IRepository<Recruiter>
     {
-        void Update(Recruiter recruiter);
+        void Update(Recruiter entity);
     }
 }

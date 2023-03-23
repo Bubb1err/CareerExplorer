@@ -1,6 +1,7 @@
 ﻿using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
+        
 
         public void Update(JobSeeker jobSeeker)
         {

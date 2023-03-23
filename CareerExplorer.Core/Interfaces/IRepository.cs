@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CareerExplorer.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -15,5 +16,6 @@ namespace CareerExplorer.Core.Interfaces
         void Add(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);
+        
     }
 }

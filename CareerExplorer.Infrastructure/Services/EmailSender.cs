@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CareerExplorer.Shared
+namespace CareerExplorer.Infrastructure.Services
 {
     public class EmailSender : IEmailSender
     {

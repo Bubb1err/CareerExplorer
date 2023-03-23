@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using CareerExplorer.Shared;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Repository;
+using CareerExplorer.Infrastructure.Services;
+using CareerExplorer.Core.IServices;
 
 namespace CareerExplorer.Web
 {
@@ -29,6 +31,13 @@ namespace CareerExplorer.Web
 
             builder.Services.AddSingleton<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IJobSeekerProfileRepository, JobSeekerRepository>();
+            builder.Services.AddScoped<IRecruiterProfileRepository, RecruiterProfileRepository>();
+            builder.Services.AddScoped<IVacanciesRepository, VacanciesRepository>();
+            builder.Services.AddScoped<IApplyOnVacancyService, ApplyOnVacancyService>();
+            builder.Services.AddScoped<ICvPathsRepository, CvPathsRepository>();
+            builder.Services.AddScoped<IRepository<JobSeekerVacancy>, Repository<JobSeekerVacancy>>();
+            builder.Services.AddAutoMapper(typeof(MappingConfig));
 
             var app = builder.Build();
 

@@ -1,6 +1,8 @@
 ﻿using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +13,55 @@ namespace CareerExplorer.Infrastructure.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private AppDbContext _db;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly AppDbContext _db;
+        private Dictionary<Type, object> _repositories;
 
-        public UnitOfWork(AppDbContext db)
+        public UnitOfWork(AppDbContext db, IServiceProvider serviceProvider)
         {
             _db = db;
-            JobSeekerProfile = new JobSeekerRepository(db);
-            RecruiterProfile = new RecruiterProfileRepository(db);
+            _serviceProvider = serviceProvider;
+            _repositories = new Dictionary<Type, object>();
         }
-        public IJobSeekerProfileRepository JobSeekerProfile { get; private set; }
-        public IRecruiterProfileRepository RecruiterProfile { get; private set; }
-
-        public void Save()
+        public IRepository<T> GetRepository<T>() where T : class
         {
-            _db.SaveChanges();
+            if (_repositories.ContainsKey(typeof(T)))
+            {
+                return (IRepository<T>)_repositories[typeof(T)];
+            }
+
+            var repository = _serviceProvider.GetService<IRepository<T>>();
+            _repositories.Add(typeof(T), repository);
+            return repository;
+        }
+        public IJobSeekerProfileRepository GetJobSeekerRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<IJobSeekerProfileRepository>();
+            return repository; 
+        }
+        public IRecruiterProfileRepository GetRecruiterRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<IRecruiterProfileRepository>();
+            return repository;
+        }
+        public IVacanciesRepository GetVacanciesRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<IVacanciesRepository>();
+            return repository;
+        }
+        public ICvPathsRepository GetCvPathsRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<ICvPathsRepository>();
+            return repository;
+        }
+        public void Dispose()
+        {
+            _db.Dispose();
+        }
+
+        public async Task SaveAsync()
+        {
+            await _db.SaveChangesAsync();
         }
     }
 }

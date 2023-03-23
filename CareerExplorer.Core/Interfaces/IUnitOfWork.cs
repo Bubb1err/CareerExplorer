@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace CareerExplorer.Core.Interfaces
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
-        IJobSeekerProfileRepository JobSeekerProfile { get; }
-        IRecruiterProfileRepository RecruiterProfile { get; }
-        void Save();
+        IVacanciesRepository GetVacanciesRepository();
+        IJobSeekerProfileRepository GetJobSeekerRepository();
+        IRecruiterProfileRepository GetRecruiterRepository();
+        ICvPathsRepository GetCvPathsRepository();
+        IRepository<T> GetRepository<T>() where T : class;
+        Task SaveAsync();
     }
 }

@@ -38,38 +38,20 @@ namespace CareerExplorer.Infrastructure.Repository
                     query = query.Include(includeProp);
                 }
             }
-            return query.ToList();
+            return query;
         }
-
+       
         public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = true)
         {
             if (tracked)
             {
                 IQueryable<T> query = dbSet;
-
-                query = query.Where(filter);
-                if (includeProperties != null)
-                {
-                    foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        query = query.Include(includeProp);
-                    }
-                }
-                return query.FirstOrDefault();
+                return Filtering(query, filter, includeProperties);
             }
             else
             {
                 IQueryable<T> query = dbSet.AsNoTracking();
-
-                query = query.Where(filter);
-                if (includeProperties != null)
-                {
-                    foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                    {
-                        query = query.Include(includeProp);
-                    }
-                }
-                return query.FirstOrDefault();
+                return Filtering(query, filter, includeProperties);
             }
 
         }
@@ -82,6 +64,20 @@ namespace CareerExplorer.Infrastructure.Repository
         public void RemoveRange(IEnumerable<T> entity)
         {
             dbSet.RemoveRange(entity);
+        }
+
+        private T Filtering(IQueryable<T> query, Expression<Func<T, bool>> filter, string? includeProperties)
+        {
+
+            query = query.Where(filter);
+            if (includeProperties != null)
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+            return query.FirstOrDefault();
         }
     }
 }
