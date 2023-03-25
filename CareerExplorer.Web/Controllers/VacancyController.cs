@@ -4,7 +4,9 @@ using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Web.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace CareerExplorer.Web.Controllers
 {
@@ -16,7 +18,7 @@ namespace CareerExplorer.Web.Controllers
         private readonly IVacanciesRepository _vacanciesRepository;
         private readonly IRecruiterProfileRepository _recruiterRepository;
         private readonly IJobSeekerProfileRepository _jobSeekerRepositoy;
-        private readonly IRepository<JobSeekerVacancy> _jobSeekerVacancyRepository;
+        private readonly IJobSeekerVacancyRepository _jobSeekerVacancyRepository;
         public VacancyController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<IdentityUser> userManager)
         {
             _unitOfWork = unitOfWork;
@@ -25,7 +27,7 @@ namespace CareerExplorer.Web.Controllers
             _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
             _recruiterRepository = _unitOfWork.GetRecruiterRepository();
             _jobSeekerRepositoy = _unitOfWork.GetJobSeekerRepository();
-            _jobSeekerVacancyRepository = _unitOfWork.GetRepository<JobSeekerVacancy>();
+            _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
         }
         [HttpGet]
         public ActionResult GetAll()
@@ -122,6 +124,36 @@ namespace CareerExplorer.Web.Controllers
                 vacancyDto.IsApplied= false;
             return View(vacancyDto);
         }
+        [HttpGet]
+        public ActionResult GetApplicants(int id)
+        {
+            var jobSeekers = _jobSeekerVacancyRepository.GetApplicantsForVacancy(id);
+            var applicants = _mapper.Map<List<ApplicantDTO>>(jobSeekers);
+            foreach(var applicant in applicants)
+                applicant.VacancyId= id;
 
+            return View(applicants);
+        }
+        [HttpGet]
+        public ActionResult GetApplicant(int jobSeekerId, int vacancyId)
+        {
+            var jobSeeker = _jobSeekerRepositoy.GetFirstOrDefault(x => x.Id == jobSeekerId);
+            var applicant = _mapper.Map<ApplicantDTO>(jobSeeker);
+            applicant.VacancyId = vacancyId;
+            return View(applicant);
+        }
+        [HttpGet]
+        public async Task<ActionResult> GetCv(int jobSeekerId, int vacancyId)
+        {
+            var jobSeekerVacancy = _jobSeekerVacancyRepository.GetFirstOrDefault(x => x.JobSeekerId == jobSeekerId && x.VacancyId == vacancyId);
+            if (jobSeekerVacancy == null)
+            {
+                return NotFound();
+            }
+
+            var filePath = jobSeekerVacancy.CvPath;
+            byte[] fileContent = System.IO.File.ReadAllBytes(filePath);
+            return File(fileContent, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        }
     }
 }

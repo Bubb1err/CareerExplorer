@@ -49,11 +49,6 @@ namespace CareerExplorer.Infrastructure.Repository
             var repository = _serviceProvider.GetRequiredService<IVacanciesRepository>();
             return repository;
         }
-        public ICvPathsRepository GetCvPathsRepository()
-        {
-            var repository = _serviceProvider.GetRequiredService<ICvPathsRepository>();
-            return repository;
-        }
         public void Dispose()
         {
             _db.Dispose();
@@ -62,6 +57,12 @@ namespace CareerExplorer.Infrastructure.Repository
         public async Task SaveAsync()
         {
             await _db.SaveChangesAsync();
+        }
+
+        public IJobSeekerVacancyRepository GetJobSeekerVacancyRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<IJobSeekerVacancyRepository>();
+            return repository;
         }
     }
 }

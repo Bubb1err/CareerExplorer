@@ -43,28 +43,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("CareerExplorer.Core.Entities.CvPath", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("JobSeekerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobSeekerId");
-
-                    b.ToTable("CvPaths");
-                });
-
             modelBuilder.Entity("CareerExplorer.Core.Entities.JobSeeker", b =>
                 {
                     b.Property<int>("Id")
@@ -107,6 +85,10 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CvPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsApplied")
                         .HasColumnType("bit");
@@ -426,17 +408,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasDiscriminator().HasValue("AppUser");
                 });
 
-            modelBuilder.Entity("CareerExplorer.Core.Entities.CvPath", b =>
-                {
-                    b.HasOne("CareerExplorer.Core.Entities.JobSeeker", "JobSeeker")
-                        .WithMany("PathsToAppliedCvs")
-                        .HasForeignKey("JobSeekerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("JobSeeker");
-                });
-
             modelBuilder.Entity("CareerExplorer.Core.Entities.JobSeekerVacancy", b =>
                 {
                     b.HasOne("CareerExplorer.Core.Entities.JobSeeker", "JobSeeker")
@@ -546,8 +517,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                 {
                     b.Navigation("AppUser")
                         .IsRequired();
-
-                    b.Navigation("PathsToAppliedCvs");
 
                     b.Navigation("VacanciesApplied");
                 });

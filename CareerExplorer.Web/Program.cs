@@ -35,8 +35,7 @@ namespace CareerExplorer.Web
             builder.Services.AddScoped<IRecruiterProfileRepository, RecruiterProfileRepository>();
             builder.Services.AddScoped<IVacanciesRepository, VacanciesRepository>();
             builder.Services.AddScoped<IApplyOnVacancyService, ApplyOnVacancyService>();
-            builder.Services.AddScoped<ICvPathsRepository, CvPathsRepository>();
-            builder.Services.AddScoped<IRepository<JobSeekerVacancy>, Repository<JobSeekerVacancy>>();
+            builder.Services.AddScoped<IJobSeekerVacancyRepository, JobSeekerVacancyRepository>();
             builder.Services.AddAutoMapper(typeof(MappingConfig));
 
             var app = builder.Build();

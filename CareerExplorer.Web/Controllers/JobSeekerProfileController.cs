@@ -17,9 +17,8 @@ namespace CareerExplorer.Web.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IJobSeekerProfileRepository _jobSeekerRepository;
-        private readonly ICvPathsRepository _cvPathsRepository;
         private readonly IVacanciesRepository _vacanciesRepository;
-        private readonly IRepository<JobSeekerVacancy> _jobSeekerVacancyRepository;
+        private readonly IJobSeekerVacancyRepository _jobSeekerVacancyRepository;
         public JobSeekerProfileController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork,
             IApplyOnVacancyService applyService)
         {
@@ -27,9 +26,8 @@ namespace CareerExplorer.Web.Controllers
             _unitOfWork = unitOfWork;
             _applyService= applyService;
             _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
-            _cvPathsRepository = _unitOfWork.GetCvPathsRepository();
             _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
-            _jobSeekerVacancyRepository = _unitOfWork.GetRepository<JobSeekerVacancy>();
+            _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
         }
         [HttpGet]
         public IActionResult GetProfile()
@@ -62,16 +60,10 @@ namespace CareerExplorer.Web.Controllers
             //save cv to local folder with name <guid>-jobseekerid-vacancyid.<fileExtension> 
             var fileName = await _applyService.SaveCv(file, folderPath, jobSeekerId, vacancyId);
 
-            //create CvPath entity
-            var cvPath = _applyService.CreateCvPath(fileName, jobSeekerId, jobSeeker);
-            _cvPathsRepository.Add(cvPath);
-
-            jobSeeker.PathsToAppliedCvs.Add(cvPath);
-
             var vacancyApplied = _vacanciesRepository.GetFirstOrDefault( x => x.Id == vacancyId);
 
             //create JobSeekerVacancy entity
-            var jobSeekVac = _applyService.CreateJobSeekerVacancy(jobSeekerId, jobSeeker, vacancyId, vacancyApplied);
+            var jobSeekVac = _applyService.CreateJobSeekerVacancy(jobSeekerId, jobSeeker, vacancyId, vacancyApplied, fileName);
             _jobSeekerVacancyRepository.Add(jobSeekVac);
 
             await _unitOfWork.SaveAsync();

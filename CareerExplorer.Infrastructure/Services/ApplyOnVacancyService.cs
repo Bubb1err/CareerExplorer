@@ -1,11 +1,17 @@
 ﻿using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.IServices;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
+using Google.Apis.Upload;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace CareerExplorer.Infrastructure.Services
 {
@@ -23,7 +29,7 @@ namespace CareerExplorer.Infrastructure.Services
             {
                 await cv.CopyToAsync(stream);
             }
-            return fileName;
+            return fullPath;
         }
         public int GetJobSeekerIdFromFilePath(string path)
         {
@@ -32,16 +38,7 @@ namespace CareerExplorer.Infrastructure.Services
             return jobSeekerId;
 
         }
-        public CvPath CreateCvPath(string path, int jobSeekerId, JobSeeker jobSeeker)
-        {
-            return new CvPath()
-            {
-                Path = path,
-                JobSeekerId = jobSeekerId,
-                JobSeeker = jobSeeker
-            };
-        }
-        public JobSeekerVacancy CreateJobSeekerVacancy(int jobSeekerId, JobSeeker jobSeeker, int appliedVacancyId, Vacancy appliedVacancy)
+        public JobSeekerVacancy CreateJobSeekerVacancy(int jobSeekerId, JobSeeker jobSeeker, int appliedVacancyId, Vacancy appliedVacancy, string cvPath)
         {
             return new JobSeekerVacancy()
             {
@@ -49,7 +46,8 @@ namespace CareerExplorer.Infrastructure.Services
                 JobSeeker = jobSeeker,
                 Vacancy = appliedVacancy,
                 VacancyId = appliedVacancyId,
-                IsApplied = true
+                IsApplied = true,
+                CvPath= cvPath
             };
         }
     }

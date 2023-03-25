@@ -21,7 +21,7 @@
                     <button class="btn btn-primary mt-3 mb-3" id="apply-button">Apply</button>
                     <form id="application-form" style="display:none;">
                         <input id="id-input" name="vacancyId" value="@Model.Id" type="hidden">
-                            <label for="file-input" class="form-label mt-4">Attach your CV (.pdf, .docx)</label>
+                            <label for="file-input" class="form-label mt-4">Attach your CV (.pdf)</label>
                             <input class="form-control" type="file" id="file-input">
                             <button style="display:block" class="btn btn-primary mt-3" id="apply-btn" type="post">Submit</button>
                     </form>
@@ -53,12 +53,12 @@
             var formData = new FormData();
             var fileInput = $('#file-input')[0];
             var file = fileInput.files[0];
-            var allowedExtensions = ['pdf', 'docx'];
+            var allowedExtensions = ['pdf'];
 
             if (file && file.size > 0) {
                 var extension = file.name.split('.').pop().toLowerCase();
                 if (allowedExtensions.indexOf(extension) === -1) {
-                    alert('Invalid file extension. Please select a PDF or DOCX file.');
+                    alert('Invalid file extension. Please select a PDF file.');
                     return;
                 }
                 formData.append('file', file);
