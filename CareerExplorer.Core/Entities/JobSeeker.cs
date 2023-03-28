@@ -15,6 +15,10 @@ namespace CareerExplorer.Core.Entities
         public string? Phone { get; set; }
         public string? GitHub { get; set; }
         public string? Experience { get; set; }
+        public virtual ICollection<SkillsTag> Skills { get; set; } 
+        public Position? DesiredPosition { get; set; }
+        public bool IsFilled { get; set; } = false;
+        public bool IsAccepted { get; set; } = false;
         public int? Views { get; set; }
         public ICollection<JobSeekerVacancy> VacanciesApplied { get; set; }
         public string UserId { get; set; }

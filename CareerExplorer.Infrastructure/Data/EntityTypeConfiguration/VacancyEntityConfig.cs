@@ -13,9 +13,9 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Vacancy> builder)
         {
-          //builder.HasOne(x => x.Creator)
-          //      .WithMany(x => x.Vacancies)
-          //      .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.Creator);
+            builder.HasOne(x => x.Position);
+            builder.HasOne(x => x.WorkType).WithOne(x => x.Vacancy).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

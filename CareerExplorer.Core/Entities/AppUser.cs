@@ -15,5 +15,7 @@ namespace CareerExplorer.Core.Entities
         public JobSeeker JobSeekerProfile { get; set; }
         public int? RecruiterProfileId { get; set; }
         public Recruiter RecruiterProfile { get; set; }
+        public int? AdminProfileId { get; set; }
+        public Admin AdminProfile { get; set; }
     }
 }

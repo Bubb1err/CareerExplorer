@@ -10,5 +10,6 @@ namespace CareerExplorer.Shared
     {
         public const string Recruiter = nameof(Recruiter);
         public const string JobSeeker = nameof(JobSeeker);
+        public const string Admin = nameof(Admin);
     }
 }
