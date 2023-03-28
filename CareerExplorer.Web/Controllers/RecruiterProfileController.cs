@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
+using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CareerExplorer.Web.Controllers
 {
+    [Authorize(Roles = UserRoles.Recruiter)]
     public class RecruiterProfileController : Controller
     {
 
@@ -25,26 +28,44 @@ namespace CareerExplorer.Web.Controllers
         [HttpGet]
         public IActionResult GetProfile()
         {
-            var currentRecrId = _userManager.GetUserId(User);
-            var recrProfile = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecrId);
-            var recrProfileDTO = _mapper.Map<RecruiterProfileDTO>(recrProfile);
+            try
+            {
+                var currentRecruiterId = _userManager.GetUserId(User);
+                var recruiterProfile = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecruiterId);
+                if (recruiterProfile == null)
+                {
+                    return NotFound();
+                }
+                var recruiterProfileDTO = _mapper.Map<RecruiterProfileDTO>(recruiterProfile);
 
-            return View(recrProfileDTO);
+                return View(recruiterProfileDTO);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return BadRequest();
+            
         }
         [HttpPost]
-        public IActionResult GetProfile(RecruiterProfileDTO recruiterDTO)
+        public async Task<IActionResult> GetProfile(RecruiterProfileDTO recruiterDTO)
         {
-            if(ModelState.IsValid)
+            try
             {
-                var recruiter = _mapper.Map<Recruiter>(recruiterDTO);
-                _recruiterRepository.Update(recruiter);
-                _unitOfWork.SaveAsync();
-                return RedirectToAction(nameof(GetProfile));
+                if (ModelState.IsValid)
+                {
+                    var recruiter = _mapper.Map<Recruiter>(recruiterDTO);
+                    _recruiterRepository.Update(recruiter);
+                    await _unitOfWork.SaveAsync();
+                    return RedirectToAction(nameof(GetProfile));
+                }
+                else
+                {
+                    return View(recruiterDTO);
+                }
             }
-            else
-            {
-                return View(recruiterDTO);
-            }
+            catch { return BadRequest(); }
+            
             
         }
     }

@@ -16,7 +16,10 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
         {
             builder.HasOne(x => x.AppUser)
                 .WithOne(x => x.JobSeekerProfile)
-                .OnDelete(DeleteBehavior.ClientCascade);
+                .OnDelete(DeleteBehavior.NoAction);
+            builder.HasMany(x => x.VacanciesApplied)
+                .WithOne(x => x.JobSeeker)
+                .OnDelete(DeleteBehavior.NoAction);
 
         }
     }

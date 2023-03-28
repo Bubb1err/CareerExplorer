@@ -1,0 +1,35 @@
+﻿
+@using CareerExplorer.Web.DTO;
+@model IEnumerable<ApplicantDTO>
+
+<div class="row">
+    <div class="col-md-2">
+        <partial name="_RecrMenuPartial" />
+    </div>
+    <div class="col-md-10">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Surname</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var applicant in Model)
+                {
+                     <tr>
+                          <th>@applicant.Name</th>
+                          <th>@applicant.Surname</th>
+                              <th>
+                           <div class="w-50 btn-group" role="group">
+                                <a asp-controller="Vacancy" asp-action="GetApplicant" asp-route-jobSeekerId="@applicant.Id"
+                                asp-route-vacancyId="@applicant.VacancyId"class="btn btn-primary">View profile</a>
+                                </div>
+                            </th>
+                     </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

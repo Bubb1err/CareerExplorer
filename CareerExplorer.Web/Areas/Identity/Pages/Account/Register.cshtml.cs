@@ -118,10 +118,10 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
         {
             //adding roles if they don't exist
             //if one of them doesn't exist then we need to add all roles
-            if (!_roleManager.RoleExistsAsync(UserRoles.RoleRecruiter).GetAwaiter().GetResult())
+            if (!_roleManager.RoleExistsAsync(UserRoles.Recruiter).GetAwaiter().GetResult())
             {
-                _roleManager.CreateAsync(new IdentityRole(UserRoles.RoleRecruiter)).GetAwaiter().GetResult();
-                _roleManager.CreateAsync(new IdentityRole(UserRoles.RoleJobSeeker)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(UserRoles.Recruiter)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(UserRoles.JobSeeker)).GetAwaiter().GetResult();
             }
 
             ReturnUrl = returnUrl;
@@ -139,7 +139,7 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                user.UserType = Input.Role == UserRoles.RoleRecruiter ? UserType.Recruiter : UserType.JobSeeker;
+                user.UserType = Input.Role == UserRoles.Recruiter ? UserType.Recruiter : UserType.JobSeeker;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -151,7 +151,7 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
 
                     if(Input.Role == null)
                     {
-                        await _userManager.AddToRoleAsync(user, UserRoles.RoleJobSeeker);
+                        await _userManager.AddToRoleAsync(user, UserRoles.JobSeeker);
                     }
                     else
                     {

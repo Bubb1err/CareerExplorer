@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CareerExplorer.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230323111643_jobseekervacancy")]
-    partial class jobseekervacancy
+    [Migration("20230325231500_conf")]
+    partial class conf
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,28 +44,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies");
-                });
-
-            modelBuilder.Entity("CareerExplorer.Core.Entities.CvPath", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("JobSeekerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobSeekerId");
-
-                    b.ToTable("CvPaths");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.JobSeeker", b =>
@@ -105,23 +83,25 @@ namespace CareerExplorer.Infrastructure.Migrations
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.JobSeekerVacancy", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("VacancyId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("JobSeekerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("VacancyId")
+                    b.Property<byte[]>("Cv")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<bool>("IsApplied")
+                        .HasColumnType("bit");
+
+                    b.HasKey("VacancyId", "JobSeekerId");
 
                     b.HasIndex("JobSeekerId");
-
-                    b.HasIndex("VacancyId");
 
                     b.ToTable("JobSeekerVacancies");
                 });
@@ -426,29 +406,18 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasDiscriminator().HasValue("AppUser");
                 });
 
-            modelBuilder.Entity("CareerExplorer.Core.Entities.CvPath", b =>
-                {
-                    b.HasOne("CareerExplorer.Core.Entities.JobSeeker", "JobSeeker")
-                        .WithMany("PathsToAppliedCvs")
-                        .HasForeignKey("JobSeekerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("JobSeeker");
-                });
-
             modelBuilder.Entity("CareerExplorer.Core.Entities.JobSeekerVacancy", b =>
                 {
                     b.HasOne("CareerExplorer.Core.Entities.JobSeeker", "JobSeeker")
                         .WithMany("VacanciesApplied")
                         .HasForeignKey("JobSeekerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("CareerExplorer.Core.Entities.Vacancy", "Vacancy")
                         .WithMany("Applicants")
                         .HasForeignKey("VacancyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("JobSeeker");
@@ -465,7 +434,7 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasOne("CareerExplorer.Core.Entities.Recruiter", "Creator")
                         .WithMany("Vacancies")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("Creator");
@@ -526,11 +495,13 @@ namespace CareerExplorer.Infrastructure.Migrations
                 {
                     b.HasOne("CareerExplorer.Core.Entities.JobSeeker", "JobSeekerProfile")
                         .WithOne("AppUser")
-                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "JobSeekerProfileId");
+                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "JobSeekerProfileId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("CareerExplorer.Core.Entities.Recruiter", "RecruiterProfile")
                         .WithOne("AppUser")
-                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "RecruiterProfileId");
+                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "RecruiterProfileId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("JobSeekerProfile");
 
@@ -546,8 +517,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                 {
                     b.Navigation("AppUser")
                         .IsRequired();
-
-                    b.Navigation("PathsToAppliedCvs");
 
                     b.Navigation("VacanciesApplied");
                 });

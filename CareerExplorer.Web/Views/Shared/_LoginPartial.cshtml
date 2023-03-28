@@ -6,7 +6,7 @@
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
 {
-        @if(User.IsInRole(UserRoles.RoleJobSeeker))
+        @if(User.IsInRole(UserRoles.JobSeeker))
         {
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"> @UserManager.GetUserName(User)</a>
@@ -22,7 +22,7 @@
         </li>
             
         }
-        else if (User.IsInRole(UserRoles.RoleRecruiter))
+        else if (User.IsInRole(UserRoles.Recruiter))
         {
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"> @UserManager.GetUserName(User)</a>

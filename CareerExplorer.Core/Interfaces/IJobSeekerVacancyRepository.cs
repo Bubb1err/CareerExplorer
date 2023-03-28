@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace CareerExplorer.Core.Interfaces
 {
-    public interface ICvPathsRepository : IRepository<CvPath>
+    public interface IJobSeekerVacancyRepository : IRepository<JobSeekerVacancy>
     {
-        void Update(CvPath entity);
+        IEnumerable<JobSeeker> GetApplicantsForVacancy(int vacancyId);
+        void Update(JobSeekerVacancy entity);
     }
 }

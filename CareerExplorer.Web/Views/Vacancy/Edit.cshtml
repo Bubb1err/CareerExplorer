@@ -1,12 +1,12 @@
 ﻿@using CareerExplorer.Web.DTO
 
-@model VacancyDTO
+@model CreateOrEditVacancyDTO
 <div class="row mb-3">
     <div class="col-md-2">
         <partial name="_RecrMenuPartial" />
     </div>
     <div class="col-md-10">
-        <form method="post" asp-action="GetProfile">
+        <form method="post" asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input asp-for="Id" hidden />
             <input asp-for="CreatorId" hidden />

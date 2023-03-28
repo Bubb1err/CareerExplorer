@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CareerExplorer.Core\CareerExplorer.Core.csproj" />
+  </ItemGroup>
+
 </Project>
