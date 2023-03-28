@@ -9,6 +9,8 @@ using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Repository;
 using CareerExplorer.Infrastructure.Services;
 using CareerExplorer.Core.IServices;
+using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CareerExplorer.Web
 {
@@ -34,8 +36,10 @@ namespace CareerExplorer.Web
             builder.Services.AddScoped<IJobSeekerProfileRepository, JobSeekerRepository>();
             builder.Services.AddScoped<IRecruiterProfileRepository, RecruiterProfileRepository>();
             builder.Services.AddScoped<IVacanciesRepository, VacanciesRepository>();
+            
             builder.Services.AddScoped<IApplyOnVacancyService, ApplyOnVacancyService>();
             builder.Services.AddScoped<IJobSeekerVacancyRepository, JobSeekerVacancyRepository>();
+            builder.Services.AddScoped<IRepository<AppUser>, Repository<AppUser>>();
             builder.Services.AddAutoMapper(typeof(MappingConfig));
 
             var app = builder.Build();
@@ -54,6 +58,7 @@ namespace CareerExplorer.Web
             app.UseRouting();
 
             app.UseAuthentication();
+                
             app.UseAuthorization();
             app.MapRazorPages();
 

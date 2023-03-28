@@ -10,7 +10,6 @@ namespace CareerExplorer.Core.IServices
 {
     public interface IApplyOnVacancyService
     {
-        Task<string> SaveCv(IFormFile cv, string destinationFolderPath, int jobSeekerId, int? vacancyId);
-        JobSeekerVacancy CreateJobSeekerVacancy(int jobSeekerId, JobSeeker jobSeeker, int appliedVacancyId, Vacancy appliedVacancy, string cvPath);
+        Task Apply(string currentLogedInUserId, int vacancyId, IFormFile file);
     }
 }

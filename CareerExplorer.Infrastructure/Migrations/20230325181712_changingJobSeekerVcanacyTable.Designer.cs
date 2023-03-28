@@ -4,6 +4,7 @@ using CareerExplorer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CareerExplorer.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230325181712_changingJobSeekerVcanacyTable")]
+    partial class changingJobSeekerVcanacyTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,25 +83,30 @@ namespace CareerExplorer.Infrastructure.Migrations
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.JobSeekerVacancy", b =>
                 {
-                    b.Property<int>("VacancyId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("JobSeekerId")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<byte[]>("Cv")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsApplied")
                         .HasColumnType("bit");
 
-                    b.HasKey("VacancyId", "JobSeekerId");
+                    b.Property<int>("JobSeekerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VacancyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("JobSeekerId");
+
+                    b.HasIndex("VacancyId");
 
                     b.ToTable("JobSeekerVacancies");
                 });
@@ -408,13 +416,13 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasOne("CareerExplorer.Core.Entities.JobSeeker", "JobSeeker")
                         .WithMany("VacanciesApplied")
                         .HasForeignKey("JobSeekerId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CareerExplorer.Core.Entities.Vacancy", "Vacancy")
                         .WithMany("Applicants")
                         .HasForeignKey("VacancyId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("JobSeeker");
@@ -431,7 +439,7 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasOne("CareerExplorer.Core.Entities.Recruiter", "Creator")
                         .WithMany("Vacancies")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Creator");
@@ -492,13 +500,11 @@ namespace CareerExplorer.Infrastructure.Migrations
                 {
                     b.HasOne("CareerExplorer.Core.Entities.JobSeeker", "JobSeekerProfile")
                         .WithOne("AppUser")
-                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "JobSeekerProfileId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "JobSeekerProfileId");
 
                     b.HasOne("CareerExplorer.Core.Entities.Recruiter", "RecruiterProfile")
                         .WithOne("AppUser")
-                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "RecruiterProfileId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("CareerExplorer.Core.Entities.AppUser", "RecruiterProfileId");
 
                     b.Navigation("JobSeekerProfile");
 

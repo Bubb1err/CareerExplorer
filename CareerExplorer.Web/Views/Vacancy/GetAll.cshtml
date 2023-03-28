@@ -2,19 +2,22 @@
 @using Microsoft.AspNetCore.Identity;
 @using CareerExplorer.Shared;
 
-@model IEnumerable<VacancyDTO>
-@inject UserManager<IdentityUser> UserManager
+@model PaginatedList<VacancyDTO>
 
 <div class="row">
     <div class="col-md-8">
         @foreach (var vacancy in Model)
         {
-            <div class="card bg-secondary mb-3">
-                <div class="card-header"><a asp-controller="Vacancy" asp-action="GetVacancy" asp-route-id="@vacancy.Id">@vacancy.Title</a></div>
-                <div class="card-body">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header text-white">
+                    <a class="link-light" asp-controller="Vacancy" asp-action="GetVacancy" asp-route-id="@vacancy.Id">@vacancy.Title</a>
+                </div>
+                <div class="card-body description-container">
                     <p class="card-text">@vacancy.Description</p>
                 </div>
+                <button class="expand-btn btn btn-primary w-25">Read More</button>
                 <div class="card-footer">
+                    @vacancy.CompanyName @vacancy.CreatorName @vacancy.CreatorSurname
                 </div>
 
             </div>
@@ -22,6 +25,76 @@
         }
     </div>
     <div class="col-md-4">
-
+    </div>
+    <div>
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a asp-action="GetAll" asp-route-pageNumber="@Model.PageIndex - 1" class="page-link">&laquo;</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+            }
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                if (i == Model.PageIndex)
+                {
+                    <li class="page-item active">
+                        <span class="page-link">@i</span>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("GetAll", new { pageNumber = i })">@i</a>
+                    </li>
+                }
+            }
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("GetAll", new { pageNumber = Model.PageIndex + 1 })">&raquo;</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+            }
+        </ul>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        const expandBtns = document.querySelectorAll('.expand-btn');
+
+        expandBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.previousElementSibling.classList.toggle('expanded');
+                btn.textContent = btn.textContent === 'Read More' ? 'Read Less' : 'Read More';
+            });
+        });
+    </script>
+}
+
+<style>
+    .description-container {
+        height: 100px;
+        overflow: hidden;
+    }
+
+        .description-container.expanded {
+            height: auto;
+        }
+
+    .expand-btn {
+        margin-top: 10px;
+    }
+</style>

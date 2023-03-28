@@ -34,6 +34,12 @@ namespace CareerExplorer.Infrastructure.Repository
             _repositories.Add(typeof(T), repository);
             return repository;
         }
+        //public TRepository GetRepository<TEntity, TRepository>() 
+        //    where TEntity : class
+        //    where TRepository : IRepository<TEntity>
+        //{
+        //    return (TRepository)GetRepository<TEntity>();
+        //}
         public IJobSeekerProfileRepository GetJobSeekerRepository()
         {
             var repository = _serviceProvider.GetRequiredService<IJobSeekerProfileRepository>();

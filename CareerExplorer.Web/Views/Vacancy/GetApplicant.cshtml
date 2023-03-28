@@ -18,10 +18,10 @@
     </div>
 </div>
 
+
 @section scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        
 
         $(document).on('click', '#viewCvBtn', function () {
             var jobSeekerId = $(this).data('jobseeker-id');
@@ -33,13 +33,17 @@
                     responseType: 'arraybuffer'
                 },
                 success: function (data) {
-                    var blob = new Blob([data], { type: 'application/pdf' }); // or 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' for DOCX files
+                    var blob = new Blob([data], { type: 'application/pdf' }); 
                     var url = URL.createObjectURL(blob);
-                    $('#cvContent').html('<embed src="' + url + '" type="application/pdf" width="100%" height="600px" />'); // or 'type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"' for DOCX files
+                    $('#cvContent').html('<embed src="' + url + '" type="application/pdf" width="100%" height="600px" />'); 
                     $('#viewCvModal').modal('show');
                 }
             });
         });
+        $(document).on('click', '#closeCvBtn', function () {
+            $('#viewCvModal').modal('hide');
+        });
     </script>
 }
+
 @Html.Partial("_FileContentPartial")

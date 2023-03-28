@@ -8,7 +8,7 @@ namespace CareerExplorer.Shared
 {
     public sealed class UserRoles
     {
-        public const string RoleRecruiter = "Recruiter";
-        public const string RoleJobSeeker = "JobSeeker";
+        public const string Recruiter = nameof(Recruiter);
+        public const string JobSeeker = nameof(JobSeeker);
     }
 }

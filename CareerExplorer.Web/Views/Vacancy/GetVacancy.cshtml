@@ -10,10 +10,10 @@
         <div class="col-md-8">
 
             <h1>@Model.Title</h1>
-            <span>@UserManager.GetUserName(User)</span>
+            <span></span>
             <p>@Model.Description</p>
             <span>Published: @Model.CreatedDate.ToShortDateString()</span>
-            @if (User.IsInRole(UserRoles.RoleJobSeeker))
+            @if (User.IsInRole(UserRoles.JobSeeker))
             {
                 @if(!Model.IsApplied)
                 {
@@ -71,6 +71,8 @@
                     processData: false,
                     success: function (response) {
                         $('#apply-btn').text('Sent');
+                        $('#apply-btn').prop('disabled', true);
+                        $('#file-input').prop('disabled', true);
                     },
                     error: function () {
                         alert('An error occurred while submitting your application. Please try again later.');
