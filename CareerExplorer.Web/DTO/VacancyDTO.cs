@@ -10,6 +10,7 @@ namespace CareerExplorer.Web.DTO
         public string Title { get; set; }
         [Required]
         public string Description { get; set; }
+        [Required]
         public bool IsAvailable { get; set; } = false;
         public int CreatorId { get; set; }
         public string CreatorNickName { get; set; }

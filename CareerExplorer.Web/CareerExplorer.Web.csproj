@@ -29,4 +29,9 @@
     <ProjectReference Include="..\CareerExplorer.Shared\CareerExplorer.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Recources\Views\JobSeekerProfile\" />
+    <Folder Include="Recources\Views\RecruiterProfile\" />
+  </ItemGroup>
+
 </Project>

@@ -1,37 +1,39 @@
-﻿@model CareerExplorer.Web.DTO.VacancyDTO
+﻿@using Microsoft.AspNetCore.Mvc.Localization
 
+@model CareerExplorer.Web.DTO.VacancyDTO 
+@inject IViewLocalizer Localizer
 <form method="post">
     <div class="border p-3 mt-4">
         <div class="row pb-2">
             <h2 class=" text-primary">
-                Create Vacancy
+                @Localizer["Header"]
             </h2>
             <hr />
         </div>
         <div class=" mb-3">
-            <label asp-for="Title">Title</label>
+            <label asp-for="Title">@Localizer["Title"]</label>
             <input asp-for="Title" class="form-control" />
             <span asp-validation-for="Title" class="text-danger"></span>
         </div>
         <div class=" mb-3">
-            <label asp-for="Description">Description</label>
+            <label asp-for="Description">@Localizer["Description"]</label>
             <textarea rows="7" asp-for="Description" class="form-control"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div
         <div class="mb-3">
             <label >
                 <input class="form-check-input" type="radio" asp-for="IsAvailable" value="true" />
-                Available
+                @Localizer["Available"]
                 </label>
                 <label >
                 <input class="form-check-input" type="radio" asp-for="IsAvailable" value="false" />
-                Not Available
+                @Localizer["Not Available"]
                 </label>
         </div>
         
-        <button type="submit" class="btn btn-primary" style="width:150px">Create</button>
+        <button type="submit" class="btn btn-primary" style="width:150px">@Localizer["Create"]</button>
         <a asp-controller="Vacancy" asp-action="CreatedVacancies" class="btn btn-secondary" style="width:150px">
-            Back To List
+            @Localizer["Back To List"]
         </a>
     </div>
 </form>

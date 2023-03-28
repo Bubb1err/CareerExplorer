@@ -5,12 +5,14 @@ using CareerExplorer.Infrastructure.Data;
 using CareerExplorer.Core.Entities;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using CareerExplorer.Shared;
+using Microsoft.AspNetCore.Localization;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Repository;
 using CareerExplorer.Infrastructure.Services;
 using CareerExplorer.Core.IServices;
 using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 
 namespace CareerExplorer.Web
 {
@@ -21,7 +23,9 @@ namespace CareerExplorer.Web
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddMvc();
+            builder.Services.AddMvc()
+                .AddDataAnnotationsLocalization()
+                .AddViewLocalization();
             builder.Services.AddRazorPages();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -35,12 +39,24 @@ namespace CareerExplorer.Web
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IJobSeekerProfileRepository, JobSeekerRepository>();
             builder.Services.AddScoped<IRecruiterProfileRepository, RecruiterProfileRepository>();
-            builder.Services.AddScoped<IVacanciesRepository, VacanciesRepository>();
-            
+            builder.Services.AddScoped<IVacanciesRepository, VacanciesRepository>();         
             builder.Services.AddScoped<IApplyOnVacancyService, ApplyOnVacancyService>();
             builder.Services.AddScoped<IJobSeekerVacancyRepository, JobSeekerVacancyRepository>();
             builder.Services.AddScoped<IRepository<AppUser>, Repository<AppUser>>();
             builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Recources");
+            builder.Services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supported = new[]
+                {
+                    new CultureInfo("en"),
+                    new CultureInfo("uk")
+                };
+                options.DefaultRequestCulture = new RequestCulture("en");
+                options.SupportedCultures = supported;
+                options.SupportedUICultures= supported;
+            });
 
             var app = builder.Build();
 
@@ -53,6 +69,7 @@ namespace CareerExplorer.Web
             }
 
             app.UseHttpsRedirection();
+            app.UseRequestLocalization();
             app.UseStaticFiles();
 
             app.UseRouting();
