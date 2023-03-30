@@ -10,6 +10,7 @@ namespace CareerExplorer.Core.Interfaces
     {
         //TRepository GetRepository<TEntity, TRepository>() where TEntity : class
         //    where TRepository : IRepository<TEntity>;
+        IAdminRepository GetAdminRepository();
         IJobSeekerVacancyRepository GetJobSeekerVacancyRepository();
         IVacanciesRepository GetVacanciesRepository();
         IJobSeekerProfileRepository GetJobSeekerRepository();

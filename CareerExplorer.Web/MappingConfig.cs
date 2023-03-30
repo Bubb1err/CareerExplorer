@@ -21,6 +21,9 @@ namespace CareerExplorer.Web
                 .ReverseMap();
             CreateMap<JobSeeker, ApplicantDTO>().ReverseMap();
             CreateMap<Vacancy, CreateOrEditVacancyDTO>().ReverseMap();
+            CreateMap<SkillTagDTO, SkillsTag>().ReverseMap();
+            CreateMap<Position, PositionDTO>().ReverseMap();
+            CreateMap<JobSeeker, JobSeekerDTO>().ReverseMap();
         }
     }
 }

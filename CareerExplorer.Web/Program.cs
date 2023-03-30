@@ -43,6 +43,11 @@ namespace CareerExplorer.Web
             builder.Services.AddScoped<IApplyOnVacancyService, ApplyOnVacancyService>();
             builder.Services.AddScoped<IJobSeekerVacancyRepository, JobSeekerVacancyRepository>();
             builder.Services.AddScoped<IRepository<AppUser>, Repository<AppUser>>();
+            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+            builder.Services.AddScoped<IRepository<SkillsTag>, Repository<SkillsTag>>();
+            builder.Services.AddScoped<IRepository<WorkType>, Repository<WorkType>>();
+            builder.Services.AddScoped<IRepository<Country>, Repository<Country>>();
+            builder.Services.AddScoped<IRepository<Position>, Repository<Position>>();
             builder.Services.AddAutoMapper(typeof(MappingConfig));
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Recources");

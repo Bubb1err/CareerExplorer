@@ -1,0 +1,25 @@
+﻿
+@using CareerExplorer.Web.DTO
+
+@model PositionDTO
+
+<div class="row mb-3">
+    <div class="col-md-2">
+        <partial name="_AdminMenuPartial" />
+    </div>
+    <div class="col-md-10">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <input asp-for="Id" hidden />
+            <div class="form-floating mb-3">
+                <input asp-for="Name" class="form-control" placeholder="Name" />
+                <label asp-for="Name" class="form-label"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <button asp-controller="Admin" asp-action="EditPosition" type="submit" class="w-25 btn btn btn-primary">Save</button>
+            <a asp-controller="Admin" asp-action="GetPositions" class="btn btn-secondary">
+                Back To List
+        </a>
+        </form>
+    </div>
+</div>

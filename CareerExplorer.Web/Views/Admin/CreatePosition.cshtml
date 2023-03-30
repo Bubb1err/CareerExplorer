@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model CareerExplorer.Web.DTO.PositionDTO
+@inject IViewLocalizer Localizer
+
+
+<form method="post" asp-action="CreatePosition">
+    <div class="border p-3 mt-4">
+        <div class="row pb-2">
+            <h2 class=" text-primary">
+                @Localizer["Create new postion"]
+            </h2>
+            <hr />
+        </div>
+        <div class=" mb-3">
+            <label asp-for="Name">@Localizer["Name"]</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        
+        <button asp-controller="Admin" asp-action="CreatePosition" type="submit" class="btn btn-primary" style="width:150px">@Localizer["Create"]</button>
+        <a asp-controller="Admin" asp-action="GetPositions" class="btn btn-secondary" style="width:150px">
+            @Localizer["Back To List"]
+        </a>
+    </div>
+</form>

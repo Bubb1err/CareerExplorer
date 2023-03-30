@@ -1,0 +1,36 @@
+﻿
+@model IEnumerable<CareerExplorer.Web.DTO.PositionDTO>
+
+<div class="row">
+    <div class="col-md-2">
+        <partial name="_AdminMenuPartial" />
+    </div>
+    <div class="col-md-10">
+        <a class="btn btn-primary" asp-controller="Admin" asp-action="CreatePosition">Add Position</a>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tag in Model)
+                {
+                    <tr>
+                        <th>@tag.Id</th>
+                        <th>@tag.Name</th>
+                        <th>
+                            <div class="w-50 btn-group" role="group">
+                                <a asp-controller="Admin" asp-action="EditPosition" asp-route-id="@tag.Id" class="btn btn-primary me-3">Edit</a>
+                                <a asp-controller="Admin" asp-action="DeletePosition" asp-route-id="@tag.Id" class="btn btn-primary me-3">Delete</a>
+                            </div>
+                        </th>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

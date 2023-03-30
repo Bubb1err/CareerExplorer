@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace CareerExplorer.Core.Interfaces
 {
-    public interface IJobSeekerProfileRepository : IRepository<JobSeeker>
+    public interface IAdminRepository : IRepository<Admin>
     {
-        JobSeeker GetJobSeeker(string userId);
-        void Update(JobSeeker jobSeeker);
+        void UpdateSkillTag(SkillsTag tag);
+        void UpdatePosition(Position position);
     }
 }

@@ -11,21 +11,21 @@ using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Repository
 {
-    public class JobSeekerRepository : Repository<JobSeeker>, IJobSeekerProfileRepository
+    public class AdminRepository : Repository<Admin>, IAdminRepository
     {
         private AppDbContext _context;
-        public JobSeekerRepository(AppDbContext context) : base(context) 
+        public AdminRepository(AppDbContext context) : base(context) 
         {
             _context = context;
         }
 
-        public JobSeeker GetJobSeeker(string userId)
+        public void UpdateSkillTag(SkillsTag tag)
         {
-            return _context.JobSeekers.Include(x => x.Skills).FirstOrDefault(x => x.UserId == userId);
+            _context.SkillsTags.Update(tag);
         }
-        public void Update(JobSeeker jobSeeker)
+        public void UpdatePosition(Position position)
         {
-            _context.JobSeekers.Update(jobSeeker);
+            _context.Positions.Update(position);
         }
     }
 }
