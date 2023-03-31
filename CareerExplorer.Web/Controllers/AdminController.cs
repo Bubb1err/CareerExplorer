@@ -49,6 +49,10 @@ namespace CareerExplorer.Web.Controllers
         {
             try
             {
+                if(!ModelState.IsValid)
+                {
+                    return View(skillTagDTO);
+                }
                 if (skillTagDTO == null)
                     return BadRequest(ModelState);
 
@@ -126,6 +130,8 @@ namespace CareerExplorer.Web.Controllers
         {
             try
             {
+                if(!ModelState.IsValid)
+                    return View(positionDto);
                 if (positionDto == null)
                     return BadRequest(ModelState);
 

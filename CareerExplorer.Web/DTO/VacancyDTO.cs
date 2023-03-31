@@ -1,5 +1,4 @@
-﻿using CareerExplorer.Core.Entities;
-using Microsoft.Build.Framework;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CareerExplorer.Web.DTO
 {
@@ -9,6 +8,7 @@ namespace CareerExplorer.Web.DTO
         [Required]
         public string Title { get; set; }
         [Required]
+        [MinLength(200, ErrorMessage = "Provide at least 200 symbols.")]
         public string Description { get; set; }
         [Required]
         public bool IsAvailable { get; set; } = false;
@@ -18,7 +18,7 @@ namespace CareerExplorer.Web.DTO
         public string CreatorSurname { get; set; }
         public string CompanyName { get; set; }
         public string CompanyDesciprion { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } 
         public bool IsApplied { get; set; }
     }
 }

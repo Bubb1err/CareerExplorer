@@ -123,6 +123,9 @@
   <data name="Back To List" xml:space="preserve">
     <value>Back To List</value>
   </data>
+  <data name="Choose skills" xml:space="preserve">
+    <value>Choose required skills</value>
+  </data>
   <data name="Create" xml:space="preserve">
     <value>Create</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="Not Available" xml:space="preserve">
     <value>Not Available</value>
+  </data>
+  <data name="Skills" xml:space="preserve">
+    <value>Skills</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Title</value>

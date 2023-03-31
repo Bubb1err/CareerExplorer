@@ -61,9 +61,19 @@ namespace CareerExplorer.Web.Controllers
         {
             try
             {
-                if (jobSeekerDto == null)
-                    return NotFound();
+                
                 string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
+                if (!ModelState.IsValid)
+                {
+                    var skills = new List<SkillsTag>();
+                    foreach(var tag in tags)
+                    {
+                        skills.Add(_skillsTagRepository.GetFirstOrDefault(x => x.Title == tag));
+                    }
+                    jobSeekerDto.Skills = skills;
+                    return View(jobSeekerDto);
+                }
+
                 var currentUserId = _userManager.GetUserId(User);
                 var userProfile = _jobSeekerRepository.GetJobSeeker(currentUserId);
 

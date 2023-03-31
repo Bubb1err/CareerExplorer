@@ -27,6 +27,8 @@ namespace CareerExplorer.Infrastructure.Repository
         public IEnumerable<Vacancy> GetAvailablePaginatedVacancies(int pageSize, int pageNumber)
         {
             IQueryable<Vacancy> vacancies = dbSet;
+            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true)
+                .Include(x => x.Creator);
             if (pageSize > 0)
             {
                 if (pageSize > 100)
@@ -34,10 +36,7 @@ namespace CareerExplorer.Infrastructure.Repository
                     pageSize = 100;
                 }
                 vacancies = vacancies.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
-            }
-
-            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true)
-                .Include(x => x.Creator); 
+            }  
             return vacancies;
         }
         public IEnumerable<Vacancy> GetCreatedVacancies(string userId)
@@ -51,7 +50,6 @@ namespace CareerExplorer.Infrastructure.Repository
             var vacancies = dbSet.AsNoTracking().Where(x => x.CreatorId== recuiterId);
             return vacancies;
         }
-
         public void Update(Vacancy entity)
         {
             _context.Vacancies.Update(entity);

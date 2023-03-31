@@ -1,8 +1,8 @@
-﻿
+﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using CareerExplorer.Web.DTO
 
 @model SkillTagDTO
-
+@inject IViewLocalizer Localizer
 <div class="row mb-3">
     <div class="col-md-2">
         <partial name="_AdminMenuPartial" />
@@ -12,13 +12,13 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input asp-for="Id" hidden />
             <div class="form-floating mb-3">
-                <input asp-for="Title" class="form-control" placeholder="Title" />
-                <label asp-for="Title" class="form-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <label asp-for="Title" class="form-label">@Localizer["Title"]</label>
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <button asp-controller="Admin" asp-action="EditTag" type="submit" class=" btn btn btn-primary">Save</button>
+            <button asp-controller="Admin" asp-action="EditTag" type="submit" class=" btn btn btn-primary">@Localizer["Save"]</button>
             <a asp-controller="Admin" asp-action="GetSkillsTags" class="btn btn-secondary">
-                Back To List
+                @Localizer["Back To List"]
         </a>
         </form>
     </div>

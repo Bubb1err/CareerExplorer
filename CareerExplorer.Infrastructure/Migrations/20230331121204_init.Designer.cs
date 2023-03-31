@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CareerExplorer.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230328195517_changingPostionTable")]
-    partial class changingPostionTable
+    [Migration("20230331121204_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -233,9 +233,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Property<int?>("AdminId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("JobSeekerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -246,8 +243,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AdminId");
-
-                    b.HasIndex("JobSeekerId");
 
                     b.HasIndex("VacancyId");
 
@@ -281,9 +276,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PositionId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -293,8 +285,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("PositionId");
 
                     b.ToTable("Vacancies");
                 });
@@ -321,10 +311,24 @@ namespace CareerExplorer.Infrastructure.Migrations
 
                     b.HasIndex("AdminId");
 
-                    b.HasIndex("VacancyId")
-                        .IsUnique();
+                    b.HasIndex("VacancyId");
 
                     b.ToTable("WorkTypes");
+                });
+
+            modelBuilder.Entity("JobSeekerSkillsTag", b =>
+                {
+                    b.Property<int>("JobSeekersId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkillsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("JobSeekersId", "SkillsId");
+
+                    b.HasIndex("SkillsId");
+
+                    b.ToTable("JobSeekerSkillsTag");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -622,10 +626,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .WithMany("Tags")
                         .HasForeignKey("AdminId");
 
-                    b.HasOne("CareerExplorer.Core.Entities.JobSeeker", null)
-                        .WithMany("Skills")
-                        .HasForeignKey("JobSeekerId");
-
                     b.HasOne("CareerExplorer.Core.Entities.Vacancy", null)
                         .WithMany("Requirements")
                         .HasForeignKey("VacancyId");
@@ -645,15 +645,7 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-                    b.HasOne("CareerExplorer.Core.Entities.Position", "Position")
-                        .WithMany()
-                        .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Creator");
-
-                    b.Navigation("Position");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.WorkType", b =>
@@ -665,14 +657,29 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("CareerExplorer.Core.Entities.Vacancy", "Vacancy")
-                        .WithOne("WorkType")
-                        .HasForeignKey("CareerExplorer.Core.Entities.WorkType", "VacancyId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .WithMany()
+                        .HasForeignKey("VacancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Admin");
 
                     b.Navigation("Vacancy");
+                });
+
+            modelBuilder.Entity("JobSeekerSkillsTag", b =>
+                {
+                    b.HasOne("CareerExplorer.Core.Entities.JobSeeker", null)
+                        .WithMany()
+                        .HasForeignKey("JobSeekersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CareerExplorer.Core.Entities.SkillsTag", null)
+                        .WithMany()
+                        .HasForeignKey("SkillsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -773,8 +780,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Navigation("AppUser")
                         .IsRequired();
 
-                    b.Navigation("Skills");
-
                     b.Navigation("VacanciesApplied");
                 });
 
@@ -793,9 +798,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Navigation("Countries");
 
                     b.Navigation("Requirements");
-
-                    b.Navigation("WorkType")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

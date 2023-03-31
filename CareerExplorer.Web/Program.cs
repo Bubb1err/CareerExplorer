@@ -55,8 +55,8 @@ namespace CareerExplorer.Web
             {
                 var supported = new[]
                 {
-                    new CultureInfo("en"),
-                    new CultureInfo("uk")
+                    new CultureInfo("uk"),
+                    new CultureInfo("en")
                 };
                 options.DefaultRequestCulture = new RequestCulture("en");
                 options.SupportedCultures = supported;
@@ -86,7 +86,7 @@ namespace CareerExplorer.Web
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Vacancy}/{action=GetAll}/{id?}");
 
             app.Run();
         }

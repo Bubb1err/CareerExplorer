@@ -1,5 +1,7 @@
 ﻿@using CareerExplorer.Web.DTO;
+@using Microsoft.AspNetCore.Mvc.Localization
 
+@inject IViewLocalizer Localizer
 @model JobSeekerDTO
 
 <div class="row">
@@ -9,36 +11,37 @@
             <input asp-for="Id" hidden />
             <input asp-for="UserId" hidden />
             <div class="form-floating mb-3">
-                <input asp-for="Name" class="form-control" placeholder="Enter your name" />
-                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control"/>
+                <label asp-for="Name" class="form-label">@Localizer["Name"]</label>
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Surname" class="form-control" placeholder="Enter your surname" />
-                <label asp-for="Surname" class="form-label"></label>
+                <input asp-for="Surname" class="form-control" />
+                <label asp-for="Surname" class="form-label">@Localizer["Surname"]</label>
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Phone" class="form-control" placeholder="Please enter your phone number." />
-                <label asp-for="Phone" class="form-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <label asp-for="Phone" class="form-label">@Localizer["Phone"]</label>
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3 input-group" id="skill-tags-input-container">
                 <input  type="hidden" id="selected-skills-input" name="selectedSkills"/>
-                <input  class="form-control" id="skill-tags-input" placeholder="Choose skills" />
-                <label class="form-label">Skills</label>
+                <input class="form-control" id="skill-tags-input" placeholder="@Localizer["Choose skills"]" />
+                <label class="form-label">@Localizer["Skills"]</label>
             </div>
             <div class="form-control skill-tags-display" id="skill-tags-display"></div>
             <div class=" mb-3">
-                    <label asp-for="Experience">Experience</label>
-                    <textarea asp-for="Experience" class="form-control"></textarea>
+                <label asp-for="Experience">@Localizer["Experience"]</label>
+                    <textarea rows="7" asp-for="Experience" class="form-control"></textarea>
                     <span asp-validation-for="Experience" class="text-danger"></span>
                 </div>
             <div class="form-floating mb-3">
-                <input asp-for="GitHub" class="form-control" placeholder="Enter link to your GitHub profile." />
-                <label asp-for="GitHub" class="form-label"></label>
-                <span asp-validation-for="Surname" class="text-danger"></span>
+                <input asp-for="GitHub" class="form-control" />
+                <label asp-for="GitHub" class="form-label">@Localizer["GitHub"]</label>
+                <span asp-validation-for="GitHub" class="text-danger"></span>
             </div>
-            <button asp-controller="JobSeekerProfile" asp-action="GetProfile" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+            <button asp-controller="JobSeekerProfile" asp-action="GetProfile" type="submit" class="w-100 btn btn-lg btn-primary">@Localizer["Save"]</button>
         </form>
     </div>
 </div>
@@ -64,7 +67,7 @@
                     console.log(tags, "tags");
                     $('#skill-tags-input').autocomplete({
                         source: tags,
-                        minLength: 2,
+                        minLength: 1,
                         select: function (event, ui) {
                             selectedTags.push(ui.item.value);
                             updateSkillTagsDisplay();
@@ -88,16 +91,17 @@
                 closeButton.append(closeIcon);
                 tag.append(closeButton);
                 closeButton.on('click', function () {
-                    var tagText = $(this).parent().text().trim();
-                    selectedTags.splice(selectedTags.indexOf(tagText), 1);
-                    updateSkillTagsDisplay();
-                    var skills = JSON.parse($('#selected-skills-input').val());
-                    var skillIndex = skills.indexOf(tagText);
-                    if (skillIndex > -1) {
-                        skills.splice(skillIndex, 1);
-                        $('#selected-skills-input').val(JSON.stringify(skills));
-                    }
-                });
+                var index = $(this).parent().index();
+                selectedTags.splice(index, 1);
+                updateSkillTagsDisplay();
+                var skills = JSON.parse($('#selected-skills-input').val());
+                var skillIndex = skills.indexOf(tagText);
+                if (skillIndex > -1) {
+                    skills.splice(skillIndex, 1);
+                    $('#selected-skills-input').val(JSON.stringify(skills));
+                }
+                $(this).parent().remove(); 
+            });
                 $('#skill-tags-display').append(tag);
             }
             $('#selected-skills-input').val(JSON.stringify(selectedTags));

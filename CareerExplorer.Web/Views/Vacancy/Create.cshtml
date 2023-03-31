@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 
-@model CareerExplorer.Web.DTO.VacancyDTO 
+@model CareerExplorer.Web.DTO.CreateOrEditVacancyDTO
 @inject IViewLocalizer Localizer
 <form method="post">
     <div class="border p-3 mt-4">
@@ -19,16 +19,22 @@
             <label asp-for="Description">@Localizer["Description"]</label>
             <textarea rows="7" asp-for="Description" class="form-control"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
-        </div
+        </div>
+        <div class="form-floating mb-3 input-group" id="skill-tags-input-container">
+            <input type="hidden" id="selected-skills-input" name="selectedSkills" />
+            <input class="form-control" id="skill-tags-input" placeholder="@Localizer["Choose skills"]" />
+            <label class="form-label">@Localizer["Skills"]</label>
+        </div>
+        <div class="form-control skill-tags-display" id="skill-tags-display"></div>
         <div class="mb-3">
             <label >
                 <input class="form-check-input" type="radio" asp-for="IsAvailable" value="true" />
                 @Localizer["Available"]
-                </label>
-                <label >
+            </label>
+            <label >
                 <input class="form-check-input" type="radio" asp-for="IsAvailable" value="false" />
                 @Localizer["Not Available"]
-                </label>
+            </label>
         </div>
         
         <button type="submit" class="btn btn-primary" style="width:150px">@Localizer["Create"]</button>
@@ -37,3 +43,67 @@
         </a>
     </div>
 </form>
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+    <script>
+        var selectedTags = [];
+        $(document).ready(function () {
+            selectedTags = [];
+            updateSkillTagsDisplay();
+        });
+        $('#skill-tags-input').on('input', function () {
+            var search = $(this).val();
+            $.ajax({
+                url: '/Admin/GetSkillTags',
+                type: 'GET',
+                data: { search: search },
+                success: function (data) {
+                    var tags = data.map(function (tag) {
+                        return tag.title;
+                    });
+                    console.log(tags, "tags");
+                    $('#skill-tags-input').autocomplete({
+                        source: tags,
+                        minLength: 1,
+                        select: function (event, ui) {
+                            selectedTags.push(ui.item.value);
+                            updateSkillTagsDisplay();
+                            $(this).val('');
+                            return false;
+                        }
+                    });
+                },
+                error: function () {
+                    console.log('Error retrieving tags');
+                }
+            });
+        });
+
+        function updateSkillTagsDisplay() {
+            $('#skill-tags-display').empty();
+            for (var i = 0; i < selectedTags.length; i++) {
+                var tag = $('<div>', { class: 'skill-tag' }).text(selectedTags[i]);
+                var closeButton = $('<button>', { type: 'button', class: 'close', 'aria-label': 'Close' });
+                var closeIcon = $('<span>', { 'aria-hidden': 'true' }).html('&times;');
+                closeButton.append(closeIcon);
+                tag.append(closeButton);
+                closeButton.on('click', function () {
+                var index = $(this).parent().index();
+                selectedTags.splice(index, 1);
+                updateSkillTagsDisplay();
+                var skills = JSON.parse($('#selected-skills-input').val());
+                var skillIndex = skills.indexOf(tagText);
+                if (skillIndex > -1) {
+                    skills.splice(skillIndex, 1);
+                    $('#selected-skills-input').val(JSON.stringify(skills));
+                }
+                $(this).parent().remove(); 
+            });
+                $('#skill-tags-display').append(tag);
+            }
+            $('#selected-skills-input').val(JSON.stringify(selectedTags));
+        }
+    </script>
+
+}

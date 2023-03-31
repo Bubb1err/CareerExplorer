@@ -123,6 +123,9 @@
   <data name="Back To List" xml:space="preserve">
     <value>До списку вакансій</value>
   </data>
+  <data name="Choose skills" xml:space="preserve">
+    <value>Виберіть необхідні навички</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Опис</value>
   </data>
@@ -131,6 +134,9 @@
   </data>
   <data name="Save" xml:space="preserve">
     <value>Зберегти</value>
+  </data>
+  <data name="Skills" xml:space="preserve">
+    <value>Навички</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Назва</value>

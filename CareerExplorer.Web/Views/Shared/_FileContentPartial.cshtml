@@ -1,4 +1,7 @@
-﻿<div class="modal fade" id="viewCvModal" tabindex="-1" role="dialog" aria-labelledby="viewCvModalLabel" aria-hidden="true">
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<div class="modal fade" id="viewCvModal" tabindex="-1" role="dialog" aria-labelledby="viewCvModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,7 +14,7 @@
                 <pre id="cvContent"></pre>
             </div>
             <div class="modal-footer">
-                <button id="closeCvBtn" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="closeCvBtn" type="button" class="btn btn-secondary" data-dismiss="modal">@Localizer["Close"]</button>
             </div>
         </div>
     </div>

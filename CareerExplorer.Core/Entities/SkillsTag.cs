@@ -13,6 +13,7 @@ namespace CareerExplorer.Core.Entities
         public int? AdminId { get; set; }
         public virtual Admin? Admin { get; set; }
         public virtual ICollection<JobSeeker> JobSeekers { get; set; } = new List<JobSeeker>();
+        public virtual ICollection<Vacancy> Vacancies { get; set; } = new List<Vacancy>();
 
     }
 }

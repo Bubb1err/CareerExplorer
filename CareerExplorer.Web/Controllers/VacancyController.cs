@@ -24,6 +24,7 @@ namespace CareerExplorer.Web.Controllers
         private readonly IJobSeekerProfileRepository _jobSeekerRepositoy;
         private readonly IJobSeekerVacancyRepository _jobSeekerVacancyRepository;
         private readonly IRepository<AppUser> _appUserRepository;
+        private readonly IRepository<SkillsTag> _skillsTagRepository;
         public VacancyController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<IdentityUser> userManager,
             IRepository<AppUser> appUserRepository)
         {
@@ -36,13 +37,14 @@ namespace CareerExplorer.Web.Controllers
             _jobSeekerRepositoy = _unitOfWork.GetJobSeekerRepository();
             _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
             _appUserRepository = appUserRepository;
+            _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
         }
         [HttpGet]
         public async Task<IActionResult> GetAll(int pageNumber = 1)
         {
             try
             {
-                const int pageSize = 1;
+                const int pageSize = 3;
                 var vacancies = _vacanciesRepository.GetAvailablePaginatedVacancies(pageSize, pageNumber);
                 var totalVacancies = _vacanciesRepository.CountVacancies();
 
@@ -95,18 +97,31 @@ namespace CareerExplorer.Web.Controllers
         }
         [Authorize(Roles = UserRoles.Recruiter)]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateOrEditVacancyDTO vacancyDTO)
+        public async Task<IActionResult> Create(CreateOrEditVacancyDTO vacancyDTO, string selectedSkills)
         {
             try
             {
-                if (vacancyDTO == null)
-                    return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return View(vacancyDTO);
+                }
+                if (selectedSkills== null)
+                    return BadRequest();
+                string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
+                var skills = new List<SkillsTag>();
+                foreach (var tag in tags)
+                {
+                    skills.Add(_skillsTagRepository.GetFirstOrDefault(x => x.Title == tag));
+                }
                 var currentRecruiterId = _userManager.GetUserId(User);
-
                 var creator = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecruiterId);
                 var vacancy = _mapper.Map<Vacancy>(vacancyDTO);
+                vacancy.Requirements = skills;
                 vacancy.CreatorId = creator.Id;
                 vacancy.Creator = creator;
+                vacancy.CreatedDate= DateTime.Now;
+
+
                 await _vacanciesRepository.AddAsync(vacancy);
 
                 await _unitOfWork.SaveAsync();
@@ -123,7 +138,7 @@ namespace CareerExplorer.Web.Controllers
             {
                 if (id == null)
                     return BadRequest();
-                var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id);
+                var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id, "Requirements");
                 var vacancyDto = _mapper.Map<CreateOrEditVacancyDTO>(vacancy);
                 return View(vacancyDto);
             }
@@ -132,18 +147,44 @@ namespace CareerExplorer.Web.Controllers
         }
         [HttpPost]
         [Authorize(Roles = UserRoles.Recruiter)]
-        public async Task<IActionResult> Edit(CreateOrEditVacancyDTO vacancyDto)
+        public async Task<IActionResult> Edit(CreateOrEditVacancyDTO vacancyDto, string selectedSkills)
         {
             try
             {
-                if (ModelState.IsValid)
+                string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
+                if (!ModelState.IsValid)
                 {
-                    var vacancy = _mapper.Map<Vacancy>(vacancyDto);
-                    _vacanciesRepository.Update(vacancy);
-                    await _unitOfWork.SaveAsync();
-                    return RedirectToAction(nameof(CreatedVacancies));
+                    var skills = new List<SkillsTag>();
+                    foreach (var tag in tags)
+                    {
+                        skills.Add(_skillsTagRepository.GetFirstOrDefault(x => x.Title == tag));
+                    }
+                    vacancyDto.Requirements = skills;
+                    return View(vacancyDto);
                 }
-                return View(vacancyDto);
+
+                var currentVacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == vacancyDto.Id, "Requirements");
+                currentVacancy.Title= vacancyDto.Title;
+                currentVacancy.Description= vacancyDto.Description;
+                currentVacancy.IsAvailable = vacancyDto.IsAvailable;
+
+                List<SkillsTag> skillsToAdd = new List<SkillsTag>();
+                var existingSkillTags = currentVacancy.Requirements.Select(s => s.Title);
+                var tagsToRemove = existingSkillTags.Except(tags).ToList();
+                for (int i = tagsToRemove.Count() - 1; i >= 0; i--)
+                {
+                    var skillTagToRemove = currentVacancy.Requirements.FirstOrDefault(s => s.Title == tagsToRemove[i]);
+                    currentVacancy.Requirements.Remove(skillTagToRemove);
+                }
+                foreach (var skillTag in tags.Except(existingSkillTags))
+                {
+                    var newSkillTag = _skillsTagRepository.GetFirstOrDefault(s => s.Title == skillTag)
+                        ?? new SkillsTag { Title = skillTag };
+
+                    currentVacancy.Requirements.Add(newSkillTag);
+                }
+                await _unitOfWork.SaveAsync();
+                return RedirectToAction(nameof(CreatedVacancies));
             }
             catch { return BadRequest(); }
             

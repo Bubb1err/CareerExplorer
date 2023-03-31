@@ -17,10 +17,10 @@ namespace CareerExplorer.Core.Entities
         public ICollection<Country> Countries { get; set; }
         public string Description { get; set; }
         public bool IsAvailable { get; set; }
-        public ICollection<SkillsTag> Requirements { get; set; }
+        public ICollection<SkillsTag> Requirements { get; set; } = new List<SkillsTag>();
         public ICollection<JobSeekerVacancy> Applicants { get; set; } 
         public int CreatorId { get; set; }
         public virtual Recruiter Creator { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
     }
 }

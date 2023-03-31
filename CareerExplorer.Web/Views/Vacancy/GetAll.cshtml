@@ -1,7 +1,9 @@
 ﻿@using CareerExplorer.Web.DTO
 @using Microsoft.AspNetCore.Identity;
 @using CareerExplorer.Shared;
+@using Microsoft.AspNetCore.Mvc.Localization
 
+@inject IViewLocalizer Localizer
 @model PaginatedList<VacancyDTO>
 
 <div class="row">
@@ -15,7 +17,7 @@
                 <div class="card-body description-container">
                     <p class="card-text">@vacancy.Description</p>
                 </div>
-                <button class="expand-btn btn btn-primary w-25">Read More</button>
+                <button class="expand-btn btn btn-primary w-25">@Localizer["Read More"]</button>
                 <div class="card-footer">
                     @vacancy.CompanyName @vacancy.CreatorName @vacancy.CreatorSurname
                 </div>
@@ -78,7 +80,7 @@
         expandBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 btn.previousElementSibling.classList.toggle('expanded');
-                btn.textContent = btn.textContent === 'Read More' ? 'Read Less' : 'Read More';
+                btn.textContent = btn.textContent === '@Localizer["Read More"]' ? '@Localizer["Read Less"]' : '@Localizer["Read More"]';
             });
         });
     </script>

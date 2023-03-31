@@ -234,14 +234,9 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("VacancyId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AdminId");
-
-                    b.HasIndex("VacancyId");
 
                     b.ToTable("SkillsTags");
                 });
@@ -534,6 +529,21 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("SkillsTagVacancy", b =>
+                {
+                    b.Property<int>("RequirementsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VacanciesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RequirementsId", "VacanciesId");
+
+                    b.HasIndex("VacanciesId");
+
+                    b.ToTable("SkillsTagVacancy");
+                });
+
             modelBuilder.Entity("CareerExplorer.Core.Entities.AppUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
@@ -622,10 +632,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasOne("CareerExplorer.Core.Entities.Admin", "Admin")
                         .WithMany("Tags")
                         .HasForeignKey("AdminId");
-
-                    b.HasOne("CareerExplorer.Core.Entities.Vacancy", null)
-                        .WithMany("Requirements")
-                        .HasForeignKey("VacancyId");
 
                     b.Navigation("Admin");
                 });
@@ -730,6 +736,21 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SkillsTagVacancy", b =>
+                {
+                    b.HasOne("CareerExplorer.Core.Entities.SkillsTag", null)
+                        .WithMany()
+                        .HasForeignKey("RequirementsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CareerExplorer.Core.Entities.Vacancy", null)
+                        .WithMany()
+                        .HasForeignKey("VacanciesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CareerExplorer.Core.Entities.AppUser", b =>
                 {
                     b.HasOne("CareerExplorer.Core.Entities.Admin", "AdminProfile")
@@ -793,8 +814,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Navigation("Applicants");
 
                     b.Navigation("Countries");
-
-                    b.Navigation("Requirements");
                 });
 #pragma warning restore 612, 618
         }

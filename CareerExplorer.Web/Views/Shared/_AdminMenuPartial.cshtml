@@ -1,5 +1,7 @@
-﻿
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 <div class="list-group">
-    <a asp-controller="Admin" asp-action="GetSkillsTags" type="button" class="btn btn-primary">Skill Tags</a>
-    <a asp-controller="Admin" asp-action="GetPositions" type="button" class="btn btn-primary">Positions</a>
+    <a asp-controller="Admin" asp-action="GetSkillsTags" type="button" class="btn btn-primary">@Localizer["Skill Tags"]</a>
+    <a asp-controller="Admin" asp-action="GetPositions" type="button" class="btn btn-primary">@Localizer["Positions"]</a>
 </div>
