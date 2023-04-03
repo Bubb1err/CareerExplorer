@@ -13,6 +13,7 @@ using CareerExplorer.Core.IServices;
 using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
+using CareerExplorer.Infrastructure.IServices;
 
 namespace CareerExplorer.Web
 {
@@ -48,6 +49,7 @@ namespace CareerExplorer.Web
             builder.Services.AddScoped<IRepository<WorkType>, Repository<WorkType>>();
             builder.Services.AddScoped<IRepository<Country>, Repository<Country>>();
             builder.Services.AddScoped<IRepository<Position>, Repository<Position>>();
+            builder.Services.AddScoped<IVacancyService, VacancyService>();
             builder.Services.AddAutoMapper(typeof(MappingConfig));
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Recources");

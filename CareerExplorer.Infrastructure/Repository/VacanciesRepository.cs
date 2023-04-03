@@ -20,15 +20,23 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
-        public int CountVacancies()
-        {
-            return dbSet.AsNoTracking().Count(x => x.IsAvailable == true);
-        }
-        public IEnumerable<Vacancy> GetAvailablePaginatedVacancies(int pageSize, int pageNumber)
+        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies(int pageSize, int pageNumber, out int countVacancies, int[]? tagsIds = null)
         {
             IQueryable<Vacancy> vacancies = dbSet;
-            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true)
-                .Include(x => x.Creator);
+            if(tagsIds == null)
+            {
+                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true)
+                .Include(x => x.Creator)
+                .Include(x => x.Requirements);
+                countVacancies= vacancies.Count();
+            }
+            else
+            {
+                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
+                .Include(x => x.Creator)
+                .Include(x => x.Requirements);
+                countVacancies = vacancies.Count();
+            }
             if (pageSize > 0)
             {
                 if (pageSize > 100)

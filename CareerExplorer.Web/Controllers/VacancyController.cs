@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
+using CareerExplorer.Infrastructure.IServices;
 using CareerExplorer.Infrastructure.Repository;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -25,8 +27,9 @@ namespace CareerExplorer.Web.Controllers
         private readonly IJobSeekerVacancyRepository _jobSeekerVacancyRepository;
         private readonly IRepository<AppUser> _appUserRepository;
         private readonly IRepository<SkillsTag> _skillsTagRepository;
+        private readonly IVacancyService _vacancyService;
         public VacancyController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<IdentityUser> userManager,
-            IRepository<AppUser> appUserRepository)
+            IRepository<AppUser> appUserRepository, IVacancyService vacancyService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -38,15 +41,16 @@ namespace CareerExplorer.Web.Controllers
             _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
             _appUserRepository = appUserRepository;
             _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
+            _vacancyService = vacancyService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll(int pageNumber = 1)
+        public async Task<IActionResult> GetAll(int pageNumber = 1, string tagIds = "")
         {
             try
             {
+                int[] tagIdsArray = _vacancyService.GetIdsFromString(tagIds);
                 const int pageSize = 3;
-                var vacancies = _vacanciesRepository.GetAvailablePaginatedVacancies(pageSize, pageNumber);
-                var totalVacancies = _vacanciesRepository.CountVacancies();
+                var vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(pageSize, pageNumber, out int totalVacancies, tagIdsArray).ToList();
 
                 var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
                 foreach (var vacancyDto in vacanciesDto)
@@ -62,7 +66,12 @@ namespace CareerExplorer.Web.Controllers
                         return BadRequest();
                     vacancyDto.CreatorNickName = creatorEmail;
                 }
-
+                var tagsItems = _skillsTagRepository.GetAll().Select(tag => new SelectListItem
+                {
+                    Value = tag.Id.ToString(),
+                    Text = tag.Title
+                });
+                ViewBag.Tags = tagsItems;
                 var paginatedVacancies = PaginatedList<VacancyDTO>.Create(vacanciesDto, pageNumber, pageSize, totalVacancies);
 
                 return View(paginatedVacancies);

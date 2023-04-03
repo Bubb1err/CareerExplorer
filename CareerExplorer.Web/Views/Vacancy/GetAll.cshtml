@@ -20,13 +20,24 @@
                 <button class="expand-btn btn btn-primary w-25">@Localizer["Read More"]</button>
                 <div class="card-footer">
                     @vacancy.CompanyName @vacancy.CreatorName @vacancy.CreatorSurname
+                    @foreach(var tag in vacancy.Requirements)
+                    {
+                        <span>@tag.Title</span>
+                    }
+                    
                 </div>
 
             </div>
-
         }
     </div>
     <div class="col-md-4">
+        <div class="filtering-box">
+            <span style="color:#fff;" >Filter by skills</span><br />
+            @foreach(var tag in ViewBag.Tags)
+            {
+                <button data-tag-id=@tag.Value style="display:inline-block;margin:0.1rem;border-radius:5%;" class="btn btn-light tag-btn">@tag.Text</button>
+            }
+        </div>
     </div>
     <div>
         <ul class="pagination">
@@ -72,7 +83,14 @@
         </ul>
     </div>
 </div>
-
+<style>
+    .filtering-box {
+        background-color: #1a1a1a;
+        border-radius: 1%;
+        width: 100%;
+        padding: 3%;
+    }
+</style>
 @section Scripts {
     <script>
         const expandBtns = document.querySelectorAll('.expand-btn');
@@ -83,6 +101,121 @@
                 btn.textContent = btn.textContent === '@Localizer["Read More"]' ? '@Localizer["Read Less"]' : '@Localizer["Read More"]';
             });
         });
+        //filtering
+        function setCookie(name, value, days) {
+            //const expires = new Date();
+            //expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+            document.cookie = `${name}=${value};expires="";path=/`;
+        };
+
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(`${name}=`)) {
+                    return cookie.substring(name.length + 1);
+                };
+            }
+            return null;
+        };
+        const savedTagIds = getCookie('selectedTagIds');
+        console.log(savedTagIds);
+        const selectedTagIds = new Set();
+        if (savedTagIds) {
+            // Parse the saved tag IDs string and add them to the selectedTagIds set
+            savedTagIds.split(',').forEach(id => selectedTagIds.add(parseInt(id)));
+        }
+
+        // Update the URL with the selected tag IDs and navigate to it
+        function updateUrlAndNavigate() {
+            const pageNumber = @Model.PageIndex;
+            const tagIds = Array.from(selectedTagIds);
+            console.log(tagIds);
+            const url = `@Url.Action("GetAll")?pageNumber=${pageNumber}&tagIds=${tagIds.join(',')}`;
+            window.location.href = url;
+        }
+
+        // Save the selected tag IDs in a cookie whenever they change
+        function saveSelectedTagIdsInCookie() {
+            const tagIdsString = Array.from(selectedTagIds).join(',');
+            setCookie('selectedTagIds', tagIdsString, 365);
+        }
+        const tagBtns = document.querySelectorAll('.tag-btn');
+        //const selectedTagIds = new Set();
+        // Add click event listeners to tag buttons
+        tagBtns.forEach(btn => {
+            console.log(selectedTagIds.has(parseInt(btn.dataset.tagId)))
+            if (!selectedTagIds.has(parseInt(btn.dataset.tagId))) {
+                btn.addEventListener('click', () => {
+                btn.classList.toggle('btn-primary');
+                btn.classList.toggle('btn-secondary');
+
+                // Add or remove tag ID from the set of selected tag IDs
+                const tagId = parseInt(btn.dataset.tagId);
+                
+                console.log(tagId, "tagId");
+                selectedTagIds.add(tagId);
+                //console.log(selectedTagIds, "selectedTagIds");
+
+                //if (selectedTagIds.has(tagId)) {
+                //    selectedTagIds.delete(tagId);
+                //} else {
+                //    selectedTagIds.add(tagId);
+                //}
+                console.log(selectedTagIds, "selectedTagIds")
+
+                // Update the URL and save the selected tag IDs in a cookie
+                updateUrlAndNavigate();
+                saveSelectedTagIdsInCookie();
+                });
+            } else {
+                btn.innerHTML += '&times;';
+                btn.setAttribute("class", "btn btn-custom");
+                btn.disabled = true;
+            }
+        });
+
+
+        // Add click event listeners to tag buttons
+        //tagBtns.forEach(btn => {
+        //    btn.addEventListener('click', () => {
+        //        btn.classList.toggle('btn-primary');
+        //        btn.classList.toggle('btn-secondary');
+
+        //        // Add or remove tag ID from the set of selected tag IDs
+        //        const tagId = parseInt(btn.dataset.tagId);
+        //        console.log(btn.dataset.tagId);
+        //        if (selectedTagIds.has(tagId)) {
+        //            selectedTagIds.delete(tagId);
+        //        } else {
+        //            selectedTagIds.add(tagId);
+        //        }
+        //        const pageNumber = @Model.PageIndex;
+        //        const tagIds = Array.from(selectedTagIds);
+        //        const url = `@Url.Action("GetAll")?pageNumber=${pageNumber}&tagIds=${tagIds.join(',')}`;
+        //        window.location.href = url;
+
+        //    });
+        //});
+
+        
+        //const applyFilterBtn = document.getElementById('apply-filter-btn');
+        //applyFilterBtn.addEventListener('click', () => {
+        //    const pageSize = ;
+        //    const tagIds = Array.from(selectedTagIds);
+
+        //    const url = `@Url.Action("GetAll")?pageSize=${pageSize}&tagIds=${tagIds.join(',')}`;
+        //    window.location.href = url;
+        //});
+
+        //const initialSelectedTagIds = ;
+        //initialSelectedTagIds.forEach(tagId => {
+        //    const btn = document.querySelector(`.tag-btn[data-tag-id="${tagId}"]`);
+        //    if (btn) {
+        //        btn.classList.add('btn-primary');
+        //        selectedTagIds.add(tagId);
+        //    }
+        //});
     </script>
 }
 
