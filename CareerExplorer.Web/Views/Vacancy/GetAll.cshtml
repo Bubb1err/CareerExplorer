@@ -1,7 +1,9 @@
 ﻿@using CareerExplorer.Web.DTO
 @using Microsoft.AspNetCore.Identity;
 @using CareerExplorer.Shared;
+@using Microsoft.AspNetCore.Mvc.Localization
 
+@inject IViewLocalizer Localizer
 @model PaginatedList<VacancyDTO>
 
 <div class="row">
@@ -15,23 +17,34 @@
                 <div class="card-body description-container">
                     <p class="card-text">@vacancy.Description</p>
                 </div>
-                <button class="expand-btn btn btn-primary w-25">Read More</button>
+                <button class="expand-btn btn btn-primary w-25">@Localizer["Read More"]</button>
                 <div class="card-footer">
                     @vacancy.CompanyName @vacancy.CreatorName @vacancy.CreatorSurname
+                    @foreach(var tag in vacancy.Requirements)
+                    {
+                        <span>@tag.Title</span>
+                    }
+                    
                 </div>
 
             </div>
-
         }
     </div>
     <div class="col-md-4">
+        <div class="filtering-box">
+            <span style="color:#fff;" >Filter by skills</span><br />
+            @foreach(var tag in ViewBag.Tags)
+            {
+                <button data-tag-id=@tag.Value style="display:inline-block;margin:0.1rem;border-radius:5%;" class="btn btn-light tag-btn">@tag.Text</button>
+            }
+        </div>
     </div>
     <div>
         <ul class="pagination">
             @if (Model.HasPreviousPage)
             {
                 <li class="page-item">
-                    <a asp-action="GetAll" asp-route-pageNumber="@Model.PageIndex - 1" class="page-link">&laquo;</a>
+                    <a class="page-link navig-link" data-page-number=@(Model.PageIndex - 1)>&laquo;</a>
                 </li>
             }
             else
@@ -51,14 +64,14 @@
                 else
                 {
                     <li class="page-item">
-                        <a class="page-link" href="@Url.Action("GetAll", new { pageNumber = i })">@i</a>
+                        <a data-page-number=@i class="page-link navig-link">@i</a>
                     </li>
                 }
             }
             @if (Model.HasNextPage)
             {
                 <li class="page-item">
-                    <a class="page-link" href="@Url.Action("GetAll", new { pageNumber = Model.PageIndex + 1 })">&raquo;</a>
+                    <a class="page-link navig-link" data-page-number=@(Model.PageIndex + 1)>&raquo;</a>
                 </li>
             }
             else
@@ -70,17 +83,101 @@
         </ul>
     </div>
 </div>
+<style>
+    .filtering-box {
+        background-color: #1a1a1a;
+        border-radius: 1%;
+        width: 100%;
+        padding: 3%;
+    }
+    .btn-custom {
+        background-color: #343a40;
+    }
 
+    .btn-custom span {
+        margin-left: 5px;
+        color: #fff;
+    }
+</style>
 @section Scripts {
     <script>
         const expandBtns = document.querySelectorAll('.expand-btn');
-
         expandBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 btn.previousElementSibling.classList.toggle('expanded');
-                btn.textContent = btn.textContent === 'Read More' ? 'Read Less' : 'Read More';
+                btn.textContent = btn.textContent === '@Localizer["Read More"]' ? '@Localizer["Read Less"]' : '@Localizer["Read More"]';
             });
         });
+        //filtering
+        function setCookie(name, value, days) {
+            document.cookie = `${name}=${value};expires="";path=/`;
+        };
+
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(`${name}=`)) {
+                    return cookie.substring(name.length + 1);
+                };
+            }
+            return null;
+        };
+        const savedTagIds = getCookie('selectedTagIds');
+        console.log(savedTagIds);
+        const selectedTagIds = new Set();
+        if (savedTagIds) {
+            savedTagIds.split(',').forEach(id => selectedTagIds.add(parseInt(id)));
+        }
+
+        function updateUrlAndNavigate() {
+            const pageNumber = @Model.PageIndex;
+            const tagIds = Array.from(selectedTagIds);
+            console.log(tagIds);
+            const url = `@Url.Action("GetAll")?pageNumber=${pageNumber}&tagIds=${tagIds.join(',')}`;
+            window.location.href = url;
+        }
+        function saveSelectedTagIdsInCookie() {
+            const tagIdsString = Array.from(selectedTagIds).join(',');
+            setCookie('selectedTagIds', tagIdsString, 365);
+        }
+        const tagBtns = document.querySelectorAll('.tag-btn');
+        tagBtns.forEach(btn => {
+            console.log(selectedTagIds.has(parseInt(btn.dataset.tagId)))
+            if (!selectedTagIds.has(parseInt(btn.dataset.tagId))) {
+                btn.addEventListener('click', () => {
+                btn.classList.toggle('btn-primary');
+                btn.classList.toggle('btn-secondary');
+
+                const tagId = parseInt(btn.dataset.tagId);
+                
+                selectedTagIds.add(tagId);
+
+                updateUrlAndNavigate();
+                saveSelectedTagIdsInCookie();
+                });
+            } else {
+                btn.innerHTML += '<span>&times;</span>';
+                btn.setAttribute("class", "btn btn-custom");
+                btn.addEventListener('click', () => {
+                    const tagId = parseInt(btn.dataset.tagId);
+                    selectedTagIds.delete(tagId);
+                    updateUrlAndNavigate();
+                    saveSelectedTagIdsInCookie();
+                });
+            }
+        });
+        const navigationElements = document.querySelectorAll(".navig-link");
+
+        navigationElements.forEach(link => {
+                link.addEventListener('click', () => {
+                    const pageNumber = parseInt(link.dataset.pageNumber);
+                    const tagIds = Array.from(selectedTagIds);
+                    const url = `@Url.Action("GetAll")?pageNumber=${pageNumber}&tagIds=${tagIds.join(',')}`;
+                    window.location.href = url;
+                });
+        });
+        
     </script>
 }
 

@@ -10,6 +10,7 @@ namespace CareerExplorer.Core.Interfaces
 {
     public interface IJobSeekerProfileRepository : IRepository<JobSeeker>
     {
+        JobSeeker GetJobSeeker(string userId);
         void Update(JobSeeker jobSeeker);
     }
 }

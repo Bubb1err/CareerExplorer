@@ -2,6 +2,7 @@
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +18,11 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
-        
 
+        public JobSeeker GetJobSeeker(string userId)
+        {
+            return _context.JobSeekers.Include(x => x.Skills).FirstOrDefault(x => x.UserId == userId);
+        }
         public void Update(JobSeeker jobSeeker)
         {
             _context.JobSeekers.Update(jobSeeker);

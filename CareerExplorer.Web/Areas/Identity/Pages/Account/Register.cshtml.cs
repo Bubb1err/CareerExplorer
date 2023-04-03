@@ -122,6 +122,27 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
             {
                 _roleManager.CreateAsync(new IdentityRole(UserRoles.Recruiter)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(UserRoles.JobSeeker)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin)).GetAwaiter().GetResult();
+                //seed admin
+                var user = CreateUser();
+                
+                await _userStore.SetUserNameAsync(user, "admin@mail.com", CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, "admin@mail.com", CancellationToken.None);
+                user.UserType = UserType.Admin;
+                var result = await _userManager.CreateAsync(user, "Admin123!");
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    await _context.Admins.AddAsync(new Admin()
+                    {
+                        UserId = userId
+                    });
+                    await _context.SaveChangesAsync();
+                    var currentUser = _context.AppUsers.FirstOrDefault(x => x.Id == userId);
+                    currentUser.AdminProfileId = _context.Admins.FirstOrDefault(x => x.UserId == userId).Id;
+                    await _context.SaveChangesAsync();
+                }
             }
 
             ReturnUrl = returnUrl;
@@ -157,7 +178,7 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
                     {
                         await _userManager.AddToRoleAsync(user, Input.Role);
                     }
-                    //checking if user recruiter or jobseeker and creating profile 
+                    //checking if user recruiter or jobseeker and create profile 
                     if (user.UserType == UserType.JobSeeker)
                     {
                         await _context.JobSeekers.AddAsync(new JobSeeker

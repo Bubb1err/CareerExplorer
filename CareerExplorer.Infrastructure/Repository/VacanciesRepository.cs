@@ -20,13 +20,23 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
-        public int CountVacancies()
-        {
-            return dbSet.AsNoTracking().Count(x => x.IsAvailable == true);
-        }
-        public IEnumerable<Vacancy> GetAvailablePaginatedVacancies(int pageSize, int pageNumber)
+        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies(int pageSize, int pageNumber, out int countVacancies, int[]? tagsIds = null)
         {
             IQueryable<Vacancy> vacancies = dbSet;
+            if(tagsIds == null)
+            {
+                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true)
+                .Include(x => x.Creator)
+                .Include(x => x.Requirements);
+                countVacancies= vacancies.Count();
+            }
+            else
+            {
+                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
+                .Include(x => x.Creator)
+                .Include(x => x.Requirements);
+                countVacancies = vacancies.Count();
+            }
             if (pageSize > 0)
             {
                 if (pageSize > 100)
@@ -34,10 +44,7 @@ namespace CareerExplorer.Infrastructure.Repository
                     pageSize = 100;
                 }
                 vacancies = vacancies.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
-            }
-
-            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true)
-                .Include(x => x.Creator); 
+            }  
             return vacancies;
         }
         public IEnumerable<Vacancy> GetCreatedVacancies(string userId)
@@ -51,7 +58,6 @@ namespace CareerExplorer.Infrastructure.Repository
             var vacancies = dbSet.AsNoTracking().Where(x => x.CreatorId== recuiterId);
             return vacancies;
         }
-
         public void Update(Vacancy entity)
         {
             _context.Vacancies.Update(entity);

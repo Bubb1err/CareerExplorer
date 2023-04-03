@@ -1,5 +1,7 @@
 ﻿@using CareerExplorer.Web.DTO
+@using Microsoft.AspNetCore.Mvc.Localization
 
+@inject IViewLocalizer Localizer
 @model RecruiterProfileDTO
 <div class="row mb-3">
     <div class="col-md-2">
@@ -11,26 +13,26 @@
             <input asp-for="Id" hidden />
             <input asp-for="UserId" hidden />
             <div class="form-floating mb-3">
-                <input asp-for="Name" class="form-control" placeholder="Enter your name" />
-                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" placeholder="" />
+                <label class="form-label">@Localizer["Enter your name"]</label>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Surname" class="form-control" placeholder="Enter your surname" />
-                <label asp-for="Surname" class="form-label"></label>
+                <input asp-for="Surname" class="form-control" placeholder="" />
+                <label class="form-label">@Localizer["Enter your surname"]</label>
                 <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Company" class="form-control" placeholder="Enter your company" />
-                <label asp-for="Company" class="form-label"></label>
+                <input asp-for="Company" class="form-control" placeholder="" />
+                <label class="form-label">@Localizer["Enter your company"]</label>
                 <span asp-validation-for="Company" class="text-danger"></span>
             </div>
              <div class=" mb-3">
-                    <label asp-for="CompanyDescription">Provide some information about your company</label>
+                <label asp-for="CompanyDescription">@Localizer["Information"]</label>
                     <textarea rows="7" asp-for="CompanyDescription" class="form-control"></textarea>
                     <span asp-validation-for="CompanyDescription" class="text-danger"></span>
                 </div>
-            <button asp-controller="RecruiterProfile" asp-action="GetProfile" type="submit" class="w-100 btn btn btn-primary">Save</button>
+            <button asp-controller="RecruiterProfile" asp-action="GetProfile" type="submit" class="w-50 btn btn btn-primary">@Localizer["Save"]</button>
         </form>
     </div>
 </div>

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CareerExplorer.Core.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace CareerExplorer.Web.DTO
 {
@@ -9,9 +10,11 @@ namespace CareerExplorer.Web.DTO
         [Required]
         public string Title { get; set; }
         [Required]
+        [MinLength(200, ErrorMessage = "Provide at least 200 symbols.")]
         public string Description { get; set; }
         [Required]
         public bool IsAvailable { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; }
+        public virtual ICollection<SkillsTag> Requirements { get; set; } = new List<SkillsTag>();
     }
 }

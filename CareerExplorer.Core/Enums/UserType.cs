@@ -9,6 +9,7 @@ namespace CareerExplorer.Core.Enums
     public enum UserType
     {
         JobSeeker,
-        Recruiter
+        Recruiter,
+        Admin
     }
 }

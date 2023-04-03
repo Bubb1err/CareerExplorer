@@ -1,6 +1,8 @@
-﻿
+﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using CareerExplorer.Web.DTO;
+
 @model ApplicantDTO
+@inject IViewLocalizer Localizer
 
 <div class="row mb-3">
     <div class="col-md-2">
@@ -9,12 +11,12 @@
     <div class="col-md-10">
         <h1>@Model.Name @Model.Surname</h1>
         <p>@Model.Experience</p>
-        <h4>Contacts:</h4>
-        <span>Phone</span>
+        <h4>@Localizer["Contacts"]</h4>
+        <span>@Localizer["Phone"]</span>
         <h5>@Model.Phone</h5>
-        <span>GitHub</span>
+        <span>@Localizer["GitHub"]</span>
         <h5>@Model.GitHub</h5>
-        <a id="viewCvBtn" class="btn btn-primary" data-jobseeker-id="@Model.Id" data-vacancy-id="@Model.VacancyId">View attached CV</a>
+        <a id="viewCvBtn" class="btn btn-primary" data-jobseeker-id="@Model.Id" data-vacancy-id="@Model.VacancyId">@Localizer["View attached CV"]</a>
     </div>
 </div>
 

@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model IEnumerable<CareerExplorer.Web.DTO.SkillTagDTO>
+@inject IViewLocalizer Localizer
+<div class="row">
+    <div class="col-md-2">
+        <partial name="_AdminMenuPartial" />
+    </div>
+    <div class="col-md-10">
+        <a class="btn btn-primary" asp-controller="Admin" asp-action="CreateTag">@Localizer["Add Tag"]</a>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">@Localizer["Id"]</th>
+                    <th scope="col">@Localizer["Title"]</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tag in Model)
+                {
+                    <tr>
+                        <th>@tag.Id</th>
+                        <th>@tag.Title</th>
+                        <th>
+                            <div class="w-50 btn-group" role="group">
+                                <a asp-controller="Admin" asp-action="EditTag" asp-route-id="@tag.Id" class="btn btn-primary me-3">@Localizer["Edit"]</a>
+                                <a asp-controller="Admin" asp-action="DeleteTag" asp-route-id="@tag.Id" class="btn btn-primary me-3">@Localizer["Delete"]</a>
+                            </div>
+                        </th>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
