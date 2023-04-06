@@ -10,11 +10,9 @@
             </h2>
             <hr />
         </div>
-        <div class=" mb-3">
-            <label asp-for="Title">@Localizer["Title"]</label>
-            <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
-        </div>
+        <input type="text" id="searchInput">
+        <input type="text" id="searchInputForId" name="position" hidden>
+        <div id="searchResults"></div>
         <div class=" mb-3">
             <label asp-for="Description">@Localizer["Description"]</label>
             <textarea rows="7" asp-for="Description" class="form-control"></textarea>
@@ -104,6 +102,33 @@
             }
             $('#selected-skills-input').val(JSON.stringify(selectedTags));
         }
+        $(function() {
+            $('#searchInput').on('input', function() {
+                var search = $(this).val();
+                $.get('/Vacancy/Search', { search: search }, function (results) {
+                    var $searchResults = $('#searchResults');
+                    $searchResults.empty();
+                    $.each(results, function(index, value) {
+                        console.log(index , "index");
+                        console.log(value.name, "value");
+                      var $option = $('<div>').text(value.name);
+                        $option.val(value.id);
+                        console.log($option);
+                      $searchResults.append($option);
+                    });
+                    $searchResults.show();
+                });
+            });
+
+            $('#searchResults').on('click', 'div', function() {
+                var value = $(this).text();
+                var ind = $(this).val();
+                //$('#searchInput').val(JSON.stringify(value));
+                $('#searchInput').val(value);
+                $('#searchInputForId').val(ind);
+                $('#searchResults').hide();
+            });
+        });
     </script>
 
 }

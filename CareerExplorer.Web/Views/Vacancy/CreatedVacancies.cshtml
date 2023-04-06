@@ -20,7 +20,7 @@
                 @foreach (var vacancy in Model)
                 {
                     <tr>
-                        <th>@vacancy.Title</th>
+                        <th>@vacancy.Position.Name</th>
                         <th>@(vacancy.IsAvailable ? @Localizer["Yes"] : @Localizer["No"])</th>
                         <th>@vacancy.CreatedDate.ToShortDateString()</th>
                         <th>

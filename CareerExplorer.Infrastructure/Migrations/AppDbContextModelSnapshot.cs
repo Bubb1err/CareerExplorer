@@ -268,15 +268,16 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PositionId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("CreatorId");
+
+                    b.HasIndex("PositionId");
 
                     b.ToTable("Vacancies");
                 });
@@ -610,7 +611,7 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasOne("CareerExplorer.Core.Entities.Vacancy", "Vacancy")
                         .WithMany("Applicants")
                         .HasForeignKey("VacancyId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("JobSeeker");
@@ -648,7 +649,15 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
+                    b.HasOne("CareerExplorer.Core.Entities.Position", "Position")
+                        .WithMany("Vacancies")
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Creator");
+
+                    b.Navigation("Position");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.WorkType", b =>
@@ -799,6 +808,11 @@ namespace CareerExplorer.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("VacanciesApplied");
+                });
+
+            modelBuilder.Entity("CareerExplorer.Core.Entities.Position", b =>
+                {
+                    b.Navigation("Vacancies");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Recruiter", b =>

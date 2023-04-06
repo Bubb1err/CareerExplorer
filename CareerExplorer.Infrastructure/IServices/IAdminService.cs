@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CareerExplorer.Infrastructure.Services
+namespace CareerExplorer.Infrastructure.IServices
 {
-    public class JobSeekerProfileService
+    public interface IAdminService
     {
-
+        Task AcceptVacancy(int id);
     }
 }

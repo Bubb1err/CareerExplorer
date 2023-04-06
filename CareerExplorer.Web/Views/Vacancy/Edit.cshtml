@@ -12,11 +12,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input asp-for="Id" hidden />
             <input asp-for="CreatorId" hidden />
-            <div class="form-floating mb-3">
-                <input asp-for="Title" class="form-control"/>
-                <label asp-for="Title" class="form-label">@Localizer["Title"]</label>
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
+            <input class="form-control" type="text" id="searchInput" value="@ViewBag.PositionTitle">
+            <input type="text" id="searchInputForId" name="position" value="@ViewBag.PositionId" hidden>
+            <div id="searchResults"></div>
             <div class=" mb-3">
                 <label asp-for="Description">@Localizer["Description"]</label>
                 <textarea rows="7" asp-for="Description" class="form-control"></textarea>
@@ -51,7 +49,7 @@
     <script>
         var selectedTags = [];
         $(document).ready(function () {
-            selectedTags = @Html.Raw(Json.Serialize(Model.Requirements.Select(s => s.Title)));
+            selectedTags = @Html.Raw(Json.Serialize(@ViewBag.Requirements));
             updateSkillTagsDisplay();
         });
         $('#skill-tags-input').on('input', function () {
@@ -106,6 +104,33 @@
             }
             $('#selected-skills-input').val(JSON.stringify(selectedTags));
         }
+        $(function () {
+            $('#searchInput').on('input', function () {
+                var search = $(this).val();
+                $.get('/Vacancy/Search', { search: search }, function (results) {
+                    var $searchResults = $('#searchResults');
+                    $searchResults.empty();
+                    $.each(results, function (index, value) {
+                        console.log(index, "index");
+                        console.log(value.name, "value");
+                        var $option = $('<div>').text(value.name);
+                        $option.val(value.id);
+                        console.log($option);
+                        $searchResults.append($option);
+                    });
+                    $searchResults.show();
+                });
+            });
+
+            $('#searchResults').on('click', 'div', function () {
+                var value = $(this).text();
+                var ind = $(this).val();
+                //$('#searchInput').val(JSON.stringify(value));
+                $('#searchInput').val(value);
+                $('#searchInputForId').val(ind);
+                $('#searchResults').hide();
+            });
+        });
     </script>
 
 }

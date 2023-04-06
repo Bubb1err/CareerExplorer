@@ -1,0 +1,34 @@
+﻿@using CareerExplorer.Web.DTO;
+@model List<VacancyDTO>
+
+<div class="row">
+    <div class="col-md-2">
+        <partial name="_AdminMenuPartial" />
+    </div>
+    <div class="col-md-10">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Creator</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vacancy in Model)
+                {
+                    <tr>
+                        <th>@vacancy.Position.Name</th>
+                        <th>@vacancy.CreatorNickName</th>
+                        <th>
+                            <div class="w-50 btn-group" role="group">
+                                <a asp-controller="Admin" asp-action="ViewVacancy" asp-route-id="@vacancy.Id" class="btn btn-primary">View Vacancy</a>
+                            </div>
+                        </th>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

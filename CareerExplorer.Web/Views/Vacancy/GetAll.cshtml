@@ -12,7 +12,7 @@
         {
             <div class="card text-white bg-primary mb-3">
                 <div class="card-header text-white">
-                    <a class="link-light" asp-controller="Vacancy" asp-action="GetVacancy" asp-route-id="@vacancy.Id">@vacancy.Title</a>
+                    <a class="link-light" asp-controller="Vacancy" asp-action="GetVacancy" asp-route-id="@vacancy.Id">@vacancy.Position.Name</a>
                 </div>
                 <div class="card-body description-container">
                     <p class="card-text">@vacancy.Description</p>
@@ -23,8 +23,7 @@
                     @foreach(var tag in vacancy.Requirements)
                     {
                         <span>@tag.Title</span>
-                    }
-                    
+                    }                    
                 </div>
 
             </div>
@@ -109,22 +108,7 @@
             });
         });
         //filtering
-        function setCookie(name, value, days) {
-            document.cookie = `${name}=${value};expires="";path=/`;
-        };
-
-        function getCookie(name) {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.startsWith(`${name}=`)) {
-                    return cookie.substring(name.length + 1);
-                };
-            }
-            return null;
-        };
-        const savedTagIds = getCookie('selectedTagIds');
-        console.log(savedTagIds);
+        const savedTagIds = sessionStorage.getItem('selectedTagIds');
         const selectedTagIds = new Set();
         if (savedTagIds) {
             savedTagIds.split(',').forEach(id => selectedTagIds.add(parseInt(id)));
@@ -133,17 +117,15 @@
         function updateUrlAndNavigate() {
             const pageNumber = @Model.PageIndex;
             const tagIds = Array.from(selectedTagIds);
-            console.log(tagIds);
             const url = `@Url.Action("GetAll")?pageNumber=${pageNumber}&tagIds=${tagIds.join(',')}`;
             window.location.href = url;
         }
-        function saveSelectedTagIdsInCookie() {
+        function saveSelectedTagIdsInSession() {
             const tagIdsString = Array.from(selectedTagIds).join(',');
-            setCookie('selectedTagIds', tagIdsString, 365);
+            sessionStorage.setItem('selectedTagIds', tagIdsString);
         }
         const tagBtns = document.querySelectorAll('.tag-btn');
         tagBtns.forEach(btn => {
-            console.log(selectedTagIds.has(parseInt(btn.dataset.tagId)))
             if (!selectedTagIds.has(parseInt(btn.dataset.tagId))) {
                 btn.addEventListener('click', () => {
                 btn.classList.toggle('btn-primary');
@@ -154,7 +136,7 @@
                 selectedTagIds.add(tagId);
 
                 updateUrlAndNavigate();
-                saveSelectedTagIdsInCookie();
+                saveSelectedTagIdsInSession();
                 });
             } else {
                 btn.innerHTML += '<span>&times;</span>';
@@ -163,7 +145,7 @@
                     const tagId = parseInt(btn.dataset.tagId);
                     selectedTagIds.delete(tagId);
                     updateUrlAndNavigate();
-                    saveSelectedTagIdsInCookie();
+                    saveSelectedTagIdsInSession();
                 });
             }
         });

@@ -8,13 +8,10 @@ namespace CareerExplorer.Web.DTO
         public int Id { get; set; }
         public int CreatorId { get; set; }
         [Required]
-        public string Title { get; set; }
-        [Required]
         [MinLength(200, ErrorMessage = "Provide at least 200 symbols.")]
         public string Description { get; set; }
         [Required]
         public bool IsAvailable { get; set; }
         public DateTime CreatedDate { get; set; }
-        public virtual ICollection<SkillsTag> Requirements { get; set; } = new List<SkillsTag>();
     }
 }
