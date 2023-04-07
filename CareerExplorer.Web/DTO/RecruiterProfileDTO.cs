@@ -15,5 +15,7 @@ namespace CareerExplorer.Web.DTO
         [MinLength(200, ErrorMessage = "Provide at least 200 symbols.")]
         public string CompanyDescription { get; set; } 
         public string UserId { get; set; }
+        public bool IsFilled { get; set; }
+        public bool IsAccepted { get; set; }
     }
 }

@@ -11,7 +11,7 @@
         <div class="col-md-8">
 
             <h1>@Model.Position.Name</h1>
-            <span></span>
+            <span>@Model.CreatorNickName</span>
             <p>@Model.Description</p>
             <span>Published: @Model.CreatedDate.ToShortDateString()</span>
             @if (User.IsInRole(UserRoles.JobSeeker))

@@ -8,6 +8,22 @@
         <partial name="_RecrMenuPartial" />
     </div>
     <div class="col-md-10">
+        @if(!Model.IsFilled)
+        {
+            <span class="text-danger">Fill your profile to send it for review and start posting vacancies.</span>
+        }
+        else if(Model.IsFilled && !Model.IsAccepted)
+        {
+            <span>
+                <i class="bi bi-clock"></i>
+                Your profile is on review.
+            </span>
+        }
+        else
+        {
+            <span><i class="bi bi-check2"></i>
+                Profile is verified!</span>
+        }
         <form method="post" asp-action="GetProfile">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input asp-for="Id" hidden />

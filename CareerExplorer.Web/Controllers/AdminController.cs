@@ -22,21 +22,19 @@ namespace CareerExplorer.Web.Controllers
         private readonly IMapper _mapper;
         private readonly IVacanciesRepository _vacanciesRepository;
         private readonly IRecruiterProfileRepository _recruiterRepository;
-        private readonly IRepository<AppUser> _appUserRepository;
-        private readonly UserManager<IdentityUser> _userManager;
+        
         private readonly IAdminService _adminService;
-        public AdminController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<IdentityUser> userManager,
+        public AdminController(IUnitOfWork unitOfWork, IMapper mapper,
             IAdminService adminService)
         {
             _unitOfWork= unitOfWork;
             _mapper= mapper;
-            _userManager = userManager;
+
             _skillsRepository = _unitOfWork.GetRepository<SkillsTag>();
             _positionRepository = _unitOfWork.GetRepository<Position>();
             _adminRepository = _unitOfWork.GetAdminRepository();
             _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
             _recruiterRepository = _unitOfWork.GetRecruiterRepository();
-            _appUserRepository = _unitOfWork.GetRepository<AppUser>();
             _adminService = adminService;
         }
         #region SkillTag Control
@@ -206,38 +204,17 @@ namespace CareerExplorer.Web.Controllers
         }
         #endregion
         [HttpGet]
-        public async Task<IActionResult> GetVacanciesToAccept()
+        public IActionResult GetVacanciesToAccept()
         {
-            var vacancies = _vacanciesRepository.GetAll(x => x.IsAccepted == false, "Position");
+            var vacancies = _vacanciesRepository.GetVacanciesToAccept().ToList();
             var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
-            foreach (var vacancyDto in vacanciesDto)
-            {
-                var creator = _recruiterRepository.GetFirstOrDefault(x => x.Id == vacancyDto.CreatorId);
-                if (creator == null)
-                    return BadRequest();
-                var appUserCreator = _appUserRepository.GetFirstOrDefault(x => x.RecruiterProfileId == creator.Id);
-                if (appUserCreator == null)
-                    return BadRequest();
-                var creatorEmail = await _userManager.GetEmailAsync(appUserCreator);
-                if (creatorEmail == null)
-                    return BadRequest();
-                vacancyDto.CreatorNickName = creatorEmail;
-            }
             return View(vacanciesDto);
         }
         [HttpGet]
         public async Task<IActionResult> ViewVacancy(int id)
         {
-            var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id, "Position");
+            var vacancy = await _vacanciesRepository.GetVacancyAsync(id);
             var vacancyDto = _mapper.Map<VacancyDTO>(vacancy);
-            var creator = _recruiterRepository.GetFirstOrDefault(x => x.Id == vacancy.CreatorId);
-            var appUserCreator = _appUserRepository.GetFirstOrDefault(x => x.RecruiterProfileId == creator.Id);
-            var creatorEmail = await _userManager.GetEmailAsync(appUserCreator);
-            vacancyDto.CreatorName = creator.Name;
-            vacancyDto.CreatorSurname = creator.Surname;
-            if (creatorEmail == null)
-                return BadRequest();
-            vacancyDto.CreatorNickName = creatorEmail;
             return View(vacancyDto);
         }
         [HttpPost]
@@ -253,6 +230,27 @@ namespace CareerExplorer.Web.Controllers
             {
                 return BadRequest();
             }
+        }
+        [HttpGet]
+        public IActionResult GetRecruitersToAccept()
+        {
+            var recruiters = _recruiterRepository.GetRecruiterProfilesToAccept().ToList();
+            var recruitersDto = _mapper.Map<List<RecruiterProfileDTO>>(recruiters);
+            return View(recruitersDto);
+        }
+        [HttpGet]
+        public IActionResult ViewRecruiterProfile(int id)
+        {
+            var recruiter = _recruiterRepository.GetFirstOrDefault(x => x.Id == id);
+            var recruiterDto = _mapper.Map<RecruiterProfileDTO>(recruiter);
+            return View(recruiterDto);
+        }
+        [HttpPost]
+        public async  Task<IActionResult> AcceptRecruiterProfile(int id)
+        {
+            if(id == 0) return BadRequest();
+            await _adminService.AcceptRecruiterProfile(id);
+            return Ok();
         }
     }
 }

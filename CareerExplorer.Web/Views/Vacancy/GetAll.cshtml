@@ -13,6 +13,7 @@
             <div class="card text-white bg-primary mb-3">
                 <div class="card-header text-white">
                     <a class="link-light" asp-controller="Vacancy" asp-action="GetVacancy" asp-route-id="@vacancy.Id">@vacancy.Position.Name</a>
+                    <span>@vacancy.CreatorNickName</span>
                 </div>
                 <div class="card-body description-container">
                     <p class="card-text">@vacancy.Description</p>

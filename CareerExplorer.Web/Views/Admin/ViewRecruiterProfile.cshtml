@@ -1,16 +1,13 @@
 ﻿@using CareerExplorer.Web.DTO;
-@model VacancyDTO
+@model RecruiterProfileDTO
 <div class="row">
     <div class="col-md-2">
         <partial name="_AdminMenuPartial" />
     </div>
     <div class="col-md-10">
-        <h1>@Model.Position.Name</h1>
-        <p>@Model.CreatorNickName</p>
-        <span>@Model.CreatorName @Model.CreatorSurname</span>
-        <hr />
-        <p>@Model.Description</p>
-        <span>@(Model.IsAvailable ? "Available" : "Not available")</span>
+        <h1>@Model.Name @Model.Surname</h1>
+        <h2>@Model.Company</h2>
+        <p>@Model.CompanyDescription</p>
         <button style="display:block" onclick="acceptButtonClick()" id="accept" class="btn btn-primary mt-2">Accept</button>
     </div>
 </div>
@@ -21,12 +18,12 @@
             var id = @Model.Id; 
             $.ajax({
                 type: "POST",
-                url: "/Admin/AcceptVacancy",
+                url: "/Admin/AcceptRecruiterProfile",
                 data: { id: id },
                 success: function (response) {
                     console.log(response);
-                        $("#accept").text("Accepted");
-                        $('#accept').prop('disabled', true);
+                    $("#accept").text("Accepted");
+                    $('#accept').prop('disabled', true);
                 },
                 error: function () {
                     alert("Failed to accept");

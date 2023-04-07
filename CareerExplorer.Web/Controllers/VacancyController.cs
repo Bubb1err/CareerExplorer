@@ -55,19 +55,6 @@ namespace CareerExplorer.Web.Controllers
                 var vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(pageSize, pageNumber, out int totalVacancies, tagIdsArray).ToList();
 
                 var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
-                foreach (var vacancyDto in vacanciesDto)
-                {
-                    var creator = _recruiterRepository.GetFirstOrDefault(x => x.Id == vacancyDto.CreatorId);
-                    if (creator == null)
-                        return BadRequest();
-                    var appUserCreator = _appUserRepository.GetFirstOrDefault(x => x.RecruiterProfileId == creator.Id);
-                    if (appUserCreator == null)
-                        return BadRequest();
-                    var creatorEmail = await _userManager.GetEmailAsync(appUserCreator);
-                    if (creatorEmail == null)
-                        return BadRequest();
-                    vacancyDto.CreatorNickName = creatorEmail;
-                }
                 var tagsItems = _skillsTagRepository.GetAll().Select(tag => new SelectListItem
                 {
                     Value = tag.Id.ToString(),
@@ -95,6 +82,8 @@ namespace CareerExplorer.Web.Controllers
                     return NotFound();
 
                 var vacancies = _vacanciesRepository.GetCreatedVacancies(currentRecruiterId).ToList();
+                bool isProfileAccepted = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecruiterId).IsAccepted;
+                ViewBag.IsAccepted = isProfileAccepted;
                 var vacanciesDTO = _mapper.Map<List<VacancyDTO>>(vacancies);
                 return View(vacanciesDTO);
             }
@@ -123,7 +112,8 @@ namespace CareerExplorer.Web.Controllers
                 }
                 if (selectedSkills == null)
                     return View(vacancyDTO);
-                var currentRecruiterId = _userManager.GetUserId(User);
+                string currentRecruiterId = _userManager.GetUserId(User);
+                
                 if (currentRecruiterId == null) return BadRequest();
                 var vacancy = _mapper.Map<Vacancy>(vacancyDTO);
                 await _vacancyService.CreateVacancy(selectedSkills, position, currentRecruiterId, vacancy);
@@ -188,22 +178,14 @@ namespace CareerExplorer.Web.Controllers
         }
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetVacancy(int? id)
+        public async Task<IActionResult> GetVacancy(int id)
         {
             try
             {
-                if (id == null)
+                if (id == 0)
                     return BadRequest();
-                var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id);
-                var creator = _recruiterRepository.GetFirstOrDefault(x => x.Id == vacancy.CreatorId);
-
+                var vacancy = await _vacanciesRepository.GetVacancyAsync(id);
                 var vacancyDto = _mapper.Map<VacancyDTO>(vacancy);
-
-                var appUserCreator = _appUserRepository.GetFirstOrDefault(x => x.RecruiterProfileId == creator.Id);
-                var creatorEmail = await _userManager.GetEmailAsync(appUserCreator);
-                if (creatorEmail == null)
-                    return BadRequest();
-                vacancyDto.CreatorNickName = creatorEmail;
 
                 var currentUserId = _userManager.GetUserId(User);
                 var currentAppUser = _appUserRepository.GetFirstOrDefault(x => x.Id == currentUserId);

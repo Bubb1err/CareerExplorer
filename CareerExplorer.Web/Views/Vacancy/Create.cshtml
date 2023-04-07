@@ -10,9 +10,9 @@
             </h2>
             <hr />
         </div>
-        <input type="text" id="searchInput">
+        <input class="form-control" type="text" id="searchInput">
         <input type="text" id="searchInputForId" name="position" hidden>
-        <div id="searchResults"></div>
+        <div class="mt-3" id="searchResults"></div>
         <div class=" mb-3">
             <label asp-for="Description">@Localizer["Description"]</label>
             <textarea rows="7" asp-for="Description" class="form-control"></textarea>
@@ -23,8 +23,8 @@
             <input class="form-control" id="skill-tags-input" placeholder="@Localizer["Choose skills"]" />
             <label class="form-label">@Localizer["Skills"]</label>
         </div>
-        <div class="form-control skill-tags-display" id="skill-tags-display"></div>
-        <div class="mb-3">
+        <div class="mb-3 skill-tags-display" id="skill-tags-display"></div>
+        <div>
             <label >
                 <input class="form-check-input" type="radio" asp-for="IsAvailable" value="true" />
                 @Localizer["Available"]
@@ -87,17 +87,17 @@
                 closeButton.append(closeIcon);
                 tag.append(closeButton);
                 closeButton.on('click', function () {
-                var index = $(this).parent().index();
-                selectedTags.splice(index, 1);
-                updateSkillTagsDisplay();
-                var skills = JSON.parse($('#selected-skills-input').val());
-                var skillIndex = skills.indexOf(tagText);
-                if (skillIndex > -1) {
-                    skills.splice(skillIndex, 1);
-                    $('#selected-skills-input').val(JSON.stringify(skills));
-                }
-                $(this).parent().remove(); 
-            });
+                    var index = $(this).parent().index();
+                    selectedTags.splice(index, 1);
+                    updateSkillTagsDisplay();
+                    var skills = JSON.parse($('#selected-skills-input').val());
+                    var skillIndex = skills.indexOf(tagText);
+                    if (skillIndex > -1) {
+                        skills.splice(skillIndex, 1);
+                        $('#selected-skills-input').val(JSON.stringify(skills));
+                    }
+                    $(this).parent().remove();
+                });
                 $('#skill-tags-display').append(tag);
             }
             $('#selected-skills-input').val(JSON.stringify(selectedTags));
@@ -105,7 +105,9 @@
         $(function() {
             $('#searchInput').on('input', function() {
                 var search = $(this).val();
-                $.get('/Vacancy/Search', { search: search }, function (results) {
+                $.get('/Vacancy/Search',
+                { search: search },
+                function (results) {
                     var $searchResults = $('#searchResults');
                     $searchResults.empty();
                     $.each(results, function(index, value) {
@@ -123,7 +125,6 @@
             $('#searchResults').on('click', 'div', function() {
                 var value = $(this).text();
                 var ind = $(this).val();
-                //$('#searchInput').val(JSON.stringify(value));
                 $('#searchInput').val(value);
                 $('#searchInputForId').val(ind);
                 $('#searchResults').hide();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CareerExplorer.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,9 @@ namespace CareerExplorer.Infrastructure.IServices
 {
     public interface IAdminService
     {
+        Task AcceptRecruiterProfile(int id);
+        bool IsRecuiterProfileFilled(Recruiter recruiter);
+        bool IsJobSeekerProfileFilled(JobSeeker jobSeeker);
         Task AcceptVacancy(int id);
     }
 }
