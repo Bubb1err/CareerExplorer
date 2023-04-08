@@ -1,6 +1,7 @@
 ﻿using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,10 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
-
+        public IEnumerable<Recruiter> GetRecruiterProfilesToAccept()
+        {
+            return _context.Recruiters.AsNoTracking().Where(x => x.IsFilled && !x.IsAccepted).ToList();
+        }
         public void Update(Recruiter entity)
         {
             _context.Recruiters.Update(entity);

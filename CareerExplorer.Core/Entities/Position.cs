@@ -12,5 +12,6 @@ namespace CareerExplorer.Core.Entities
         public string Name { get; set; }
         public int? AdminId { get; set; }
         public virtual Admin? Admin { get; set; }
+        public virtual ICollection<Vacancy> Vacancies { get; set; }
     }
 }

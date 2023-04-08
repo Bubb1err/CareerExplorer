@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
+using CareerExplorer.Infrastructure.IServices;
+using CareerExplorer.Infrastructure.Services;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -17,9 +19,11 @@ namespace CareerExplorer.Web.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IRecruiterProfileRepository _recruiterRepository;
+        private readonly IAdminService _adminService;
         public RecruiterProfileController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper, IAdminService adminService)
         {
+            _adminService = adminService;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -55,6 +59,8 @@ namespace CareerExplorer.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     var recruiter = _mapper.Map<Recruiter>(recruiterDTO);
+                    recruiter.IsFilled = _adminService.IsRecuiterProfileFilled(recruiter);
+                    recruiter.IsAccepted = false;
                     _recruiterRepository.Update(recruiter);
                     await _unitOfWork.SaveAsync();
                     return RedirectToAction(nameof(GetProfile));

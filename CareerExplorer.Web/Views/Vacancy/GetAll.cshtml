@@ -8,23 +8,30 @@
 
 <div class="row">
     <div class="col-md-8">
-        @foreach (var vacancy in Model)
+
+        @foreach(var vacancy in Model)
         {
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-header text-white">
-                    <a class="link-light" asp-controller="Vacancy" asp-action="GetVacancy" asp-route-id="@vacancy.Id">@vacancy.Title</a>
+            <div style="padding:1rem;">
+                <div class="row">
+                    <div class="col-8">
+                        <a style="font-size:20px;" class="link-dark" asp-controller="Vacancy" asp-action="GetVacancy" asp-route-id="@vacancy.Id">@vacancy.Position.Name</a>
+                        <br/>
+                        <span>@vacancy.CreatorNickName</span>
+                    </div>
+                    <div class="col-4">
+                        @*views*@
+                    </div>
                 </div>
-                <div class="card-body description-container">
-                    <p class="card-text">@vacancy.Description</p>
-                </div>
-                <button class="expand-btn btn btn-primary w-25">@Localizer["Read More"]</button>
-                <div class="card-footer">
-                    @vacancy.CompanyName @vacancy.CreatorName @vacancy.CreatorSurname
-                    @foreach(var tag in vacancy.Requirements)
-                    {
-                        <span>@tag.Title</span>
-                    }
-                    
+                <hr/>
+                <p class="description-container" style="color:#000;margin-bottom:0px;">@vacancy.Description</p>
+                <a class="expand-btn" style="text-decoration:none;font-size:20px;line-height:1;">...</a>
+                <div class="row">
+                    <div class="col-8">
+                        <span>@vacancy.CompanyName @vacancy.CreatorName @vacancy.CreatorSurname</span>
+                    </div>
+                    <div class="col-4">
+                        <span>@vacancy.CreatedDate.ToShortDateString()</span>
+                    </div>
                 </div>
 
             </div>
@@ -98,6 +105,15 @@
         margin-left: 5px;
         color: #fff;
     }
+
+    .description-container {
+        height: 100px;
+        overflow: hidden;
+    }
+
+        .description-container.expanded {
+            height: auto;
+        }
 </style>
 @section Scripts {
     <script>
@@ -105,26 +121,10 @@
         expandBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 btn.previousElementSibling.classList.toggle('expanded');
-                btn.textContent = btn.textContent === '@Localizer["Read More"]' ? '@Localizer["Read Less"]' : '@Localizer["Read More"]';
             });
         });
         //filtering
-        function setCookie(name, value, days) {
-            document.cookie = `${name}=${value};expires="";path=/`;
-        };
-
-        function getCookie(name) {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.startsWith(`${name}=`)) {
-                    return cookie.substring(name.length + 1);
-                };
-            }
-            return null;
-        };
-        const savedTagIds = getCookie('selectedTagIds');
-        console.log(savedTagIds);
+        const savedTagIds = sessionStorage.getItem('selectedTagIds');
         const selectedTagIds = new Set();
         if (savedTagIds) {
             savedTagIds.split(',').forEach(id => selectedTagIds.add(parseInt(id)));
@@ -133,17 +133,15 @@
         function updateUrlAndNavigate() {
             const pageNumber = @Model.PageIndex;
             const tagIds = Array.from(selectedTagIds);
-            console.log(tagIds);
             const url = `@Url.Action("GetAll")?pageNumber=${pageNumber}&tagIds=${tagIds.join(',')}`;
             window.location.href = url;
         }
-        function saveSelectedTagIdsInCookie() {
+        function saveSelectedTagIdsInSession() {
             const tagIdsString = Array.from(selectedTagIds).join(',');
-            setCookie('selectedTagIds', tagIdsString, 365);
+            sessionStorage.setItem('selectedTagIds', tagIdsString);
         }
         const tagBtns = document.querySelectorAll('.tag-btn');
         tagBtns.forEach(btn => {
-            console.log(selectedTagIds.has(parseInt(btn.dataset.tagId)))
             if (!selectedTagIds.has(parseInt(btn.dataset.tagId))) {
                 btn.addEventListener('click', () => {
                 btn.classList.toggle('btn-primary');
@@ -154,7 +152,7 @@
                 selectedTagIds.add(tagId);
 
                 updateUrlAndNavigate();
-                saveSelectedTagIdsInCookie();
+                saveSelectedTagIdsInSession();
                 });
             } else {
                 btn.innerHTML += '<span>&times;</span>';
@@ -163,7 +161,7 @@
                     const tagId = parseInt(btn.dataset.tagId);
                     selectedTagIds.delete(tagId);
                     updateUrlAndNavigate();
-                    saveSelectedTagIdsInCookie();
+                    saveSelectedTagIdsInSession();
                 });
             }
         });
@@ -180,18 +178,3 @@
         
     </script>
 }
-
-<style>
-    .description-container {
-        height: 100px;
-        overflow: hidden;
-    }
-
-        .description-container.expanded {
-            height: auto;
-        }
-
-    .expand-btn {
-        margin-top: 10px;
-    }
-</style>

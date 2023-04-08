@@ -2,13 +2,7 @@
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.Identity.Client;
 
 namespace CareerExplorer.Infrastructure.Repository
 {
@@ -25,16 +19,20 @@ namespace CareerExplorer.Infrastructure.Repository
             IQueryable<Vacancy> vacancies = dbSet;
             if(tagsIds == null)
             {
-                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true)
+                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true && x.IsAccepted == true)
                 .Include(x => x.Creator)
-                .Include(x => x.Requirements);
+                    .ThenInclude(x => x.AppUser)
+                .Include(x => x.Requirements)
+                .Include(x => x.Position);
                 countVacancies= vacancies.Count();
             }
             else
             {
-                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
+                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
                 .Include(x => x.Creator)
-                .Include(x => x.Requirements);
+                    .ThenInclude (x => x.AppUser)
+                .Include(x => x.Requirements)
+                .Include(x => x.Position);
                 countVacancies = vacancies.Count();
             }
             if (pageSize > 0)
@@ -55,7 +53,28 @@ namespace CareerExplorer.Infrastructure.Repository
             if (recruiter == null)
                 throw new Exception();
             var recuiterId = recruiter.Id;
-            var vacancies = dbSet.AsNoTracking().Where(x => x.CreatorId== recuiterId);
+            var vacancies = dbSet.AsNoTracking().Where(x => x.CreatorId== recuiterId).Include(x => x.Position);
+            return vacancies;
+        }
+        public async Task<Vacancy> GetVacancyAsync(int id)
+        {
+            if (id == 0) throw new ArgumentException();
+            var vacancy =  await _context.Vacancies
+                .Include(x => x.Creator)
+                .ThenInclude(x => x.AppUser)
+                .Include(x => x.Position)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if(vacancy == null)
+                throw new NullReferenceException();
+            return vacancy;
+        }
+        public IEnumerable<Vacancy> GetVacanciesToAccept()
+        {
+           var vacancies =  _context.Vacancies
+                .Include(x => x.Creator)
+                .ThenInclude(x => x.AppUser)
+                .Include(x => x.Position)
+                .Where(x => !x.IsAccepted);
             return vacancies;
         }
         public void Update(Vacancy entity)

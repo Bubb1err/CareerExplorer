@@ -18,12 +18,18 @@ namespace CareerExplorer.Web
                 m => m.MapFrom(a => a.Creator.Surname))
                 .ForMember(x => x.CreatorName,
                 m => m.MapFrom(a => a.Creator.Name))
+                .ForMember(x => x.CreatorNickName,
+                m => m.MapFrom(a => a.Creator.AppUser.Email))
                 .ReverseMap();
             CreateMap<JobSeeker, ApplicantDTO>().ReverseMap();
             CreateMap<Vacancy, CreateOrEditVacancyDTO>().ReverseMap();
             CreateMap<SkillTagDTO, SkillsTag>().ReverseMap();
             CreateMap<Position, PositionDTO>().ReverseMap();
             CreateMap<JobSeeker, JobSeekerDTO>().ReverseMap();
+            CreateMap<JobSeeker, JobSeekerViewProfileDTO > ()
+                .ForMember(x => x.NickName,
+                m => m.MapFrom(a => a.AppUser.Email))
+                .ReverseMap();
         }
     }
 }

@@ -3,6 +3,8 @@ using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Core.IServices;
 using CareerExplorer.Infrastructure.Data;
+using CareerExplorer.Infrastructure.IServices;
+using CareerExplorer.Infrastructure.Services;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -27,8 +29,9 @@ namespace CareerExplorer.Web.Controllers
         private readonly IJobSeekerVacancyRepository _jobSeekerVacancyRepository;
         private readonly IRepository<SkillsTag> _skillsTagRepository;
         private readonly IMapper _mapper;
+        private readonly IAdminService _adminService;
         public JobSeekerProfileController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork,
-            IApplyOnVacancyService applyService, IMapper mapper)
+            IApplyOnVacancyService applyService, IMapper mapper, IAdminService adminService)
         {
             _userManager= userManager;
             _unitOfWork = unitOfWork;
@@ -38,6 +41,7 @@ namespace CareerExplorer.Web.Controllers
             _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
             _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
             _mapper = mapper;
+            _adminService = adminService;
         }
         [HttpGet]
         public IActionResult GetProfile()
@@ -98,6 +102,7 @@ namespace CareerExplorer.Web.Controllers
 
                     userProfile.Skills.Add(newSkillTag);
                 }
+                userProfile.IsFilled = _adminService.IsJobSeekerProfileFilled(userProfile);
                 _jobSeekerRepository.Update(userProfile);
                 await _unitOfWork.SaveAsync();
                 return RedirectToAction(nameof(GetProfile));

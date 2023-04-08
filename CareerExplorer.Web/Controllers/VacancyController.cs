@@ -28,6 +28,7 @@ namespace CareerExplorer.Web.Controllers
         private readonly IRepository<AppUser> _appUserRepository;
         private readonly IRepository<SkillsTag> _skillsTagRepository;
         private readonly IVacancyService _vacancyService;
+        private readonly IRepository<Position> _positionsRepository;
         public VacancyController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<IdentityUser> userManager,
             IRepository<AppUser> appUserRepository, IVacancyService vacancyService)
         {
@@ -42,6 +43,7 @@ namespace CareerExplorer.Web.Controllers
             _appUserRepository = appUserRepository;
             _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
             _vacancyService = vacancyService;
+            _positionsRepository = _unitOfWork.GetRepository<Position>();
         }
         [HttpGet]
         public async Task<IActionResult> GetAll(int pageNumber = 1, string tagIds = "")
@@ -53,19 +55,6 @@ namespace CareerExplorer.Web.Controllers
                 var vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(pageSize, pageNumber, out int totalVacancies, tagIdsArray).ToList();
 
                 var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
-                foreach (var vacancyDto in vacanciesDto)
-                {
-                    var creator = _recruiterRepository.GetFirstOrDefault(x => x.Id == vacancyDto.CreatorId);
-                    if (creator == null)
-                        return BadRequest();
-                    var appUserCreator = _appUserRepository.GetFirstOrDefault(x => x.RecruiterProfileId == creator.Id);
-                    if (appUserCreator == null)
-                        return BadRequest();
-                    var creatorEmail = await _userManager.GetEmailAsync(appUserCreator);
-                    if (creatorEmail == null)
-                        return BadRequest();
-                    vacancyDto.CreatorNickName = creatorEmail;
-                }
                 var tagsItems = _skillsTagRepository.GetAll().Select(tag => new SelectListItem
                 {
                     Value = tag.Id.ToString(),
@@ -93,6 +82,8 @@ namespace CareerExplorer.Web.Controllers
                     return NotFound();
 
                 var vacancies = _vacanciesRepository.GetCreatedVacancies(currentRecruiterId).ToList();
+                bool isProfileAccepted = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecruiterId).IsAccepted;
+                ViewBag.IsAccepted = isProfileAccepted;
                 var vacanciesDTO = _mapper.Map<List<VacancyDTO>>(vacancies);
                 return View(vacanciesDTO);
             }
@@ -104,9 +95,14 @@ namespace CareerExplorer.Web.Controllers
         {
             return View();
         }
+        public IActionResult Search(string search)
+        {
+            var positions = _positionsRepository.GetAll(x => x.Name.ToLower().StartsWith(search.ToLower()));
+            return Json(positions);
+        }
         [Authorize(Roles = UserRoles.Recruiter)]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateOrEditVacancyDTO vacancyDTO, string selectedSkills)
+        public async Task<IActionResult> Create(CreateOrEditVacancyDTO vacancyDTO, string selectedSkills, string position)
         {
             try
             {
@@ -114,26 +110,13 @@ namespace CareerExplorer.Web.Controllers
                 {
                     return View(vacancyDTO);
                 }
-                if (selectedSkills== null)
-                    return BadRequest();
-                string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
-                var skills = new List<SkillsTag>();
-                foreach (var tag in tags)
-                {
-                    skills.Add(_skillsTagRepository.GetFirstOrDefault(x => x.Title == tag));
-                }
-                var currentRecruiterId = _userManager.GetUserId(User);
-                var creator = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecruiterId);
+                if (selectedSkills == null)
+                    return View(vacancyDTO);
+                string currentRecruiterId = _userManager.GetUserId(User);
+                
+                if (currentRecruiterId == null) return BadRequest();
                 var vacancy = _mapper.Map<Vacancy>(vacancyDTO);
-                vacancy.Requirements = skills;
-                vacancy.CreatorId = creator.Id;
-                vacancy.Creator = creator;
-                vacancy.CreatedDate= DateTime.Now;
-
-
-                await _vacanciesRepository.AddAsync(vacancy);
-
-                await _unitOfWork.SaveAsync();
+                await _vacancyService.CreateVacancy(selectedSkills, position, currentRecruiterId, vacancy);
                 return RedirectToAction(nameof(CreatedVacancies));
             }
             catch { return BadRequest(); }
@@ -147,8 +130,11 @@ namespace CareerExplorer.Web.Controllers
             {
                 if (id == null)
                     return BadRequest();
-                var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id, "Requirements");
+                var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id, "Requirements,Position");
                 var vacancyDto = _mapper.Map<CreateOrEditVacancyDTO>(vacancy);
+                ViewBag.PositionTitle = vacancy.Position.Name;
+                ViewBag.PositionId = vacancy.Position.Id;
+                ViewBag.Requirements = vacancy.Requirements.Select(x => x.Title).ToList();
                 return View(vacancyDto);
             }
             catch { return BadRequest(); }
@@ -156,43 +142,18 @@ namespace CareerExplorer.Web.Controllers
         }
         [HttpPost]
         [Authorize(Roles = UserRoles.Recruiter)]
-        public async Task<IActionResult> Edit(CreateOrEditVacancyDTO vacancyDto, string selectedSkills)
+        public async Task<IActionResult> Edit(CreateOrEditVacancyDTO vacancyDto, string selectedSkills, string position)
         {
             try
             {
-                string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
                 if (!ModelState.IsValid)
                 {
-                    var skills = new List<SkillsTag>();
-                    foreach (var tag in tags)
-                    {
-                        skills.Add(_skillsTagRepository.GetFirstOrDefault(x => x.Title == tag));
-                    }
-                    vacancyDto.Requirements = skills;
                     return View(vacancyDto);
                 }
-
                 var currentVacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == vacancyDto.Id, "Requirements");
-                currentVacancy.Title= vacancyDto.Title;
-                currentVacancy.Description= vacancyDto.Description;
+                currentVacancy.Description = vacancyDto.Description;
                 currentVacancy.IsAvailable = vacancyDto.IsAvailable;
-
-                List<SkillsTag> skillsToAdd = new List<SkillsTag>();
-                var existingSkillTags = currentVacancy.Requirements.Select(s => s.Title);
-                var tagsToRemove = existingSkillTags.Except(tags).ToList();
-                for (int i = tagsToRemove.Count() - 1; i >= 0; i--)
-                {
-                    var skillTagToRemove = currentVacancy.Requirements.FirstOrDefault(s => s.Title == tagsToRemove[i]);
-                    currentVacancy.Requirements.Remove(skillTagToRemove);
-                }
-                foreach (var skillTag in tags.Except(existingSkillTags))
-                {
-                    var newSkillTag = _skillsTagRepository.GetFirstOrDefault(s => s.Title == skillTag)
-                        ?? new SkillsTag { Title = skillTag };
-
-                    currentVacancy.Requirements.Add(newSkillTag);
-                }
-                await _unitOfWork.SaveAsync();
+                await _vacancyService.EditVacancy(selectedSkills, currentVacancy, position);
                 return RedirectToAction(nameof(CreatedVacancies));
             }
             catch { return BadRequest(); }
@@ -217,33 +178,29 @@ namespace CareerExplorer.Web.Controllers
         }
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetVacancy(int? id)
+        public async Task<IActionResult> GetVacancy(int id)
         {
             try
             {
-                if (id == null)
+                if (id == 0)
                     return BadRequest();
-                var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id);
-                var creator = _recruiterRepository.GetFirstOrDefault(x => x.Id == vacancy.CreatorId);
-
+                var vacancy = await _vacanciesRepository.GetVacancyAsync(id);
                 var vacancyDto = _mapper.Map<VacancyDTO>(vacancy);
-
-                var appUserCreator = _appUserRepository.GetFirstOrDefault(x => x.RecruiterProfileId == creator.Id);
-                var creatorEmail = await _userManager.GetEmailAsync(appUserCreator);
-                if (creatorEmail == null)
-                    return BadRequest();
-                vacancyDto.CreatorNickName = creatorEmail;
 
                 var currentUserId = _userManager.GetUserId(User);
                 var currentAppUser = _appUserRepository.GetFirstOrDefault(x => x.Id == currentUserId);
 
                 if (currentAppUser.RecruiterProfileId != null)
                     return View(vacancyDto);
+                if(currentAppUser.AdminProfileId!= null)
+                    return View(vacancyDto);
 
-                var joobSeekId = _jobSeekerRepositoy.GetFirstOrDefault(x => x.UserId == currentUserId).Id;
-
+                var joobSeeker = _jobSeekerRepositoy.GetFirstOrDefault(x => x.UserId == currentUserId);
+                var joobSeekerId = joobSeeker.Id;
+                ViewBag.IsProfileAccepted = joobSeeker.IsAccepted;
+                ViewBag.IsProfileFilled = joobSeeker.IsFilled;
                 //if jobSeekerVacancy object exist then jobSeeker has already applied on vacancy
-                var applied = _jobSeekerVacancyRepository.GetFirstOrDefault(x => x.VacancyId == id && x.JobSeekerId == joobSeekId);
+                var applied = _jobSeekerVacancyRepository.GetFirstOrDefault(x => x.VacancyId == id && x.JobSeekerId == joobSeekerId);
                 if (applied != null)
                     vacancyDto.IsApplied = true;
                 else

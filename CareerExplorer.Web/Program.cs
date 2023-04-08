@@ -50,6 +50,7 @@ namespace CareerExplorer.Web
             builder.Services.AddScoped<IRepository<Country>, Repository<Country>>();
             builder.Services.AddScoped<IRepository<Position>, Repository<Position>>();
             builder.Services.AddScoped<IVacancyService, VacancyService>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddAutoMapper(typeof(MappingConfig));
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Recources");

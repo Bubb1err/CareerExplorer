@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
+using CareerExplorer.Infrastructure.IServices;
 using CareerExplorer.Infrastructure.Repository;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -18,13 +20,24 @@ namespace CareerExplorer.Web.Controllers
         private readonly IRepository<SkillsTag> _skillsRepository;
         private readonly IRepository<Position> _positionRepository;
         private readonly IMapper _mapper;
-        public AdminController(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IVacanciesRepository _vacanciesRepository;
+        private readonly IRecruiterProfileRepository _recruiterRepository;
+        private readonly IJobSeekerProfileRepository _jobSeekerRepository;
+        
+        private readonly IAdminService _adminService;
+        public AdminController(IUnitOfWork unitOfWork, IMapper mapper,
+            IAdminService adminService)
         {
             _unitOfWork= unitOfWork;
             _mapper= mapper;
+
             _skillsRepository = _unitOfWork.GetRepository<SkillsTag>();
             _positionRepository = _unitOfWork.GetRepository<Position>();
             _adminRepository = _unitOfWork.GetAdminRepository();
+            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
+            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
+            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
+            _adminService = adminService;
         }
         #region SkillTag Control
         [HttpGet]
@@ -192,5 +205,76 @@ namespace CareerExplorer.Web.Controllers
             catch { return BadRequest(); }
         }
         #endregion
+        [HttpGet]
+        public IActionResult GetVacanciesToAccept()
+        {
+            var vacancies = _vacanciesRepository.GetVacanciesToAccept().ToList();
+            var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
+            return View(vacanciesDto);
+        }
+        [HttpGet]
+        public async Task<IActionResult> ViewVacancy(int id)
+        {
+            var vacancy = await _vacanciesRepository.GetVacancyAsync(id);
+            var vacancyDto = _mapper.Map<VacancyDTO>(vacancy);
+            return View(vacancyDto);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AcceptVacancy(int id)
+        {
+            try
+            {
+                if(id==0) return BadRequest();
+                await _adminService.AcceptVacancy(id);
+                return Ok();
+            }
+            catch 
+            {
+                return BadRequest();
+            }
+        }
+        [HttpGet]
+        public IActionResult GetRecruitersToAccept()
+        {
+            var recruiters = _recruiterRepository.GetRecruiterProfilesToAccept().ToList();
+            var recruitersDto = _mapper.Map<List<RecruiterProfileDTO>>(recruiters);
+            return View(recruitersDto);
+        }
+        [HttpGet]
+        public IActionResult ViewRecruiterProfile(int id)
+        {
+            var recruiter = _recruiterRepository.GetFirstOrDefault(x => x.Id == id);
+            var recruiterDto = _mapper.Map<RecruiterProfileDTO>(recruiter);
+            return View(recruiterDto);
+        }
+        [HttpPost]
+        public async  Task<IActionResult> AcceptRecruiterProfile(int id)
+        {
+            if(id == 0) return BadRequest();
+            await _adminService.AcceptRecruiterProfile(id);
+            return Ok();
+        }
+        [HttpGet]
+        public IActionResult GetJobSeekersToAccept()
+        {
+            var jobSeekers = _jobSeekerRepository.GetJobSeekersToAccept().ToList();
+            var jobSeekersDto = _mapper.Map<List<JobSeekerViewProfileDTO>>(jobSeekers);
+            return View(jobSeekersDto);
+        }
+        [HttpGet]
+        public IActionResult ViewJobSeekerProfile(int id)
+        {
+            if(id == 0) return BadRequest();
+            var jobSeeker = _jobSeekerRepository.GetFirstOrDefault(x => x.Id == id, "AppUser");
+            var jobSeekerDto = _mapper.Map<JobSeekerViewProfileDTO>(jobSeeker);
+            return View(jobSeekerDto);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AcceptJobSeekerProfile(int id)
+        {
+            if(id == 0) return BadRequest();
+            await _adminService.AcceptJobSeekerProfile(id);
+            return Ok();
+        }
     }
 }

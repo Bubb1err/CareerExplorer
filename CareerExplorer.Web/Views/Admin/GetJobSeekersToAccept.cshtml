@@ -1,0 +1,34 @@
+﻿@using CareerExplorer.Web.DTO;
+@model List<JobSeekerViewProfileDTO>
+
+<div class="row">
+    <div class="col-md-2">
+        <partial name="_AdminMenuPartial" />
+    </div>
+    <div class="col-md-10">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Full Name</th>
+                    <th scope="col">Nickname</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var jobSeeker in Model)
+                {
+                    <tr>
+                        <th>@jobSeeker.Name @jobSeeker.Surname</th>
+                        <th>@jobSeeker.NickName</th>
+                        <th>
+                            <div class="w-50 btn-group" role="group">
+                                <a asp-controller="Admin" asp-action="ViewJobSeekerProfile" asp-route-id="@jobSeeker.Id" class="btn btn-primary">View jobseeker profile</a>
+                            </div>
+                        </th>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

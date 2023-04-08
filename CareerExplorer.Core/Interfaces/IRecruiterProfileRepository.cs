@@ -9,6 +9,7 @@ namespace CareerExplorer.Core.Interfaces
 {
     public interface IRecruiterProfileRepository : IRepository<Recruiter>
     {
+        IEnumerable<Recruiter> GetRecruiterProfilesToAccept();
         void Update(Recruiter entity);
     }
 }

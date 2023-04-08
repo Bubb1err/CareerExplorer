@@ -15,7 +15,7 @@ namespace CareerExplorer.Core.Entities
         public string Surname { get; set; } = string.Empty;
         public string Company { get; set; } = string.Empty;
         public string CompanyDescription { get; set; } = string.Empty;
-        public bool IsFilled { get; set; }= false;
+        public bool IsFilled { get; set; } = false;
         public bool IsAccepted { get; set; } = false;
         public string UserId { get; set; }
         public AppUser AppUser { get; set; }

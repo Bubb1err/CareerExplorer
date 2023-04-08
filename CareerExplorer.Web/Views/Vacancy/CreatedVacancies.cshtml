@@ -5,11 +5,22 @@
     <div class="col-md-2">
         <partial name="_RecrMenuPartial" />
     </div>
+
     <div class="col-md-10">
-        <a class="btn btn-primary" asp-controller="Vacancy" asp-action="Create">@Localizer["Create new"]</a>
+        @if (ViewBag.IsAccepted)
+        {
+            <a class="btn btn-primary" asp-controller="Vacancy" asp-action="Create">@Localizer["Create new"]</a>
+
+        }
+        else
+        {
+            <span><i style="color:red;" class="bi bi-clock"></i> To start posting vacancies your profile must be accepted.</span>
+            <button style="display:block;" class="btn btn-primary" disabled>@Localizer["Create new"]</button>
+        }
         <table class="table table-hover">
             <thead>
                 <tr>
+                    <th scope="col">Status</th>
                     <th scope="col">@Localizer["Title"]</th>
                     <th scope="col">@Localizer["Available"]</th>
                     <th scope="col">@Localizer["Creation Date"]</th>
@@ -20,13 +31,25 @@
                 @foreach (var vacancy in Model)
                 {
                     <tr>
-                        <th>@vacancy.Title</th>
+                        <th>
+                            @if (vacancy.IsAccepted)
+                            {
+                                <small style="font-size:8px;font-style:italic;"><i style="color:forestgreen;" class="bi bi-check-circle"></i>Accepted</small>
+                            }
+                            else
+                            {
+                                <small style="font-size:8px;font-style:italic;"><i style="color:red;" class="bi bi-clock"></i>On review</small>
+                            }
+                        </th>
+                        <th>
+                            @vacancy.Position.Name
+                        </th>
                         <th>@(vacancy.IsAvailable ? @Localizer["Yes"] : @Localizer["No"])</th>
                         <th>@vacancy.CreatedDate.ToShortDateString()</th>
                         <th>
-                            <div class="w-50 btn-group" role="group">
-                                <a asp-controller="Vacancy" asp-action="Edit" asp-route-id="@vacancy.Id" class="btn btn-primary me-3">@Localizer["Edit"]</a>
-                                <a asp-controller="Vacancy" asp-action="Delete" asp-route-id="@vacancy.Id" class="btn btn-primary me-3">@Localizer["Delete"]</a>
+                            <div class="w-45 btn-group" role="group">
+                                <a asp-controller="Vacancy" asp-action="Edit" asp-route-id="@vacancy.Id" class="btn btn-primary me-2">@Localizer["Edit"]</a>
+                                <a asp-controller="Vacancy" asp-action="Delete" asp-route-id="@vacancy.Id" class="btn btn-primary me-2">@Localizer["Delete"]</a>
                                 <a asp-controller="Vacancy" asp-action="GetApplicants" asp-route-id="@vacancy.Id" class="btn btn-primary">@Localizer["Applicants"]</a>
                             </div>
                         </th>
