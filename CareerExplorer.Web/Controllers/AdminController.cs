@@ -22,6 +22,7 @@ namespace CareerExplorer.Web.Controllers
         private readonly IMapper _mapper;
         private readonly IVacanciesRepository _vacanciesRepository;
         private readonly IRecruiterProfileRepository _recruiterRepository;
+        private readonly IJobSeekerProfileRepository _jobSeekerRepository;
         
         private readonly IAdminService _adminService;
         public AdminController(IUnitOfWork unitOfWork, IMapper mapper,
@@ -35,6 +36,7 @@ namespace CareerExplorer.Web.Controllers
             _adminRepository = _unitOfWork.GetAdminRepository();
             _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
             _recruiterRepository = _unitOfWork.GetRecruiterRepository();
+            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
             _adminService = adminService;
         }
         #region SkillTag Control
@@ -250,6 +252,28 @@ namespace CareerExplorer.Web.Controllers
         {
             if(id == 0) return BadRequest();
             await _adminService.AcceptRecruiterProfile(id);
+            return Ok();
+        }
+        [HttpGet]
+        public IActionResult GetJobSeekersToAccept()
+        {
+            var jobSeekers = _jobSeekerRepository.GetJobSeekersToAccept().ToList();
+            var jobSeekersDto = _mapper.Map<List<JobSeekerViewProfileDTO>>(jobSeekers);
+            return View(jobSeekersDto);
+        }
+        [HttpGet]
+        public IActionResult ViewJobSeekerProfile(int id)
+        {
+            if(id == 0) return BadRequest();
+            var jobSeeker = _jobSeekerRepository.GetFirstOrDefault(x => x.Id == id, "AppUser");
+            var jobSeekerDto = _mapper.Map<JobSeekerViewProfileDTO>(jobSeeker);
+            return View(jobSeekerDto);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AcceptJobSeekerProfile(int id)
+        {
+            if(id == 0) return BadRequest();
+            await _adminService.AcceptJobSeekerProfile(id);
             return Ok();
         }
     }

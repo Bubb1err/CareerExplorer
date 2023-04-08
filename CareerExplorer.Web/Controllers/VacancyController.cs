@@ -195,10 +195,12 @@ namespace CareerExplorer.Web.Controllers
                 if(currentAppUser.AdminProfileId!= null)
                     return View(vacancyDto);
 
-                var joobSeekId = _jobSeekerRepositoy.GetFirstOrDefault(x => x.UserId == currentUserId).Id;
-
+                var joobSeeker = _jobSeekerRepositoy.GetFirstOrDefault(x => x.UserId == currentUserId);
+                var joobSeekerId = joobSeeker.Id;
+                ViewBag.IsProfileAccepted = joobSeeker.IsAccepted;
+                ViewBag.IsProfileFilled = joobSeeker.IsFilled;
                 //if jobSeekerVacancy object exist then jobSeeker has already applied on vacancy
-                var applied = _jobSeekerVacancyRepository.GetFirstOrDefault(x => x.VacancyId == id && x.JobSeekerId == joobSeekId);
+                var applied = _jobSeekerVacancyRepository.GetFirstOrDefault(x => x.VacancyId == id && x.JobSeekerId == joobSeekerId);
                 if (applied != null)
                     vacancyDto.IsApplied = true;
                 else

@@ -1,13 +1,7 @@
 ﻿using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Repository
 {
@@ -21,7 +15,17 @@ namespace CareerExplorer.Infrastructure.Repository
 
         public JobSeeker GetJobSeeker(string userId)
         {
-            return _context.JobSeekers.Include(x => x.Skills).FirstOrDefault(x => x.UserId == userId);
+            var jobSeeker = _context.JobSeekers.Include(x => x.Skills).FirstOrDefault(x => x.UserId == userId);
+            if (jobSeeker == null) throw new NullReferenceException();
+            return jobSeeker;
+        }
+        public IEnumerable<JobSeeker> GetJobSeekersToAccept()
+        {
+            var jobSeekers = _context.JobSeekers
+                .Where(x => x.IsFilled && !x.IsAccepted)
+                .Include(x => x.AppUser)
+                .AsNoTracking();
+            return jobSeekers;
         }
         public void Update(JobSeeker jobSeeker)
         {

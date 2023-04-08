@@ -26,6 +26,10 @@ namespace CareerExplorer.Web
             CreateMap<SkillTagDTO, SkillsTag>().ReverseMap();
             CreateMap<Position, PositionDTO>().ReverseMap();
             CreateMap<JobSeeker, JobSeekerDTO>().ReverseMap();
+            CreateMap<JobSeeker, JobSeekerViewProfileDTO > ()
+                .ForMember(x => x.NickName,
+                m => m.MapFrom(a => a.AppUser.Email))
+                .ReverseMap();
         }
     }
 }

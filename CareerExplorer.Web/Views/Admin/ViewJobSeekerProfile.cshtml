@@ -1,0 +1,35 @@
+﻿@using CareerExplorer.Web.DTO;
+@model JobSeekerViewProfileDTO
+<div class="row">
+    <div class="col-md-2">
+        <partial name="_AdminMenuPartial" />
+    </div>
+    <div class="col-md-10">
+        <h1>@Model.Name @Model.Surname</h1>
+        <span>@Model.NickName</span>
+        <p>@Model.Experience</p>
+        <p>@Model.Phone</p>
+        <button style="display:block" onclick="acceptButtonClick()" id="accept" class="btn btn-primary mt-2">Accept</button>
+    </div>
+</div>
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function acceptButtonClick() {
+            var id = @Model.Id;
+            $.ajax({
+                type: "POST",
+                url: "/Admin/AcceptJobSeekerProfile",
+                data: { id: id },
+                success: function (response) {
+                    console.log(response);
+                    $("#accept").text("Accepted");
+                    $('#accept').prop('disabled', true);
+                },
+                error: function () {
+                    alert("Failed to accept");
+                }
+            });
+        }
+    </script>
+}

@@ -14,12 +14,14 @@ namespace CareerExplorer.Infrastructure.Services
         private readonly IVacanciesRepository _vacanciesRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRecruiterProfileRepository _recruiterProfileRepository;
+        private readonly IJobSeekerProfileRepository _jobSeekerRepository;
 
         public AdminService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
             _recruiterProfileRepository = _unitOfWork.GetRecruiterRepository();
+            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
         }
         public async Task AcceptVacancy(int id)
         {
@@ -31,6 +33,12 @@ namespace CareerExplorer.Infrastructure.Services
         {
             var recruiter = _recruiterProfileRepository.GetFirstOrDefault(x => x.Id == id);
             recruiter.IsAccepted = true;
+            await _unitOfWork.SaveAsync();
+        }
+        public async Task AcceptJobSeekerProfile(int id)
+        {
+            var jobSeeker = _jobSeekerRepository.GetFirstOrDefault(x => x.Id == id);
+            jobSeeker.IsAccepted = true;
             await _unitOfWork.SaveAsync();
         }
         public bool IsJobSeekerProfileFilled (JobSeeker jobSeeker)

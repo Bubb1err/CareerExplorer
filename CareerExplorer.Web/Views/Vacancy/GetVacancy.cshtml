@@ -16,8 +16,10 @@
             <span>Published: @Model.CreatedDate.ToShortDateString()</span>
             @if (User.IsInRole(UserRoles.JobSeeker))
             {
-                @if(!Model.IsApplied)
-                {
+                    @if(!Model.IsApplied)
+                    {
+                        @if (ViewBag.IsProfileAccepted && ViewBag.IsProfileFilled)
+                        {
                     <div id="apply-container">
                         <button class="btn btn-primary mt-3 mb-3" id="apply-button">@Localizer["Apply"]</button>
                     <form id="application-form" style="display:none;">
@@ -27,12 +29,19 @@
                             <button style="display:block" class="btn btn-primary mt-3" id="apply-btn" type="post">@Localizer["Submit"]</button>
                     </form>
                     </div>
-                }
-                else
-                {
-                    <button style="display:block" class="btn btn-primary mt-3" disabled>@Localizer["Applied"]</button>
-                }
-                
+                        }
+                        else
+                        {
+                            <p class="text-danger mt-2">To apply fill your profile.</p>
+                            <a style="display:inline-block" class="btn btn-primary" asp-controller="JobSeekerProfile" asp-action="GetProfile">Go to profile</a>
+                        }
+
+                    }
+                    else
+                    {
+                        <button style="display:block" class="btn btn-primary mt-3" disabled>@Localizer["Applied"]</button>
+                    }
+               
             }
         </div>
         <div class="col-md-4">
