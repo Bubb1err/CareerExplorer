@@ -1,0 +1,34 @@
+﻿@using CareerExplorer.Core.Entities;
+@using Microsoft.AspNetCore.Identity;
+@using CareerExplorer.Core.Enums;
+@model IEnumerable<Chat>
+
+<table class="table table-hover">
+    <tbody>
+        @foreach(var chat in Model)
+        {
+            
+            <tr class="click-row" data-receiverid="@chat.Users.First(x => x.UserType == UserType.Recruiter).Id">
+                   <th>
+                       <h3>@chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Company</h3>
+                       <span>
+                           @chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Name 
+                           @chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Surname
+                       </span>
+                   </th>
+                   <th>
+                       <p>@chat.Messages.Last().Text</p>
+                   </th>
+                </tr>         
+        }
+    </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" 
+integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script>
+    jQuery(document).ready(function() {
+    $(".click-row").click(function() {
+            window.location = '/Chat/GetChat?receiverId=' + $(this).data("receiverid");
+    });
+});
+</script>

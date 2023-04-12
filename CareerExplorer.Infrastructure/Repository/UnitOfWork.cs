@@ -45,6 +45,11 @@ namespace CareerExplorer.Infrastructure.Repository
             var repository = _serviceProvider.GetRequiredService<IJobSeekerProfileRepository>();
             return repository; 
         }
+        public IChatRepository GetChatRepository()
+        {
+            var repository = _serviceProvider.GetRequiredService<IChatRepository>();
+            return repository;
+        }
         public IRecruiterProfileRepository GetRecruiterRepository()
         {
             var repository = _serviceProvider.GetRequiredService<IRecruiterProfileRepository>();

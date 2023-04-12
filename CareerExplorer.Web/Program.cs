@@ -14,6 +14,7 @@ using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using CareerExplorer.Infrastructure.IServices;
+using CareerExplorer.Web.Hubs;
 
 namespace CareerExplorer.Web
 {
@@ -36,6 +37,12 @@ namespace CareerExplorer.Web
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<AppDbContext>();
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+            });
+
             builder.Services.AddSingleton<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IJobSeekerProfileRepository, JobSeekerRepository>();
@@ -51,7 +58,11 @@ namespace CareerExplorer.Web
             builder.Services.AddScoped<IRepository<Position>, Repository<Position>>();
             builder.Services.AddScoped<IVacancyService, VacancyService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
+            builder.Services.AddScoped<IRepository<Message>, Repository<Message>>();
+            builder.Services.AddScoped<IRepository<Chat>, Repository<Chat>>();
+            builder.Services.AddScoped<IChatRepository, ChatRepository>();
             builder.Services.AddAutoMapper(typeof(MappingConfig));
+            builder.Services.AddSignalR();
 
             builder.Services.AddLocalization(options => options.ResourcesPath = "Recources");
             builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -85,8 +96,10 @@ namespace CareerExplorer.Web
             app.UseAuthentication();
                 
             app.UseAuthorization();
+            
             app.MapRazorPages();
-
+            //app.MapHub<ChatHub>("/Chat/GetChat");
+            app.MapHub<ChatHub>("/chatHub");
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Vacancy}/{action=GetAll}/{id?}");

@@ -29,6 +29,8 @@ namespace CareerExplorer.Infrastructure.Data
         public DbSet<Position> Positions { get; set; }
         public DbSet<SkillsTag> SkillsTags { get; set; }
         public DbSet<WorkType> WorkTypes { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Chat> Chat { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);

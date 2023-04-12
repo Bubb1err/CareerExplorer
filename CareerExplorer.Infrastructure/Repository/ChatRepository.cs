@@ -1,0 +1,29 @@
+﻿using CareerExplorer.Core.Entities;
+using CareerExplorer.Core.Interfaces;
+using CareerExplorer.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CareerExplorer.Infrastructure.Repository
+{
+    public class ChatRepository :Repository<Chat>, IChatRepository
+    {
+        private readonly AppDbContext _context;
+        public ChatRepository(AppDbContext db) : base(db)
+        {
+            _context = db;
+        }
+
+        public IEnumerable<Chat> GetJobSeekerChats(AppUser appUser) 
+        {
+           return _context.Chat.Where(x => x.Users.Contains(appUser))
+                .Include(x => x.Users)
+                    .ThenInclude(x => x.RecruiterProfile)
+                .Include(x => x.Messages);
+        }
+    }
+}

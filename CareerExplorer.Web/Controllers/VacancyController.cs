@@ -234,11 +234,12 @@ namespace CareerExplorer.Web.Controllers
             {
                 if (jobSeekerId == 0 || vacancyId == 0)
                     return BadRequest();
-                var jobSeeker = _jobSeekerRepositoy.GetFirstOrDefault(x => x.Id == jobSeekerId);
+                var jobSeeker = _jobSeekerRepositoy.GetFirstOrDefault(x => x.Id == jobSeekerId, "AppUser");
                 if (jobSeeker == null)
                     return BadRequest();
                 var applicant = _mapper.Map<ApplicantDTO>(jobSeeker);
                 applicant.VacancyId = vacancyId;
+                ViewBag.ReceiverId = jobSeeker.AppUser.Id;
                 return View(applicant);
             }
             catch { return BadRequest(); }
