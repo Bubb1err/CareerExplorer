@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
+﻿@using CareerExplorer.Shared;
+@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 <!DOCTYPE html>
 <html lang="en">
@@ -27,9 +28,19 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Vacancy" asp-action="GetAll">@Localizer["Vacancies"]</a>               
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Chat" asp-action="GetChat">Chat</a>
-                        </li>
+                        @if(User.IsInRole(UserRoles.JobSeeker))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Chat" asp-action="GetJobSeekerChats">Chat</a>
+                            </li>
+                        }
+                        else if (User.IsInRole(UserRoles.Recruiter))
+                        {
+                           <li class="nav-item">
+                                <a class="nav-link" asp-controller="Chat" asp-action="GetRecruiterChats">Chat</a>
+                            </li> 
+                        }
+
                         
                     </ul>
                     <partial name="_LoginPartial" />

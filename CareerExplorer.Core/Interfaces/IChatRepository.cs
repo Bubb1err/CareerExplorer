@@ -10,5 +10,6 @@ namespace CareerExplorer.Core.Interfaces
     public interface IChatRepository :IRepository<Chat>
     {
         IEnumerable<Chat> GetJobSeekerChats(AppUser appUser);
+        IEnumerable<Chat> GetRecruiterChats(AppUser appUser);
     }
 }

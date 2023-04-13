@@ -5,25 +5,26 @@
 
 <table class="table table-hover">
     <tbody>
-        @foreach(var chat in Model)
+        @foreach (var chat in Model)
         {
-            
-            <tr class="click-row" data-receiverid="@chat.Users.First(x => x.UserType == UserType.Recruiter).Id">
-                   <th>
-                       <h3 style="font-size:15px;">@chat.Users.First(x => x.UserType == UserType.Recruiter).Email</h3>
-                    <h2 style="font-size:20px;">@chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Company</h2>
-                       <span>
-                           @chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Name 
-                           @chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Surname
-                       </span>
-                   </th>
-                   <th>
-                       <p>@chat.Messages.Last().Text</p>
-                   </th>
+
+            <tr class="click-row" data-receiverid="@chat.Users.First(x => x.UserType == UserType.JobSeeker).Id">
+                <th>
+                    <h3 style="font-size:20px;">@chat.Users.First(x => x.UserType == UserType.JobSeeker).Email</h3>
+                    <span>
+                    @chat.Users.First(x => x.UserType == UserType.JobSeeker).JobSeekerProfile.Name
+                    @chat.Users.First(x => x.UserType == UserType.JobSeeker).JobSeekerProfile.Surname
+                    </span>
+
+                              
+                </th>
+                <th>
+                    <p>@chat.Messages.Last().Text</p>
+                </th>
                 <th style="padding-bottom: 3rem;padding-left: 3rem;padding-right: 0.5rem;">
                     <i data-chatid="@chat.Id" class="bi bi-trash3-fill" style="font-size:20px;"></i>
                 </th>
-                </tr>         
+            </tr>
         }
     </tbody>
 </table>
@@ -43,17 +44,17 @@
       </div>
     </div>
   </div>
-</div>   
-<script src="https://code.jquery.com/jquery-3.6.4.min.js" 
-integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+</div>           
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"
+        integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
 <script>
-    jQuery(document).ready(function() {
+    jQuery(document).ready(function () {
         $(".click-row").click(function () {
-            if (!$(event.target).hasClass('bi-trash3-fill')) {
-                window.location = '/Chat/GetChat?receiverId=' + $(this).data("receiverid");
-            }
+            if (!$(event.target).hasClass('bi-trash3-fill')) { 
+            window.location = '/Chat/GetChat?receiverId=' + $(this).data("receiverid");
+        }
         });
-});
+    });
     var trashIcons = document.querySelectorAll('.bi-trash3-fill');
 
     trashIcons.forEach(function (trashIcon) {

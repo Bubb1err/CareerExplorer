@@ -25,5 +25,12 @@ namespace CareerExplorer.Infrastructure.Repository
                     .ThenInclude(x => x.RecruiterProfile)
                 .Include(x => x.Messages);
         }
+        public IEnumerable<Chat> GetRecruiterChats(AppUser appUser)
+        {
+            return _context.Chat.Where(x => x.Users.Contains(appUser))
+                 .Include(x => x.Users)
+                     .ThenInclude(x => x.JobSeekerProfile)
+                 .Include(x => x.Messages);
+        }
     }
 }
