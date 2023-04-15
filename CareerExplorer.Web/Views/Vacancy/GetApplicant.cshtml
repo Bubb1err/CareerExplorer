@@ -17,6 +17,7 @@
         <span>@Localizer["GitHub"]</span>
         <h5>@Model.GitHub</h5>
         <a id="viewCvBtn" class="btn btn-primary" data-jobseeker-id="@Model.Id" data-vacancy-id="@Model.VacancyId">@Localizer["View attached CV"]</a>
+        <a asp-controller="Chat" asp-action="GetChat" asp-route-receiverId="@ViewBag.ReceiverId">Send message</a>
     </div>
 </div>
 

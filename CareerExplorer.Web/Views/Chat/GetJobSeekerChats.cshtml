@@ -1,0 +1,84 @@
+﻿@using CareerExplorer.Core.Entities;
+@using Microsoft.AspNetCore.Identity;
+@using CareerExplorer.Core.Enums;
+@model IEnumerable<Chat>
+
+<table class="table table-hover">
+    <tbody>
+        @foreach(var chat in Model)
+        {
+            
+            <tr class="click-row" data-receiverid="@chat.Users.First(x => x.UserType == UserType.Recruiter).Id">
+                   <th>
+                       <h3 style="font-size:15px;">@chat.Users.First(x => x.UserType == UserType.Recruiter).Email</h3>
+                    <h2 style="font-size:20px;">@chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Company</h2>
+                       <span>
+                           @chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Name 
+                           @chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Surname
+                       </span>
+                   </th>
+                   <th>
+                       <p>@chat.Messages.Last().Text</p>
+                   </th>
+                <th style="padding-bottom: 3rem;padding-left: 3rem;padding-right: 0.5rem;">
+                    <i data-chatid="@chat.Id" class="bi bi-trash3-fill" style="font-size:20px;"></i>
+                </th>
+                </tr>         
+        }
+    </tbody>
+</table>
+ @*-----------Modal--------*@
+<div class="modal" id="deleteModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete chat?</h5>
+                <button id="deleteCancel" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-footer">
+                <button id="deleteConfirm" type="button" class="btn btn-primary">Delete</button>
+                <button id="deleteCancel" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>   
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" 
+integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+<script>
+    jQuery(document).ready(function() {
+        $(".click-row").click(function () {
+            if (!$(event.target).hasClass('bi-trash3-fill')) {
+                window.location = '/Chat/GetChat?receiverId=' + $(this).data("receiverid");
+            }
+        });
+});
+    var trashIcons = document.querySelectorAll('.bi-trash3-fill');
+
+    trashIcons.forEach(function (trashIcon) {
+        trashIcon.addEventListener('click', function (event) {
+            event.stopPropagation();
+            var chatid = this.dataset.chatid;
+
+            $('#deleteModal').modal('show');
+
+            $('#deleteConfirm').click(function () {
+                $.ajax({
+                    url: '/Chat/DeleteChat?chatId=' + chatid,
+                    type: 'DELETE',
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Error deleting chat');
+                    }
+                });
+            });
+
+            $('#deleteCancel').click(function () {
+                $('#deleteModal').modal('hide');
+            });
+        });
+    });
+</script>

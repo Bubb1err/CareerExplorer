@@ -17,5 +17,6 @@ namespace CareerExplorer.Core.Entities
         public Recruiter RecruiterProfile { get; set; }
         public int? AdminProfileId { get; set; }
         public Admin AdminProfile { get; set; }
+        public virtual ICollection<Chat> Chats { get; set; } = new List<Chat>();
     }
 }

@@ -4,6 +4,7 @@ using CareerExplorer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CareerExplorer.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230408202807_messages")]
+    partial class messages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AppUserChat", b =>
-                {
-                    b.Property<int>("ChatsId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ChatsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("AppUserChat");
-                });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Admin", b =>
                 {
@@ -52,19 +40,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Admins");
-                });
-
-            modelBuilder.Entity("CareerExplorer.Core.Entities.Chat", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Chat");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Company", b =>
@@ -194,17 +169,6 @@ namespace CareerExplorer.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChatId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -212,9 +176,17 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Property<DateTime>("TimeSent")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ChatId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Messages");
                 });
@@ -637,21 +609,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.HasDiscriminator().HasValue("AppUser");
                 });
 
-            modelBuilder.Entity("AppUserChat", b =>
-                {
-                    b.HasOne("CareerExplorer.Core.Entities.Chat", null)
-                        .WithMany()
-                        .HasForeignKey("ChatsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CareerExplorer.Core.Entities.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CareerExplorer.Core.Entities.Country", b =>
                 {
                     b.HasOne("CareerExplorer.Core.Entities.Admin", "Admin")
@@ -697,13 +654,13 @@ namespace CareerExplorer.Infrastructure.Migrations
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Message", b =>
                 {
-                    b.HasOne("CareerExplorer.Core.Entities.Chat", "Chat")
+                    b.HasOne("CareerExplorer.Core.Entities.AppUser", "Sender")
                         .WithMany("Messages")
-                        .HasForeignKey("ChatId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Chat");
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("CareerExplorer.Core.Entities.Position", b =>
@@ -884,11 +841,6 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Navigation("WorkTypes");
                 });
 
-            modelBuilder.Entity("CareerExplorer.Core.Entities.Chat", b =>
-                {
-                    b.Navigation("Messages");
-                });
-
             modelBuilder.Entity("CareerExplorer.Core.Entities.Company", b =>
                 {
                     b.Navigation("Vacancies");
@@ -920,6 +872,11 @@ namespace CareerExplorer.Infrastructure.Migrations
                     b.Navigation("Applicants");
 
                     b.Navigation("Countries");
+                });
+
+            modelBuilder.Entity("CareerExplorer.Core.Entities.AppUser", b =>
+                {
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

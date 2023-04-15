@@ -15,6 +15,7 @@ namespace CareerExplorer.Core.Interfaces
         IVacanciesRepository GetVacanciesRepository();
         IJobSeekerProfileRepository GetJobSeekerRepository();
         IRecruiterProfileRepository GetRecruiterRepository();
+        IChatRepository GetChatRepository();
         IRepository<T> GetRepository<T>() where T : class;
         Task SaveAsync();
     }

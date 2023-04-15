@@ -14,6 +14,7 @@
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"> @UserManager.GetUserName(User)</a>
           <div class="dropdown-menu">
                     <a class="dropdown-item" asp-controller="JobSeekerProfile" asp-action="GetProfile">@Localizer["Profile"]</a>
+                    <a class="dropdown-item" asp-controller="Chat" asp-action="GetJobSeekerChats">Chats</a>
             
             <div class="dropdown-divider"></div>
                     <form class="dropdown-item" id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("GetAll", "Vacancy", new { area = "" })">
