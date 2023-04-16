@@ -25,10 +25,10 @@ namespace CareerExplorer.Web.Controllers
         {
             _userManager= userManager;
             _unitOfWork= unitOfWork;
-            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
-            _chatRepository = _unitOfWork.GetChatRepository();
+            _jobSeekerRepository = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
+            _chatRepository = (IChatRepository)_unitOfWork.GetRepository<Chat>();
             _appUserRepository = _unitOfWork.GetRepository<AppUser>();
-            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
+            _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
             _context = context;
         }
         [Authorize]

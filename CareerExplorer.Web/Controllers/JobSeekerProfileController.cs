@@ -37,9 +37,9 @@ namespace CareerExplorer.Web.Controllers
             _unitOfWork = unitOfWork;
             _applyService= applyService;
             _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
-            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
-            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
-            _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
+            _jobSeekerRepository = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
+            _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
+            _jobSeekerVacancyRepository = (IJobSeekerVacancyRepository)_unitOfWork.GetRepository<JobSeekerVacancy>();
             _mapper = mapper;
             _adminService = adminService;
         }

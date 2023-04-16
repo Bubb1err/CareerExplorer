@@ -33,10 +33,10 @@ namespace CareerExplorer.Web.Controllers
 
             _skillsRepository = _unitOfWork.GetRepository<SkillsTag>();
             _positionRepository = _unitOfWork.GetRepository<Position>();
-            _adminRepository = _unitOfWork.GetAdminRepository();
-            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
-            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
-            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
+            _adminRepository = (IAdminRepository)_unitOfWork.GetRepository<Admin>();
+            _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
+            _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
+            _jobSeekerRepository = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
             _adminService = adminService;
         }
         #region SkillTag Control

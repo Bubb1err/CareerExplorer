@@ -24,8 +24,8 @@ namespace CareerExplorer.Infrastructure.Services
             _unitOfWork= unitOfWork;
             _positionsRepository = _unitOfWork.GetRepository<Position>();
             _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
-            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
-            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
+            _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
+            _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
         }
         public int[]? GetIdsFromString(string ids)
         {

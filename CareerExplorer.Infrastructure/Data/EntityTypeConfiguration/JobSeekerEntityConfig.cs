@@ -1,12 +1,6 @@
 ﻿using CareerExplorer.Core.Entities;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
 {
@@ -20,6 +14,8 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
             builder.HasMany(x => x.VacanciesApplied)
                 .WithOne(x => x.JobSeeker)
                 .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.City);
+            builder.HasOne(x => x.Country);
 
         }
     }

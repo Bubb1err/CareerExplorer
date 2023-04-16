@@ -2,18 +2,8 @@ using CareerExplorer.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using CareerExplorer.Infrastructure.Data;
-using CareerExplorer.Core.Entities;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using CareerExplorer.Shared;
 using Microsoft.AspNetCore.Localization;
-using CareerExplorer.Core.Interfaces;
-using CareerExplorer.Infrastructure.Repository;
-using CareerExplorer.Infrastructure.Services;
-using CareerExplorer.Core.IServices;
-using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
-using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
-using CareerExplorer.Infrastructure.IServices;
 using CareerExplorer.Web.Hubs;
 
 namespace CareerExplorer.Web
@@ -43,24 +33,9 @@ namespace CareerExplorer.Web
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
             });
 
-            builder.Services.AddSingleton<IEmailSender, EmailSender>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IJobSeekerProfileRepository, JobSeekerRepository>();
-            builder.Services.AddScoped<IRecruiterProfileRepository, RecruiterProfileRepository>();
-            builder.Services.AddScoped<IVacanciesRepository, VacanciesRepository>();         
-            builder.Services.AddScoped<IApplyOnVacancyService, ApplyOnVacancyService>();
-            builder.Services.AddScoped<IJobSeekerVacancyRepository, JobSeekerVacancyRepository>();
-            builder.Services.AddScoped<IRepository<AppUser>, Repository<AppUser>>();
-            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
-            builder.Services.AddScoped<IRepository<SkillsTag>, Repository<SkillsTag>>();
-            builder.Services.AddScoped<IRepository<WorkType>, Repository<WorkType>>();
-            builder.Services.AddScoped<IRepository<Country>, Repository<Country>>();
-            builder.Services.AddScoped<IRepository<Position>, Repository<Position>>();
-            builder.Services.AddScoped<IVacancyService, VacancyService>();
-            builder.Services.AddScoped<IAdminService, AdminService>();
-            builder.Services.AddScoped<IRepository<Message>, Repository<Message>>();
-            builder.Services.AddScoped<IRepository<Chat>, Repository<Chat>>();
-            builder.Services.AddScoped<IChatRepository, ChatRepository>();
+            builder.Services.RegisterRepositories();
+            builder.Services.RegisterServices();
+
             builder.Services.AddAutoMapper(typeof(MappingConfig));
             builder.Services.AddSignalR();
 

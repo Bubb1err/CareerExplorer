@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using System.Collections;
-
 namespace CareerExplorer.Web.DTO
 {
-    public class ApplicantDTO :IEnumerable<ApplicantDTO>
+    public class ApplicantDTO 
     {
         public int Id { get; set; }
         [BindNever]
@@ -15,14 +12,5 @@ namespace CareerExplorer.Web.DTO
         public string? GitHub { get; set; }
         public string? Experience { get; set; }
 
-        public IEnumerator<ApplicantDTO> GetEnumerator()
-        {
-            yield return this;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }

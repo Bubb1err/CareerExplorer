@@ -19,9 +19,9 @@ namespace CareerExplorer.Infrastructure.Services
         public AdminService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
-            _recruiterProfileRepository = _unitOfWork.GetRecruiterRepository();
-            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
+            _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
+            _recruiterProfileRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
+            _jobSeekerRepository = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
         }
         public async Task AcceptVacancy(int id)
         {

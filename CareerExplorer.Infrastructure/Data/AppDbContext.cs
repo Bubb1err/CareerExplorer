@@ -26,6 +26,7 @@ namespace CareerExplorer.Infrastructure.Data
         public DbSet<JobSeekerVacancy> JobSeekerVacancies { get; set; }
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Country> Countries { get; set; }
+        public DbSet<City> Cities { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<SkillsTag> SkillsTags { get; set; }
         public DbSet<WorkType> WorkTypes { get; set; }

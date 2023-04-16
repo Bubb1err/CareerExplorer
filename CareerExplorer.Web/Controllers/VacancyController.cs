@@ -6,13 +6,10 @@ using CareerExplorer.Infrastructure.Repository;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.Drawing;
 
 namespace CareerExplorer.Web.Controllers
 {
@@ -35,11 +32,10 @@ namespace CareerExplorer.Web.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
-            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
-            //_vacanciesRepository = _unitOfWork.GetRepository<Vacancy, VacanciesRepository>();
-            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
-            _jobSeekerRepositoy = _unitOfWork.GetJobSeekerRepository();
-            _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
+            _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
+            _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
+            _jobSeekerRepositoy = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
+            _jobSeekerVacancyRepository = (IJobSeekerVacancyRepository)_unitOfWork.GetRepository<JobSeekerVacancy>();
             _appUserRepository = appUserRepository;
             _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
             _vacancyService = vacancyService;
