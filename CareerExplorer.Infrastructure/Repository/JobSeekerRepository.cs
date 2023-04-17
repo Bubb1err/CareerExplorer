@@ -15,7 +15,11 @@ namespace CareerExplorer.Infrastructure.Repository
 
         public JobSeeker GetJobSeeker(string userId)
         {
-            var jobSeeker = _context.JobSeekers.Include(x => x.Skills).FirstOrDefault(x => x.UserId == userId);
+            var jobSeeker = _context.JobSeekers
+                .Include(x => x.Skills)
+                .Include(x => x.Country)
+                .Include(x => x.City)
+                .FirstOrDefault(x => x.UserId == userId);
             if (jobSeeker == null) throw new NullReferenceException();
             return jobSeeker;
         }

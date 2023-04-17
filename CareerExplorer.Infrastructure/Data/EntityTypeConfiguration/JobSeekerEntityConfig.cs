@@ -14,8 +14,14 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
             builder.HasMany(x => x.VacanciesApplied)
                 .WithOne(x => x.JobSeeker)
                 .OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(x => x.City);
-            builder.HasOne(x => x.Country);
+            builder.HasOne(x => x.Country)
+                .WithMany(x => x.JobSeekers)
+                .HasForeignKey(x => x.CountryId)
+                .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.City)
+                .WithMany(x => x.JobSeekers)
+                .HasForeignKey(x => x.CityId)
+                .OnDelete(DeleteBehavior.NoAction);
 
         }
     }

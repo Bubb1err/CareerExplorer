@@ -19,6 +19,10 @@ namespace CareerExplorer.Web.DTO
         [MinLength(100, ErrorMessage =  "Experience must contain at least 100 symbols.")]
         public string? Experience { get; set; }
         public string? UserId { get; set; }
+        public int? CountryId { get; set; }
+        public Country? Country { get; set; }
+        public int? CityId { get; set; }
+        public City? City { get; set; }
         public virtual ICollection<SkillsTag> Skills { get; set; } = new List<SkillsTag>();
     }
 }

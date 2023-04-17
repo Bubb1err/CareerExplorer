@@ -1,12 +1,7 @@
 ﻿using CareerExplorer.Core.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace CareerExplorer.Infrastructure.Data
 {
@@ -36,6 +31,33 @@ namespace CareerExplorer.Infrastructure.Data
         {
             builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
             base.OnModelCreating(builder);
+
+            var response = SeedData.GetCountriesFromExternalAPI();
+            if (response != null && response.Error == false)
+            {
+                var countries = new List<Country>();
+                var cities = new List<City>();
+                int countryId = 1;
+                int cityId = 1;
+                foreach (var countryData in response.Data)
+                {
+                    var country = new Country { Id = countryId, Name = countryData.Country ?? "" };
+                    countries.Add(country);
+
+                    if (countryData.Cities != null)
+                    {
+                        foreach (var cityName in countryData.Cities)
+                        {
+                            var city = new City { Id = cityId, Name = cityName ?? "", CountryId = countryId };
+                            cities.Add(city);
+                            cityId++;
+                        }
+                    }
+                    countryId++;
+                }
+                builder.Entity<Country>().HasData(countries);
+                builder.Entity<City>().HasData(cities);
+            }
         }
     }
 }

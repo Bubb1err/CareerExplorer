@@ -41,10 +41,30 @@
                 <label asp-for="GitHub" class="form-label">@Localizer["GitHub"]</label>
                 <span asp-validation-for="GitHub" class="text-danger"></span>
             </div>
+            @*Country*@
+            <input asp-for="CountryId" id="countriesId" value="@(Model.CountryId??0)" hidden />
+            <input type="text" class="form-control mb-3" id="countries" value="@(Model.Country?.Name??"")" />
+            <div class="mt-3 mb-3" id="searchResults"></div>
+
+            @*City*@
+            <input asp-for="CityId" id="citiesId" hidden />
+            <input type="text" class="form-control mb-3" id="cities" value="@(Model.City?.Name??"")" />
+            <div class="mt-3 mb-3" id="searchCityResults"></div>
             <button asp-controller="JobSeekerProfile" asp-action="GetProfile" type="submit" class="w-100 btn btn-lg btn-primary">@Localizer["Save"]</button>
         </form>
     </div>
 </div>
+<style>
+    .close {
+        border:none;
+        margin-left:5px;
+        background-color: #f8f9fa;
+    }
+    .close :hover {
+            background-color: #eceeef;
+            padding:1px 3px;
+    }
+</style>
 @section scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
@@ -106,6 +126,61 @@
             }
             $('#selected-skills-input').val(JSON.stringify(selectedTags));
         }
+
+        //country
+        $(function () {
+            $('#countries').on('input', function () {
+                var search = $(this).val();
+                
+                $.get('/JobSeekerProfile/CountriesSearch',
+                    { search: search},
+                    function (results) {
+                        var $searchResults = $('#searchResults');
+                        $searchResults.empty();
+                        $.each(results, function (index, value) {
+                            var $option = $('<div>').text(value.name);
+                            $option.val(value.id);
+                            $searchResults.append($option);
+                        });
+                        $searchResults.show();
+                    });
+            });
+
+            $('#searchResults').on('click', 'div', function () {
+                var value = $(this).text();
+                var ind = $(this).val();
+                $('#countries').val(value);
+                $('#countriesId').val(ind);
+                $('#searchResults').hide();
+            });
+        });
+        //city
+        $(function () {
+            $('#cities').on('input', function () {
+                var search = $(this).val();
+                var countryId = $('#countriesId').val();
+                $.get('/JobSeekerProfile/CitiesSearch',
+                    { search: search, countryId: countryId },
+                    function (results) {
+                        var $searchResults = $('#searchCityResults');
+                        $searchResults.empty();
+                        $.each(results, function (index, value) {
+                            var $option = $('<div>').text(value.name);
+                            $option.val(value.id);
+                            $searchResults.append($option);
+                        });
+                        $searchResults.show();
+                    });
+            });
+
+            $('#searchCityResults').on('click', 'div', function () {
+                var value = $(this).text();
+                var ind = $(this).val();
+                $('#cities').val(value);
+                $('#citiesId').val(ind);
+                $('#searchCityResults').hide();
+            });
+        });
     </script>
 
 }

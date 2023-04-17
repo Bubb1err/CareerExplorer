@@ -30,6 +30,8 @@ namespace CareerExplorer.Web.Controllers
         private readonly IRepository<SkillsTag> _skillsTagRepository;
         private readonly IMapper _mapper;
         private readonly IAdminService _adminService;
+        private readonly ICountryRepository _countryRepository;
+        private readonly IRepository<City> _cityRepository;
         public JobSeekerProfileController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork,
             IApplyOnVacancyService applyService, IMapper mapper, IAdminService adminService)
         {
@@ -42,6 +44,8 @@ namespace CareerExplorer.Web.Controllers
             _jobSeekerVacancyRepository = (IJobSeekerVacancyRepository)_unitOfWork.GetRepository<JobSeekerVacancy>();
             _mapper = mapper;
             _adminService = adminService;
+            _countryRepository = (ICountryRepository)_unitOfWork.GetRepository<Country>();
+            _cityRepository = _unitOfWork.GetRepository<City>();
         }
         [HttpGet]
         public IActionResult GetProfile()
@@ -80,13 +84,19 @@ namespace CareerExplorer.Web.Controllers
 
                 var currentUserId = _userManager.GetUserId(User);
                 var userProfile = _jobSeekerRepository.GetJobSeeker(currentUserId);
+                var country = _countryRepository.GetFirstOrDefault(x => x.Id == jobSeekerDto.CountryId);
+                var city = _cityRepository.GetFirstOrDefault(x => x.Id == jobSeekerDto.CityId);
 
                 userProfile.Name = jobSeekerDto.Name;
                 userProfile.Surname = jobSeekerDto.Surname;
                 userProfile.Phone= jobSeekerDto.Phone;
                 userProfile.Experience = jobSeekerDto.Experience;
                 userProfile.GitHub= jobSeekerDto.GitHub;
-
+                userProfile.CountryId = jobSeekerDto.CountryId;
+                userProfile.Country = country;
+                userProfile.CityId = jobSeekerDto.CityId;
+                userProfile.City = city;
+                
                 List<SkillsTag> skillsToAdd = new List<SkillsTag>();
                 var existingSkillTags = userProfile.Skills.Select(s => s.Title);
                 var tagsToRemove = existingSkillTags.Except(tags).ToList();
@@ -130,6 +140,18 @@ namespace CareerExplorer.Web.Controllers
             }
             return Ok();
             
+        }
+        [HttpGet]
+        public IActionResult CountriesSearch(string? search)
+        {
+            var countries = _countryRepository.GetFirstCountries(search).ToList();
+            return Json(countries);
+        }
+        [HttpGet]
+        public IActionResult CitiesSearch(string? search, int countryId)
+        {
+            var cities = _countryRepository.GetFirstCitiesOfCountry(countryId, search).ToList();
+            return Json(cities);
         }
     }
 }

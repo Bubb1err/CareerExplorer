@@ -22,5 +22,9 @@ namespace CareerExplorer.Core.Entities
         public int CreatorId { get; set; }
         public virtual Recruiter Creator { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public int? CountryId { get; set; }
+        public Country? Country { get; set; }
+        public int? CityId { get; set; }
+        public City? City { get; set; }
     }
 }

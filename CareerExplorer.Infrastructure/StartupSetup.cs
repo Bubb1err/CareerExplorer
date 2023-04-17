@@ -31,6 +31,8 @@ namespace CareerExplorer.Infrastructure
             services.AddScoped<IRepository<Position>, Repository<Position>>();           
             services.AddScoped<IRepository<Message>, Repository<Message>>();
             services.AddScoped<IRepository<Chat>, ChatRepository>();
+            services.AddScoped<IRepository<Country>, CountryRepository>();
+            services.AddScoped<IRepository<City>, Repository<City>>();
         }
         public static void RegisterServices(this IServiceCollection services)
         {
