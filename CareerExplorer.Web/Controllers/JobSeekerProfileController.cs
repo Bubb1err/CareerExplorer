@@ -2,23 +2,16 @@
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Core.IServices;
-using CareerExplorer.Infrastructure.Data;
 using CareerExplorer.Infrastructure.IServices;
-using CareerExplorer.Infrastructure.Services;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.DirectoryServices.AccountManagement;
-using System.IO.Compression;
-using System.Linq;
 
 namespace CareerExplorer.Web.Controllers
 {
-    [Authorize(Roles = UserRoles.JobSeeker)]
     public class JobSeekerProfileController : Controller
     {
         private readonly IApplyOnVacancyService _applyService;
@@ -30,6 +23,9 @@ namespace CareerExplorer.Web.Controllers
         private readonly IRepository<SkillsTag> _skillsTagRepository;
         private readonly IMapper _mapper;
         private readonly IAdminService _adminService;
+        private readonly ICountryRepository _countryRepository;
+        private readonly IRepository<City> _cityRepository;
+        private readonly IRepository<Position> _positionRepository;
         public JobSeekerProfileController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork,
             IApplyOnVacancyService applyService, IMapper mapper, IAdminService adminService)
         {
@@ -37,13 +33,17 @@ namespace CareerExplorer.Web.Controllers
             _unitOfWork = unitOfWork;
             _applyService= applyService;
             _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
-            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
-            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
-            _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
+            _jobSeekerRepository = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
+            _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
+            _jobSeekerVacancyRepository = (IJobSeekerVacancyRepository)_unitOfWork.GetRepository<JobSeekerVacancy>();
             _mapper = mapper;
             _adminService = adminService;
+            _countryRepository = (ICountryRepository)_unitOfWork.GetRepository<Country>();
+            _cityRepository = _unitOfWork.GetRepository<City>();
+            _positionRepository = _unitOfWork.GetRepository<Position>();
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.JobSeeker)]
         public IActionResult GetProfile()
         {
             try
@@ -60,7 +60,8 @@ namespace CareerExplorer.Web.Controllers
             catch { return BadRequest(); }
             
         }
-        [HttpPost] 
+        [HttpPost]
+        [Authorize(Roles = UserRoles.JobSeeker)]
         public async Task<IActionResult> GetProfile(JobSeekerDTO jobSeekerDto, string selectedSkills)
         {
             try
@@ -80,13 +81,26 @@ namespace CareerExplorer.Web.Controllers
 
                 var currentUserId = _userManager.GetUserId(User);
                 var userProfile = _jobSeekerRepository.GetJobSeeker(currentUserId);
+                var country = _countryRepository.GetFirstOrDefault(x => x.Id == jobSeekerDto.CountryId);
+                var city = _cityRepository.GetFirstOrDefault(x => x.Id == jobSeekerDto.CityId);
+                var position = _positionRepository.GetFirstOrDefault(x => x.Id == jobSeekerDto.DesiredPositionId);
 
                 userProfile.Name = jobSeekerDto.Name;
                 userProfile.Surname = jobSeekerDto.Surname;
                 userProfile.Phone= jobSeekerDto.Phone;
                 userProfile.Experience = jobSeekerDto.Experience;
                 userProfile.GitHub= jobSeekerDto.GitHub;
-
+                userProfile.CountryId = jobSeekerDto.CountryId;
+                userProfile.Country = country;
+                userProfile.CityId = jobSeekerDto.CityId;
+                userProfile.City = city;
+                userProfile.DesiredPositionId= jobSeekerDto.DesiredPositionId;
+                userProfile.DesiredPosition = position;
+                userProfile.Salary = jobSeekerDto.Salary;
+                userProfile.LinkedIn = jobSeekerDto.LinkedIn;
+                userProfile.EnglishLevel = jobSeekerDto.EnglishLevel;
+                userProfile.ExperienceYears = jobSeekerDto.ExperienceYears;
+                
                 List<SkillsTag> skillsToAdd = new List<SkillsTag>();
                 var existingSkillTags = userProfile.Skills.Select(s => s.Title);
                 var tagsToRemove = existingSkillTags.Except(tags).ToList();
@@ -130,6 +144,20 @@ namespace CareerExplorer.Web.Controllers
             }
             return Ok();
             
+        }
+        [HttpGet]
+        [Authorize]
+        public IActionResult CountriesSearch(string? search)
+        {
+            var countries = _countryRepository.GetFirstCountries(search).ToList();
+            return Json(countries);
+        }
+        [HttpGet]
+        [Authorize]
+        public IActionResult CitiesSearch(string? search, int countryId)
+        {
+            var cities = _countryRepository.GetFirstCitiesOfCountry(countryId, search).ToList();
+            return Json(cities);
         }
     }
 }

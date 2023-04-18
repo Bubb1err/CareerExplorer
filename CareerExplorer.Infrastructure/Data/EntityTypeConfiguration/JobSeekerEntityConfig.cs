@@ -1,12 +1,6 @@
 ﻿using CareerExplorer.Core.Entities;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
 {
@@ -19,6 +13,18 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
                 .OnDelete(DeleteBehavior.NoAction);
             builder.HasMany(x => x.VacanciesApplied)
                 .WithOne(x => x.JobSeeker)
+                .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.Country)
+                .WithMany(x => x.JobSeekers)
+                .HasForeignKey(x => x.CountryId)
+                .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.City)
+                .WithMany(x => x.JobSeekers)
+                .HasForeignKey(x => x.CityId)
+                .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.DesiredPosition)
+                .WithMany(x => x.JobSeekers)
+                .HasForeignKey(x => x.DesiredPositionId)
                 .OnDelete(DeleteBehavior.NoAction);
 
         }

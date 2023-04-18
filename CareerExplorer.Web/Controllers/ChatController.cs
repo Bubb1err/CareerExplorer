@@ -25,10 +25,10 @@ namespace CareerExplorer.Web.Controllers
         {
             _userManager= userManager;
             _unitOfWork= unitOfWork;
-            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
-            _chatRepository = _unitOfWork.GetChatRepository();
+            _jobSeekerRepository = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
+            _chatRepository = (IChatRepository)_unitOfWork.GetRepository<Chat>();
             _appUserRepository = _unitOfWork.GetRepository<AppUser>();
-            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
+            _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
             _context = context;
         }
         [Authorize]
@@ -43,8 +43,16 @@ namespace CareerExplorer.Web.Controllers
 
             //getting receiver
             var receiver = _appUserRepository
-                .GetFirstOrDefault(x => x.Id == receiverId);
+                .GetFirstOrDefault(x => x.Id == receiverId, "RecruiterProfile,JobSeekerProfile");
             ViewBag.ReceiverId = receiverId;
+            if(receiver.JobSeekerProfile != null)
+            {
+                ViewBag.JobSeeker = _jobSeekerRepository.GetFirstOrDefault(x => x.UserId== receiverId, "Country,City,DesiredPosition");
+            }
+            else if(receiver.RecruiterProfile!= null)
+            {
+                ViewBag.Recruiter = _recruiterRepository.GetFirstOrDefault(x => x.UserId == receiverId);
+            }
 
             var chat = _chatRepository
                 .GetFirstOrDefault(x => x.Users.Contains(receiver) && x.Users.Contains(currentAppUser), "Messages");

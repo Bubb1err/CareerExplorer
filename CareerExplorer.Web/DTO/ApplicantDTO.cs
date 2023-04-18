@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Razor.TagHelpers;
-using System.Collections;
-
+﻿using CareerExplorer.Core.Entities;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace CareerExplorer.Web.DTO
 {
-    public class ApplicantDTO :IEnumerable<ApplicantDTO>
+    public class ApplicantDTO 
     {
         public int Id { get; set; }
         [BindNever]
@@ -13,16 +11,13 @@ namespace CareerExplorer.Web.DTO
         public string? Surname { get; set; }
         public string? Phone { get; set; }
         public string? GitHub { get; set; }
+        public string? LinkedIn { get; set; }
         public string? Experience { get; set; }
-
-        public IEnumerator<ApplicantDTO> GetEnumerator()
-        {
-            yield return this;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public Position? DesiredPosition { get; set; }
+        public int? ExperienceYears { get; set; }
+        public int? EnglishLevel { get; set; }
+        public Country? Country { get; set; }
+        public City? City { get; set; }
+        public ICollection<SkillsTag> Skills { get; set; } = new List<SkillsTag>();
     }
 }

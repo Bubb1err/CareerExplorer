@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CareerExplorer.Web.DTO
 {
-    public class VacancyDTO :IEnumerable<VacancyDTO>
+    public class VacancyDTO 
     {
         public int Id { get; set; }
         [Required]
@@ -23,15 +23,5 @@ namespace CareerExplorer.Web.DTO
         public ICollection<SkillsTag> Requirements { get; set; } = new List<SkillsTag>();
         public DateTime CreatedDate { get; set; } 
         public bool IsApplied { get; set; }
-
-        public IEnumerator<VacancyDTO> GetEnumerator()
-        {
-            yield return this;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }

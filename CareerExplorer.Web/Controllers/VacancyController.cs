@@ -6,13 +6,10 @@ using CareerExplorer.Infrastructure.Repository;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.Drawing;
 
 namespace CareerExplorer.Web.Controllers
 {
@@ -29,30 +26,34 @@ namespace CareerExplorer.Web.Controllers
         private readonly IRepository<SkillsTag> _skillsTagRepository;
         private readonly IVacancyService _vacancyService;
         private readonly IRepository<Position> _positionsRepository;
+        private readonly ICountryRepository _countryRepository;
+        private readonly IRepository<City> _cityRepository;
         public VacancyController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<IdentityUser> userManager,
             IRepository<AppUser> appUserRepository, IVacancyService vacancyService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
-            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
-            //_vacanciesRepository = _unitOfWork.GetRepository<Vacancy, VacanciesRepository>();
-            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
-            _jobSeekerRepositoy = _unitOfWork.GetJobSeekerRepository();
-            _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
+            _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
+            _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
+            _jobSeekerRepositoy = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
+            _jobSeekerVacancyRepository = (IJobSeekerVacancyRepository)_unitOfWork.GetRepository<JobSeekerVacancy>();
             _appUserRepository = appUserRepository;
             _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
             _vacancyService = vacancyService;
             _positionsRepository = _unitOfWork.GetRepository<Position>();
+            _countryRepository = (ICountryRepository)_unitOfWork.GetRepository<Country>();
+            _cityRepository = _unitOfWork.GetRepository<City>();
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll(int pageNumber = 1, string tagIds = "")
+        public async Task<IActionResult> GetAll(int pageNumber = 1, string tagIds = "", string types = "")
         {
             try
             {
                 int[] tagIdsArray = _vacancyService.GetIdsFromString(tagIds);
+                int[] typesArray = _vacancyService.GetTypesFromString(types);
                 const int pageSize = 3;
-                var vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(pageSize, pageNumber, out int totalVacancies, tagIdsArray).ToList();
+                var vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(pageSize, pageNumber, out int totalVacancies, tagIdsArray, typesArray).ToList();
 
                 var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
                 var tagsItems = _skillsTagRepository.GetAll().Select(tag => new SelectListItem
@@ -116,6 +117,10 @@ namespace CareerExplorer.Web.Controllers
                 
                 if (currentRecruiterId == null) return BadRequest();
                 var vacancy = _mapper.Map<Vacancy>(vacancyDTO);
+                var country = _countryRepository.GetFirstOrDefault(x => x.Id == vacancyDTO.CountryId);
+                var city = _cityRepository.GetFirstOrDefault(x => x.Id == vacancyDTO.CityId);
+                vacancy.Country= country;
+                vacancy.City = city;
                 await _vacancyService.CreateVacancy(selectedSkills, position, currentRecruiterId, vacancy);
                 return RedirectToAction(nameof(CreatedVacancies));
             }
@@ -130,7 +135,7 @@ namespace CareerExplorer.Web.Controllers
             {
                 if (id == null)
                     return BadRequest();
-                var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id, "Requirements,Position");
+                var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id, "Requirements,Position,Country,City");
                 var vacancyDto = _mapper.Map<CreateOrEditVacancyDTO>(vacancy);
                 ViewBag.PositionTitle = vacancy.Position.Name;
                 ViewBag.PositionId = vacancy.Position.Id;
@@ -153,6 +158,14 @@ namespace CareerExplorer.Web.Controllers
                 var currentVacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == vacancyDto.Id, "Requirements");
                 currentVacancy.Description = vacancyDto.Description;
                 currentVacancy.IsAvailable = vacancyDto.IsAvailable;
+                var country = _countryRepository.GetFirstOrDefault(x => x.Id == vacancyDto.CountryId);
+                var city = _cityRepository.GetFirstOrDefault(x => x.Id == vacancyDto.CityId);
+                currentVacancy.Country = country;
+                currentVacancy.City = city;
+                currentVacancy.ExperienceYears= vacancyDto.ExperienceYears;
+                currentVacancy.Salary = vacancyDto.Salary;
+                currentVacancy.EnglishLevel= vacancyDto.EnglishLevel;
+                currentVacancy.WorkType= vacancyDto.WorkType;
                 await _vacancyService.EditVacancy(selectedSkills, currentVacancy, position);
                 return RedirectToAction(nameof(CreatedVacancies));
             }
@@ -234,7 +247,7 @@ namespace CareerExplorer.Web.Controllers
             {
                 if (jobSeekerId == 0 || vacancyId == 0)
                     return BadRequest();
-                var jobSeeker = _jobSeekerRepositoy.GetFirstOrDefault(x => x.Id == jobSeekerId, "AppUser");
+                var jobSeeker = _jobSeekerRepositoy.GetFirstOrDefault(x => x.Id == jobSeekerId, "AppUser,Skills,Country,City,DesiredPosition");
                 if (jobSeeker == null)
                     return BadRequest();
                 var applicant = _mapper.Map<ApplicantDTO>(jobSeeker);

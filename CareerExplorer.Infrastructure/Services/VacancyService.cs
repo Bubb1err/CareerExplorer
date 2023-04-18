@@ -24,8 +24,8 @@ namespace CareerExplorer.Infrastructure.Services
             _unitOfWork= unitOfWork;
             _positionsRepository = _unitOfWork.GetRepository<Position>();
             _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
-            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
-            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
+            _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
+            _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
         }
         public int[]? GetIdsFromString(string ids)
         {
@@ -48,6 +48,28 @@ namespace CareerExplorer.Infrastructure.Services
             if (tagIdsArray.Length == 0)
                 return null;
             return tagIdsArray;
+        }
+        public int[]? GetTypesFromString(string types)
+        {
+            if(types.IsNullOrEmpty()) 
+                return null;
+            string[] typesStr = types.Split(',');
+            int[] typesArray = new int[typesStr.Length];
+            for(int i = 0; i < typesStr.Length;i++)
+            {
+                if (char.IsDigit(char.Parse(typesStr[i])))
+                {
+                    typesArray[i] = int.Parse(typesStr[i]);
+                }
+                else
+                {
+                    break; 
+                    throw new ArgumentException();
+                }
+            }
+            if(typesArray.Length == 0)
+                return null;
+            return typesArray;
         }
         public async Task CreateVacancy(string selectedSkills, string position, string currentRecruiterId, Vacancy vacancy)
         {

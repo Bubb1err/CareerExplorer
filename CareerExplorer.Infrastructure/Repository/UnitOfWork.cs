@@ -1,13 +1,6 @@
-﻿using CareerExplorer.Core.Entities;
-using CareerExplorer.Core.Interfaces;
+﻿using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Repository
 {
@@ -34,37 +27,6 @@ namespace CareerExplorer.Infrastructure.Repository
             _repositories.Add(typeof(T), repository);
             return repository;
         }
-        //public TRepository GetRepository<TEntity, TRepository>() 
-        //    where TEntity : class
-        //    where TRepository : IRepository<TEntity>
-        //{
-        //    return (TRepository)GetRepository<TEntity>();
-        //}
-        public IJobSeekerProfileRepository GetJobSeekerRepository()
-        {
-            var repository = _serviceProvider.GetRequiredService<IJobSeekerProfileRepository>();
-            return repository; 
-        }
-        public IChatRepository GetChatRepository()
-        {
-            var repository = _serviceProvider.GetRequiredService<IChatRepository>();
-            return repository;
-        }
-        public IRecruiterProfileRepository GetRecruiterRepository()
-        {
-            var repository = _serviceProvider.GetRequiredService<IRecruiterProfileRepository>();
-            return repository;
-        }
-        public IVacanciesRepository GetVacanciesRepository()
-        {
-            var repository = _serviceProvider.GetRequiredService<IVacanciesRepository>();
-            return repository;
-        }
-        public IAdminRepository GetAdminRepository()
-        {
-            var repository = _serviceProvider.GetRequiredService<IAdminRepository>();
-            return repository;
-        }
         public void Dispose()
         {
             _db.Dispose();
@@ -73,12 +35,6 @@ namespace CareerExplorer.Infrastructure.Repository
         public async Task SaveAsync()
         {
             await _db.SaveChangesAsync();
-        }
-
-        public IJobSeekerVacancyRepository GetJobSeekerVacancyRepository()
-        {
-            var repository = _serviceProvider.GetRequiredService<IJobSeekerVacancyRepository>();
-            return repository;
         }
     }
 }

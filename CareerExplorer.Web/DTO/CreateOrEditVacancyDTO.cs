@@ -13,5 +13,15 @@ namespace CareerExplorer.Web.DTO
         [Required]
         public bool IsAvailable { get; set; }
         public DateTime CreatedDate { get; set; }
+        public int? CountryId { get; set; }
+        public Country? Country { get; set; }
+        public int? CityId { get; set; }
+        public City? City { get; set; }
+        [Required]
+        [Range(0, 20000, ErrorMessage = "Provide number between 0 and 20 000.")]
+        public int? Salary { get; set; }
+        public int? WorkType { get; set; }
+        public int? EnglishLevel { get; set; }
+        public int? ExperienceYears { get; set; } = 0;
     }
 }

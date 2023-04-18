@@ -27,7 +27,7 @@ namespace CareerExplorer.Web.Controllers
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _recruiterRepository = _unitOfWork.GetRecruiterRepository();
+            _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
         }
         [HttpGet]
         public IActionResult GetProfile()

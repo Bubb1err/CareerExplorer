@@ -10,7 +10,6 @@ namespace CareerExplorer.Core.Entities
     {
         public int Id { get; set; } 
         public virtual ICollection<SkillsTag> Tags { get; set; }
-        public virtual ICollection<WorkType> WorkTypes { get; set; }
         public virtual ICollection<Country> Countries { get; set; }
         public virtual ICollection<Position> Positions { get; set; }
         public string UserId { get; set; }

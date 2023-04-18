@@ -14,9 +14,9 @@ namespace CareerExplorer.Infrastructure.Services
         public ApplyOnVacancyService(IUnitOfWork unitOfWork) 
         {
             _unitOfWork = unitOfWork;
-            _jobSeekerRepository = _unitOfWork.GetJobSeekerRepository();
-            _vacanciesRepository = _unitOfWork.GetVacanciesRepository();
-            _jobSeekerVacancyRepository = _unitOfWork.GetJobSeekerVacancyRepository();
+            _jobSeekerRepository = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
+            _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
+            _jobSeekerVacancyRepository = (IJobSeekerVacancyRepository)_unitOfWork.GetRepository<JobSeekerVacancy>();
         }
         public async Task Apply(string currentLogedInUserId, int vacancyId, IFormFile file) 
         {
