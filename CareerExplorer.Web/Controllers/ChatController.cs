@@ -43,8 +43,16 @@ namespace CareerExplorer.Web.Controllers
 
             //getting receiver
             var receiver = _appUserRepository
-                .GetFirstOrDefault(x => x.Id == receiverId);
+                .GetFirstOrDefault(x => x.Id == receiverId, "RecruiterProfile,JobSeekerProfile");
             ViewBag.ReceiverId = receiverId;
+            if(receiver.JobSeekerProfile != null)
+            {
+                ViewBag.JobSeeker = _jobSeekerRepository.GetFirstOrDefault(x => x.UserId== receiverId, "Country,City,DesiredPosition");
+            }
+            else if(receiver.RecruiterProfile!= null)
+            {
+                ViewBag.Recruiter = _recruiterRepository.GetFirstOrDefault(x => x.UserId == receiverId);
+            }
 
             var chat = _chatRepository
                 .GetFirstOrDefault(x => x.Users.Contains(receiver) && x.Users.Contains(currentAppUser), "Messages");

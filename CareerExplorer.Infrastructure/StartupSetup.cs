@@ -26,7 +26,6 @@ namespace CareerExplorer.Infrastructure
             services.AddScoped<IRepository<AppUser>, Repository<AppUser>>();
             services.AddScoped<IRepository<Admin>, AdminRepository>();
             services.AddScoped<IRepository<SkillsTag>, Repository<SkillsTag>>();
-            services.AddScoped<IRepository<WorkType>, Repository<WorkType>>();
             services.AddScoped<IRepository<Country>, Repository<Country>>();
             services.AddScoped<IRepository<Position>, Repository<Position>>();           
             services.AddScoped<IRepository<Message>, Repository<Message>>();

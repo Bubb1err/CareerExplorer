@@ -11,6 +11,7 @@ namespace CareerExplorer.Core.Enums
         NoEnglish,
         Beginner,
         PreIntermediate,
+        Intermediate,
         UpperIntermediate,
         Advanced
 

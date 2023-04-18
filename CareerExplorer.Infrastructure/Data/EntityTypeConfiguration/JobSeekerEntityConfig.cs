@@ -22,6 +22,10 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
                 .WithMany(x => x.JobSeekers)
                 .HasForeignKey(x => x.CityId)
                 .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.DesiredPosition)
+                .WithMany(x => x.JobSeekers)
+                .HasForeignKey(x => x.DesiredPositionId)
+                .OnDelete(DeleteBehavior.NoAction);
 
         }
     }

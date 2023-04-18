@@ -19,6 +19,7 @@ namespace CareerExplorer.Infrastructure.Repository
                 .Include(x => x.Skills)
                 .Include(x => x.Country)
                 .Include(x => x.City)
+                .Include(x => x.DesiredPosition)
                 .FirstOrDefault(x => x.UserId == userId);
             if (jobSeeker == null) throw new NullReferenceException();
             return jobSeeker;

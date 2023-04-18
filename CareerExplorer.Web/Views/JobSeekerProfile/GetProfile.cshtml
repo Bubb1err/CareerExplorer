@@ -1,11 +1,15 @@
-﻿@using CareerExplorer.Web.DTO;
+﻿@using CareerExplorer.Core.Enums;
+@using CareerExplorer.Web.DTO;
 @using Microsoft.AspNetCore.Mvc.Localization
 
 @inject IViewLocalizer Localizer
 @model JobSeekerDTO
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-2">
+        <partial name="_JobSeekerMenuPartial" />
+    </div>
+    <div class="col-md-10">
         <form method="post" asp-action="GetProfile">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <input asp-for="Id" hidden />
@@ -25,6 +29,15 @@
                 <label asp-for="Phone" class="form-label">@Localizer["Phone"]</label>
                 <span asp-validation-for="Phone" class="text-danger"></span>
             </div>
+            @*Position*@
+            <div class="form-floating mb-3">   
+                @*<label class="form-label">Desired position</label>*@
+                <p>Select desired position</p>
+                <input asp-for="DesiredPositionId" id="positionId" value="@(Model.DesiredPositionId??0)" hidden />
+                
+                <input type="text" class="form-control mb-3" id="position" value="@(Model.DesiredPosition?.Name??"")" placeholder="Select desired position"/>
+                <div class="mt-3" id="searchPositionsResults"></div>
+            </div>
             <div class="form-floating mb-3 input-group" id="skill-tags-input-container">
                 <input  type="hidden" id="selected-skills-input" name="selectedSkills"/>
                 <input class="form-control" id="skill-tags-input" placeholder="@Localizer["Choose skills"]" />
@@ -35,21 +48,87 @@
                 <label asp-for="Experience">@Localizer["Experience"]</label>
                     <textarea rows="7" asp-for="Experience" class="form-control"></textarea>
                     <span asp-validation-for="Experience" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Salary" class="form-label mt-4">Desired Salary</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="Salary" type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                        <span class="input-group-text">.00</span>
+                    
+                    </div>
+                <span asp-validation-for="Salary" class="text-danger"></span>
+            </div>
+            <fieldset class="form-group mb-3">
+                <legend class="mt-4">English level</legend>
+                <div class="form-check">
+                    <input asp-for="@Model.EnglishLevel" class="form-check-input" type="radio" 
+                    value=@((int)EnglishLevel.NoEnglish) checked="">
+                    <label class="form-check-label" for="optionsRadios1">
+                        No English
+                    </label>
                 </div>
+                <div class="form-check">
+                    <input asp-for="@Model.EnglishLevel" class="form-check-input" type="radio" value=@((int)EnglishLevel.Beginner)>
+                    <label class="form-check-label" for="optionsRadios2">
+                        Beginner/Elementary
+                    </label>
+                </div>
+                <div class="form-check disabled">
+                    <input asp-for="@Model.EnglishLevel" class="form-check-input" type="radio" value=@((int)EnglishLevel.PreIntermediate)>
+                    <label class="form-check-label" for="optionsRadios3">
+                        Pre-Intermediate
+                    </label>
+                </div>
+                <div class="form-check disabled">
+                    <input asp-for="@Model.EnglishLevel" class="form-check-input" type="radio" value=@((int)EnglishLevel.Intermediate)>
+                    <label class="form-check-label" for="optionsRadios3">
+                        Intermediate
+                    </label>
+                </div>
+                <div class="form-check disabled">
+                    <input asp-for="@Model.EnglishLevel" class="form-check-input" type="radio" value=@((int)EnglishLevel.UpperIntermediate)>
+                    <label class="form-check-label" for="optionsRadios3">
+                        Upper-Intermediate
+                    </label>
+                </div>
+                <div class="form-check disabled">
+                    <input asp-for="@Model.EnglishLevel" class="form-check-input" type="radio" value=@((int)EnglishLevel.Advanced)>
+                    <label class="form-check-label" for="optionsRadios3">
+                        Advanced/Fluent
+                    </label>
+                </div>
+            </fieldset>
+            <fieldset class="form-group">
+                <label asp-for="ExperienceYears" class="form-label">Years of Experience: <span style="font-size:20px;font-weight:bold;" id="range-value">@(Model.ExperienceYears ?? 0)</span></label>
+                <input asp-for="ExperienceYears" type="range" class="form-range" min="0" max="6" step="1" oninput="updateValue(this.value)">
+             </fieldset>
             <div class="form-floating mb-3">
                 <input asp-for="GitHub" class="form-control" />
                 <label asp-for="GitHub" class="form-label">@Localizer["GitHub"]</label>
                 <span asp-validation-for="GitHub" class="text-danger"></span>
             </div>
+            <div class="form-floating mb-3">
+                <input asp-for="LinkedIn" class="form-control" />
+                <label asp-for="LinkedIn" class="form-label">LinkedIn</label>
+                <span asp-validation-for="LinkedIn" class="text-danger"></span>
+            </div>
             @*Country*@
-            <input asp-for="CountryId" id="countriesId" value="@(Model.CountryId??0)" hidden />
-            <input type="text" class="form-control mb-3" id="countries" value="@(Model.Country?.Name??"")" />
-            <div class="mt-3 mb-3" id="searchResults"></div>
-
+            <div class="mb-3">               
+                <input asp-for="CountryId" id="countriesId" value="@(Model.CountryId??0)" hidden />
+                <label >Country</label>
+                <input type="text" class="form-control mb-3" id="countries" value="@(Model.Country?.Name??"")" placeholder="Choose your country"/>
+                
+                <div class="mt-3" id="searchResults"></div>
+            </div>
             @*City*@
-            <input asp-for="CityId" id="citiesId" hidden />
-            <input type="text" class="form-control mb-3" id="cities" value="@(Model.City?.Name??"")" />
-            <div class="mt-3 mb-3" id="searchCityResults"></div>
+            <div class="mb-3">
+                <input asp-for="CityId" id="citiesId" hidden />
+                <label>City</label>
+                <input type="text" class="form-control mb-3" id="cities" value="@(Model.City?.Name??"")" placeholder="Choose your city" />
+                <div id="searchCityResults"></div>
+            </div>
+            
             <button asp-controller="JobSeekerProfile" asp-action="GetProfile" type="submit" class="w-100 btn btn-lg btn-primary">@Localizer["Save"]</button>
         </form>
     </div>
@@ -69,6 +148,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <script>
+        //experience range
+        function updateValue(val) {
+            document.getElementById('range-value').innerHTML = val == 6 ? '>6' : val;
+        }
+        //skills
         var selectedTags = [];
         $(document).ready(function () {
             selectedTags = @Html.Raw(Json.Serialize(Model.Skills.Select(s => s.Title)));
@@ -179,6 +263,33 @@
                 $('#cities').val(value);
                 $('#citiesId').val(ind);
                 $('#searchCityResults').hide();
+            });
+        });
+        //position
+        $(function () {
+            $('#position').on('input', function () {
+                var search = $(this).val();
+
+                $.get('/Vacancy/Search',
+                    { search: search },
+                    function (results) {
+                        var $searchResults = $('#searchPositionsResults');
+                        $searchResults.empty();
+                        $.each(results, function (index, value) {
+                            var $option = $('<div>').text(value.name);
+                            $option.val(value.id);
+                            $searchResults.append($option);
+                        });
+                        $searchResults.show();
+                    });
+            });
+
+            $('#searchPositionsResults').on('click', 'div', function () {
+                var value = $(this).text();
+                var ind = $(this).val();
+                $('#position').val(value);
+                $('#positionId').val(ind);
+                $('#searchPositionsResults').hide();
             });
         });
     </script>

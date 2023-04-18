@@ -1,23 +1,78 @@
 ﻿@using CareerExplorer.Core.Entities;
 @model IEnumerable<Message>
-<div>
-    <div id="messages">
-        @foreach (var message in Model)
+@{
+    var jobSeekerInfo = ViewBag.JobSeeker as JobSeeker;
+    var recruiterInfo = ViewBag.Recruiter as Recruiter;
+}
+<div class="row">
+    <div class="col-md-6">
+        @if(jobSeekerInfo != null)
         {
-            <div class="message @(message.SenderId == ViewBag.SenderId ? "me" : "other")">
-                @message.Text
+            <div class="card mb-3" >
+              <div class="card-header">
+                  <h1 style="font-size:25px;">@jobSeekerInfo.DesiredPosition.Name</h1>
+                  <h2 style="font-size:20px;">@jobSeekerInfo.Name @jobSeekerInfo.Surname</h2>
+              </div>
+              <div class="card-body">
+                <p class="card-text">@jobSeekerInfo.Experience</p>
+                @if (jobSeekerInfo.Phone != null)
+                {
+                    <h5><i class="bi bi-telephone-fill"></i>@jobSeekerInfo.Phone</h5>
+                }
+                @if (jobSeekerInfo.GitHub != null)
+                {
+                        <a href="@jobSeekerInfo.GitHub"><i class="bi bi-github"></i> @jobSeekerInfo.GitHub</a>
+                }
+                @if (jobSeekerInfo.LinkedIn != null)
+                {
+                    <span>LinkedIn</span>
+                        <a href="@jobSeekerInfo.LinkedIn"><i class="bi bi-linkedin"></i> @jobSeekerInfo.LinkedIn</a>
+                }
+
+
+                @if (jobSeekerInfo.Country != null && jobSeekerInfo.City != null)
+                {
+                        <p><i class="bi bi-geo-alt-fill"></i>@jobSeekerInfo.Country.Name, @jobSeekerInfo.City.Name</p>
+                }
+                else if (jobSeekerInfo.Country != null)
+                {
+                        <p><i class="bi bi-geo-alt-fill"></i>@jobSeekerInfo.Country.Name</p>
+
+                }
+              </div>
+            </div>
+        }
+        else if(recruiterInfo != null)
+        {
+            <div class="card mb-3">
+              <div class="card-header">
+                  <h1 style="font-size:25px;">@recruiterInfo.Company</h1>
+                  <h2 style="font-size:20px;">@recruiterInfo.Name @recruiterInfo.Surname</h2>
+              </div>
+              <div class="card-body">
+                <p class="card-text">@recruiterInfo.CompanyDescription</p>
+              </div>
             </div>
         }
     </div>
-    <form id="sendForm" style="position:static;">
-        <input class="form-control" style="width:91%;display:inline-block" type="text" id="messageInput"
-        placeholder="Message"/>
-        <button class="btn btn-primary" id="sendButton" type="submit" disabled>Send</button>
-    </form>
+    <div class="col-md-6">
+        <div id="messages">
+            @foreach (var message in Model)
+            {
+                <div class="message @(message.SenderId == ViewBag.SenderId ? "me" : "other")">
+                    @message.Text
+                </div>
+            }
+        </div>
+        <form id="sendForm" style="position:static;">
+            <input class="form-control" style="width:85%;display:inline-block" type="text" id="messageInput"
+            placeholder="Message"/>
+            <button class="btn btn-primary" id="sendButton" type="submit" disabled>Send</button>
+        </form>
     </div>
-    
-
 </div>
+
+
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script>
     const connection = new signalR.HubConnectionBuilder()

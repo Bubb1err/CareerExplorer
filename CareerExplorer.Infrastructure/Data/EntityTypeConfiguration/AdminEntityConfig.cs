@@ -15,7 +15,6 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
         public void Configure(EntityTypeBuilder<Admin> builder)
         {
             builder.HasMany(x => x.Tags).WithOne(x => x.Admin).HasForeignKey(x => x.AdminId);
-            builder.HasMany(x => x.WorkTypes).WithOne(x => x.Admin).HasForeignKey(x => x.AdminId);
             builder.HasMany(x => x.Positions).WithOne(x => x.Admin).HasForeignKey(x => x.AdminId);
 
         }
