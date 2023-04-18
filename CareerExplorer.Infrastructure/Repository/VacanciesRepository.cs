@@ -3,6 +3,7 @@ using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using System.Linq;
 
 namespace CareerExplorer.Infrastructure.Repository
 {
@@ -14,10 +15,10 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
-        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies(int pageSize, int pageNumber, out int countVacancies, int[]? tagsIds = null)
+        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies(int pageSize, int pageNumber, out int countVacancies, int[]? tagsIds = null, int[] types = null)
         {
             IQueryable<Vacancy> vacancies = dbSet;
-            if(tagsIds == null)
+            if(tagsIds == null && types == null)
             {
                 vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true && x.IsAccepted == true)
                 .Include(x => x.Creator)
@@ -26,13 +27,35 @@ namespace CareerExplorer.Infrastructure.Repository
                 .Include(x => x.Position);
                 countVacancies= vacancies.Count();
             }
-            else
+            else if(tagsIds != null && types == null)
             {
-                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
+                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable 
+                && x.IsAccepted == true && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
                 .Include(x => x.Creator)
                     .ThenInclude (x => x.AppUser)
                 .Include(x => x.Requirements)
                 .Include(x => x.Position);
+                countVacancies = vacancies.Count();
+            }
+            else if(tagsIds == null && types != null )
+            {
+                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true 
+                && x.WorkType != null && types.Contains((int)x.WorkType))
+                .Include(x => x.Creator)
+                    .ThenInclude(x => x.AppUser)
+                .Include(x => x.Requirements)
+                .Include(x => x.Position);
+                countVacancies = vacancies.Count();
+            }
+            else
+            {
+                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true
+                && x.WorkType != null && types.Contains((int)x.WorkType) 
+                && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
+                                .Include(x => x.Creator)
+                                    .ThenInclude(x => x.AppUser)
+                                .Include(x => x.Requirements)
+                                .Include(x => x.Position);
                 countVacancies = vacancies.Count();
             }
             if (pageSize > 0)

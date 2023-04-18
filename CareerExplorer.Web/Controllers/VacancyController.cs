@@ -46,13 +46,14 @@ namespace CareerExplorer.Web.Controllers
             _cityRepository = _unitOfWork.GetRepository<City>();
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll(int pageNumber = 1, string tagIds = "")
+        public async Task<IActionResult> GetAll(int pageNumber = 1, string tagIds = "", string types = "")
         {
             try
             {
                 int[] tagIdsArray = _vacancyService.GetIdsFromString(tagIds);
+                int[] typesArray = _vacancyService.GetTypesFromString(types);
                 const int pageSize = 3;
-                var vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(pageSize, pageNumber, out int totalVacancies, tagIdsArray).ToList();
+                var vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(pageSize, pageNumber, out int totalVacancies, tagIdsArray, typesArray).ToList();
 
                 var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
                 var tagsItems = _skillsTagRepository.GetAll().Select(tag => new SelectListItem

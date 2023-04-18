@@ -49,6 +49,28 @@ namespace CareerExplorer.Infrastructure.Services
                 return null;
             return tagIdsArray;
         }
+        public int[]? GetTypesFromString(string types)
+        {
+            if(types.IsNullOrEmpty()) 
+                return null;
+            string[] typesStr = types.Split(',');
+            int[] typesArray = new int[typesStr.Length];
+            for(int i = 0; i < typesStr.Length;i++)
+            {
+                if (char.IsDigit(char.Parse(typesStr[i])))
+                {
+                    typesArray[i] = int.Parse(typesStr[i]);
+                }
+                else
+                {
+                    break; 
+                    throw new ArgumentException();
+                }
+            }
+            if(typesArray.Length == 0)
+                return null;
+            return typesArray;
+        }
         public async Task CreateVacancy(string selectedSkills, string position, string currentRecruiterId, Vacancy vacancy)
         {
             string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
