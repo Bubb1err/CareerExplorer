@@ -5,6 +5,7 @@ using CareerExplorer.Infrastructure.Data;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using CareerExplorer.Web.Hubs;
+using Hangfire;
 
 namespace CareerExplorer.Web
 {
@@ -22,6 +23,8 @@ namespace CareerExplorer.Web
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext(connectionString);
+            builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
+            builder.Services.AddHangfireServer();
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultTokenProviders()
@@ -82,10 +85,11 @@ namespace CareerExplorer.Web
             app.UseAuthentication();
                 
             app.UseAuthorization();
-            
+            app.UseHangfireDashboard();
+
             app.MapRazorPages();
-            //app.MapHub<ChatHub>("/Chat/GetChat");
             app.MapHub<ChatHub>("/chatHub");
+            app.MapHub<NotificationHub>("/notificationHub");
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Vacancy}/{action=GetAll}/{id?}");

@@ -32,6 +32,7 @@ namespace CareerExplorer.Infrastructure
             services.AddScoped<IRepository<Chat>, ChatRepository>();
             services.AddScoped<IRepository<Country>, CountryRepository>();
             services.AddScoped<IRepository<City>, Repository<City>>();
+            services.AddScoped<IRepository<MeetingNotification>, Repository<MeetingNotification>>();
         }
         public static void RegisterServices(this IServiceCollection services)
         {
