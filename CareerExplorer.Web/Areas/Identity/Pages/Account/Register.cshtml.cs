@@ -164,7 +164,6 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
-                //todo: replace queries to context with repository queries
                 if (result.Succeeded)
                 {
                     var userId = await _userManager.GetUserIdAsync(user);

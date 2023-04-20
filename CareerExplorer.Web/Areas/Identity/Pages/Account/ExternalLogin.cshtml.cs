@@ -17,6 +17,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using CareerExplorer.Core.Entities;
+using CareerExplorer.Core.Enums;
+using CareerExplorer.Shared;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Build.Framework;
+using CareerExplorer.Infrastructure.Data;
 
 namespace CareerExplorer.Web.Areas.Identity.Pages.Account
 {
@@ -29,13 +35,16 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly AppDbContext _context;
 
         public ExternalLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            AppDbContext context)
+
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -43,6 +52,7 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
             _emailStore = GetEmailStore();
             _logger = logger;
             _emailSender = emailSender;
+            _context= context;
         }
 
         /// <summary>
@@ -81,9 +91,10 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
+            [System.ComponentModel.DataAnnotations.Required]
             [EmailAddress]
             public string Email { get; set; }
+            public string Role { get; set; }
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -155,6 +166,7 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.UserType = Input.Role == UserRoles.Recruiter ? UserType.Recruiter : UserType.JobSeeker;
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
@@ -165,6 +177,36 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
                         var userId = await _userManager.GetUserIdAsync(user);
+                        if (Input.Role == null)
+                        {
+                            await _userManager.AddToRoleAsync(user, UserRoles.JobSeeker);
+                        }
+                        else
+                        {
+                            await _userManager.AddToRoleAsync(user, Input.Role);
+                        }
+                        if (user.UserType == UserType.JobSeeker)
+                        {
+                            await _context.JobSeekers.AddAsync(new JobSeeker
+                            {
+                                UserId = userId
+                            });
+                            await _context.SaveChangesAsync();
+                            var currentUser = _context.AppUsers.FirstOrDefault(x => x.Id == userId);
+                            currentUser.JobSeekerProfileId = _context.JobSeekers.FirstOrDefault(x => x.UserId == userId).Id;
+                            await _context.SaveChangesAsync();
+                        }
+                        else if (user.UserType == UserType.Recruiter)
+                        {
+                            await _context.Recruiters.AddAsync(new Recruiter
+                            {
+                                UserId = userId
+                            });
+                            await _context.SaveChangesAsync();
+                            var currentUser = _context.AppUsers.FirstOrDefault(x => x.Id == userId);
+                            currentUser.RecruiterProfileId = _context.Recruiters.FirstOrDefault(x => x.UserId == userId).Id;
+                            await _context.SaveChangesAsync();
+                        }
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                         var callbackUrl = Url.Page(
@@ -197,16 +239,16 @@ namespace CareerExplorer.Web.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private AppUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<AppUser>();
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
-                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(AppUser)}'. " +
+                    $"Ensure that '{nameof(AppUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the external login page in /Areas/Identity/Pages/Account/ExternalLogin.cshtml");
             }
         }

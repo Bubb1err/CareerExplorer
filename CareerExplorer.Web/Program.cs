@@ -26,7 +26,18 @@ namespace CareerExplorer.Web
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<AppDbContext>();
-
+            builder.Services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                })
+                .AddLinkedIn(options =>
+                {
+                    options.ClientId = builder.Configuration["Authentication:LinkedIn:ClientId"];
+                    options.ClientSecret = builder.Configuration["Authentication:LinkedIn:ClientSecret"];
+                });
+                
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Identity/Account/Login";
