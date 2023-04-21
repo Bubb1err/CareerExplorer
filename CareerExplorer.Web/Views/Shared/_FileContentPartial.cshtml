@@ -5,9 +5,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="viewCvModalLabel">CV Content</h5>
-                <button id="closeCvBtn" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button id="closeCvBtn" type="button" class="close-btn" data-dismiss="modal" @*aria-label="Close"*@>
+                    <i class="bi bi-x-square-fill bi-md"></i>
                 </button>
             </div>
             <div class="modal-body">
@@ -19,3 +18,17 @@
         </div>
     </div>
 </div>
+<style>
+    .close-btn {
+        border: none;
+        height: 20px;
+        width: 20px;
+        background-color:none;
+
+    }
+
+    .bi-x-square-fill {
+        width:20px;
+        height:20px;
+    }
+</style>

@@ -1,4 +1,6 @@
 ﻿@using CareerExplorer.Core.Entities;
+@using CareerExplorer.Shared;
+@using Microsoft.AspNetCore.Identity;
 @model IEnumerable<Message>
 @{
     var jobSeekerInfo = ViewBag.JobSeeker as JobSeeker;
@@ -56,7 +58,11 @@
         }
     </div>
     <div class="col-md-6">
-        <button class="btn btn-primary" id="inviteModalBtn">Send invitation link</button>
+        @if(User.IsInRole(UserRoles.Recruiter))
+        {
+            <button class="btn btn-primary" id="inviteModalBtn">Send invitation link</button>
+        }
+
         <div id="messages">
             @foreach (var message in Model)
             {

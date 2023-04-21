@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using CareerExplorer.Web.Hubs;
 using Hangfire;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CareerExplorer.Web
 {

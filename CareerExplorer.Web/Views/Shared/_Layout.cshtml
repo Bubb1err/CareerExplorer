@@ -56,6 +56,7 @@
             @if (User.IsInRole(UserRoles.JobSeeker))
             {
                 <div class="alert alert-dismissible alert-primary" id="notification" style="width:30%;z-index:1;position:absolute;" hidden>
+                    <p>You have a meeting.</p>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding:7px 5px;"></button>
             </div>
             }
@@ -74,18 +75,6 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
     <script src="~/js/notification.js"></script>
-    @*<script>
-        var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
-
-        connection.on("ReceiveNotification", function (receiverId, content) {
-            var p = document.createElement("p");
-            document.getElementById("notification").appendChild(p);
-            p.textContent = content;
-            document.getElementById("notification").removeAttribute("hidden");
-        });
-
-        connection.start();
-    </script>*@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

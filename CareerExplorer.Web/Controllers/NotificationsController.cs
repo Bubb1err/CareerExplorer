@@ -26,7 +26,6 @@ namespace CareerExplorer.Web.Controllers
             _unitOfWork = unitOfWork;
             _notificationRepository = _unitOfWork.GetRepository<MeetingNotification>();
             _notificationHub = notificationHub;
-            _notificationHub = notificationHub;
         }
 
         [HttpPost]
@@ -58,25 +57,15 @@ namespace CareerExplorer.Web.Controllers
             var invitation = _notificationRepository.GetFirstOrDefault(x => x.Id == invitationId);
             invitation.IsAccepted = true;
             await _unitOfWork.SaveAsync();
-            BackgroundJob.Schedule(() 
-                => SendNotification(invitation.ReceiverId, "You have a meeting."), invitation.Date - DateTime.Now);
+            BackgroundJob.Schedule(()
+                => SendNotification(invitation.ReceiverId, invitation.MeetingLink),
+                invitation.Date - DateTime.Now);
             return Ok();
         }
         public void SendNotification(string receiverId, string content)
         {
-            Console.WriteLine("sending notification");
-            // Get the SignalR hub context for the notifications hub
             var hubContext = _notificationHub.Clients.User(receiverId);
-
-            // Send the notification to the user
             hubContext.SendAsync("ReceiveNotification", receiverId, content);
-            Console.WriteLine("sending notification2");
         }
-        //public IActionResult Notify()
-        //{
-        //    string jobId = BackgroundJob.Schedule( () =>
-        //    Console.WriteLine("Notification"), TimeSpan.FromSeconds(3));
-        //    return Ok();
-        //}
     }
 }
