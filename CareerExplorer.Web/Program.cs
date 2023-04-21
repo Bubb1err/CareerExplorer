@@ -5,6 +5,8 @@ using CareerExplorer.Infrastructure.Data;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using CareerExplorer.Web.Hubs;
+using Hangfire;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CareerExplorer.Web
 {
@@ -22,11 +24,24 @@ namespace CareerExplorer.Web
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext(connectionString);
+            builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
+            builder.Services.AddHangfireServer();
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<AppDbContext>();
-
+            builder.Services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                })
+                .AddLinkedIn(options =>
+                {
+                    options.ClientId = builder.Configuration["Authentication:LinkedIn:ClientId"];
+                    options.ClientSecret = builder.Configuration["Authentication:LinkedIn:ClientSecret"];
+                });
+                
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Identity/Account/Login";
@@ -71,10 +86,11 @@ namespace CareerExplorer.Web
             app.UseAuthentication();
                 
             app.UseAuthorization();
-            
+            app.UseHangfireDashboard();
+
             app.MapRazorPages();
-            //app.MapHub<ChatHub>("/Chat/GetChat");
             app.MapHub<ChatHub>("/chatHub");
+            app.MapHub<NotificationHub>("/notificationHub");
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Vacancy}/{action=GetAll}/{id?}");

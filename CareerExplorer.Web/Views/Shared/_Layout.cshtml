@@ -7,7 +7,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CareerExplorer.Web</title>
-    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/CareerExplorer.Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/bootswatch.css" />
@@ -33,6 +32,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Chat" asp-action="GetJobSeekerChats">Chat</a>
                             </li>
+                             <li class="nav-item">
+                                <a class="nav-link" asp-controller="Notifications" asp-action="GetInvitations"><i class="bi bi-calendar"></i></a>
+                            </li>
                         }
                         else if (User.IsInRole(UserRoles.Recruiter))
                         {
@@ -51,6 +53,13 @@
     </header>
     <div class="container mb-5">
         <main role="main" class="pb-3">
+            @if (User.IsInRole(UserRoles.JobSeeker))
+            {
+                <div class="alert alert-dismissible alert-primary" id="notification" style="width:30%;z-index:1;position:absolute;" hidden>
+                    <p>You have a meeting.</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding:7px 5px;"></button>
+            </div>
+            }
             @RenderBody()
         </main>
     </div>
@@ -64,6 +73,8 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/notification.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

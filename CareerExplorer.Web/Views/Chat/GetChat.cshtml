@@ -1,4 +1,6 @@
 ﻿@using CareerExplorer.Core.Entities;
+@using CareerExplorer.Shared;
+@using Microsoft.AspNetCore.Identity;
 @model IEnumerable<Message>
 @{
     var jobSeekerInfo = ViewBag.JobSeeker as JobSeeker;
@@ -56,6 +58,11 @@
         }
     </div>
     <div class="col-md-6">
+        @if(User.IsInRole(UserRoles.Recruiter))
+        {
+            <button class="btn btn-primary" id="inviteModalBtn">Send invitation link</button>
+        }
+
         <div id="messages">
             @foreach (var message in Model)
             {
@@ -71,10 +78,66 @@
         </form>
     </div>
 </div>
+<!-- Modal -->
+<div class="modal" id="inviteModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Send Invitation Link</h4>
+                <button type="button" id="closeInviteModal" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" id="inviteForm">
+                <div class="modal-body">
+                    <input value="@ViewBag.ReceiverId" name="receiverId" hidden />
+                    <div class="form-group">
+                        <label for="link">Link:</label>
+                        <input type="text" class="form-control" id="link" name="meetingLink" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="datetime">Date and Time:</label>
+                        <input type="datetime-local" class="form-control" id="datetime" name="Date" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    $(document).on('click', '#inviteModalBtn', function () {
+        $('#inviteModal').modal('show');
+    });
+
+    $(document).on('submit', '#inviteForm', function (event) {
+        event.preventDefault(); 
+        var formData = $(this).serialize(); 
+        $.ajax({
+            url: '/Notifications/CreateNotification',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                console.log(response);
+                $('#inviteModal').modal('hide');
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
+    $(document).on('click', '#closeInviteModal', function () {
+        $('#inviteModal').modal('hide');
+    });
+    //signalr
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/chatHub")
         .build();

@@ -23,6 +23,14 @@
                 <label asp-for="Input.Email" class="form-label"></label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
+            <label class="button">
+                <input class="form-check-input" type="radio" asp-for="Input.Role" value="Recruiter" />
+                Recruiter
+            </label>
+            <label class="button">
+                <input class="form-check-input" type="radio" asp-for="Input.Role" value="JobSeeker" />
+                JobSeeker
+            </label>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
     </div>

@@ -1,0 +1,40 @@
+﻿@using CareerExplorer.Core.Entities;
+@model IEnumerable<MeetingNotification>
+<div class="row">
+    @foreach (var invitation in Model)
+    {
+        <div class="col-3">
+              <div class="card text-white bg-primary mb-3" style="max-width: 20rem;">
+            <div class="card-body">
+                <p class="text-light">@invitation.Date.ToLongDateString() @invitation.Date.ToShortTimeString()</p>
+                <a class="link-light" href="@invitation.MeetingLink">@invitation.MeetingLink</a>
+                @if (!invitation.IsAccepted)
+                {
+                    <button class="btn btn-primary accept-invitation" data-invitation-id="@invitation.Id">Accept</button>
+                }
+            </div>
+        </div>
+        </div>
+
+    }
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).on('click', '.accept-invitation', function () {
+        var button = $(this);
+        var invitationId = button.data('invitation-id');
+        $.ajax({
+            url: '/Notifications/AcceptInvitation?invitationId=' + invitationId,
+            type: 'POST',
+            success: function (response) {
+                button.text('Accepted');
+                button.prop('disabled', true);
+            },
+            error: function (xhr, status, error) {
+                alert('An error occurred while accepting the invitation.');
+            }
+        });
+    });
+</script>
