@@ -22,7 +22,7 @@ namespace CareerExplorer.Web
                 m => m.MapFrom(a => a.Creator.AppUser.Email))
                 .ReverseMap();
             CreateMap<JobSeeker, ApplicantDTO>().ReverseMap();
-            CreateMap<Vacancy, CreateOrEditVacancyDTO>().ReverseMap();
+            CreateMap<Vacancy, EditVacancyDTO>().ReverseMap();
             CreateMap<SkillTagDTO, SkillsTag>().ReverseMap();
             CreateMap<Position, PositionDTO>().ReverseMap();
             CreateMap<JobSeeker, JobSeekerDTO>().ReverseMap();

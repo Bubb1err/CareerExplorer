@@ -16,6 +16,8 @@ namespace CareerExplorer.Core.Interfaces
         Task AddAsync(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);
-        
+        IEnumerable<T> Paginate(IQueryable<T> collection, int pageSize, int pageNumber);
+
+
     }
 }

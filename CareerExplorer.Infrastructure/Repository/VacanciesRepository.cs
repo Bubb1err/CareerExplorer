@@ -15,57 +15,68 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
-        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies(int pageSize, int pageNumber, out int countVacancies, int[]? tagsIds = null, int[] types = null)
+        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies
+            (int pageSize, int pageNumber, out int countVacancies)
         {
             IQueryable<Vacancy> vacancies = dbSet;
-            if(tagsIds == null && types == null)
-            {
-                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true && x.IsAccepted == true)
+            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true && x.IsAccepted == true)
                 .Include(x => x.Creator)
                     .ThenInclude(x => x.AppUser)
                 .Include(x => x.Requirements)
                 .Include(x => x.Position);
-                countVacancies= vacancies.Count();
-            }
-            else if(tagsIds != null && types == null)
-            {
-                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable 
-                && x.IsAccepted == true && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
+            countVacancies = vacancies.Count();
+            Paginate(vacancies, pageSize, pageNumber);
+            return vacancies;
+        }
+        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies
+            (int pageSize, int pageNumber, out int countVacancies, int[] tagIds)
+        {
+            if (tagIds == null)
+                throw new ArgumentNullException();
+
+            IQueryable<Vacancy> vacancies = dbSet;
+            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable
+                && x.IsAccepted == true && x.Requirements.Any(x => tagIds.Contains(x.Id)))
                 .Include(x => x.Creator)
-                    .ThenInclude (x => x.AppUser)
+                    .ThenInclude(x => x.AppUser)
                 .Include(x => x.Requirements)
                 .Include(x => x.Position);
-                countVacancies = vacancies.Count();
-            }
-            else if(tagsIds == null && types != null )
-            {
-                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true 
+            countVacancies = vacancies.Count();
+            Paginate(vacancies, pageSize, pageNumber);
+            return vacancies;
+        }
+        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredByTypeVacancies
+            (int pageSize, int pageNumber, out int countVacancies, int[] types)
+        {
+            if (types == null)
+                throw new ArgumentNullException();
+
+            IQueryable<Vacancy> vacancies = dbSet;
+            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true
                 && x.WorkType != null && types.Contains((int)x.WorkType))
                 .Include(x => x.Creator)
                     .ThenInclude(x => x.AppUser)
                 .Include(x => x.Requirements)
                 .Include(x => x.Position);
-                countVacancies = vacancies.Count();
-            }
-            else
-            {
-                vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true
-                && x.WorkType != null && types.Contains((int)x.WorkType) 
-                && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
-                                .Include(x => x.Creator)
-                                    .ThenInclude(x => x.AppUser)
-                                .Include(x => x.Requirements)
-                                .Include(x => x.Position);
-                countVacancies = vacancies.Count();
-            }
-            if (pageSize > 0)
-            {
-                if (pageSize > 100)
-                {
-                    pageSize = 100;
-                }
-                vacancies = vacancies.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
-            }  
+            countVacancies = vacancies.Count();
+            Paginate(vacancies, pageSize, pageNumber);
+            return vacancies;
+        }
+        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies
+            (int pageSize, int pageNumber, out int countVacancies, int[] tagsIds, int[] types)
+        {
+            IQueryable<Vacancy> vacancies = dbSet;
+            if(tagsIds== null || types ==null)
+                throw new ArgumentNullException();
+            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true
+            && x.WorkType != null && types.Contains((int)x.WorkType) 
+            && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
+                            .Include(x => x.Creator)
+                                .ThenInclude(x => x.AppUser)
+                            .Include(x => x.Requirements)
+                            .Include(x => x.Position);
+            countVacancies = vacancies.Count();
+            Paginate(vacancies, pageSize, pageNumber); 
             return vacancies;
         }
         public IEnumerable<Vacancy> GetCreatedVacancies(string userId)

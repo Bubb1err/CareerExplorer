@@ -75,19 +75,10 @@ namespace CareerExplorer.Infrastructure.Services
                 return null;
             return typesArray;
         }
-        public async Task CreateVacancy(string selectedSkills, string position, string currentRecruiterId, Vacancy vacancy)
+        public async Task CreateVacancy(string[] tags, int position, string currentRecruiterId, Vacancy vacancy)
         {
-            string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
-            if (!int.TryParse(position, out int positionIndex))
-            {
-                throw new ArgumentException();
-            }
-            var positionSelected = _positionsRepository.GetFirstOrDefault(x => x.Id == positionIndex);
+            var positionSelected = _positionsRepository.GetFirstOrDefault(x => x.Id == position);
             var skills = _skillsTagRepository.GetAll(x => tags.Contains(x.Title)).ToList();
-            //foreach (var tag in tags)
-            //{
-            //    skills.Add(_skillsTagRepository.GetFirstOrDefault(x => x.Title == tag));
-            //}
             var country = _countryRepository.GetFirstOrDefault(x => x.Id == vacancy.CountryId);
             var city = _cityRepository.GetFirstOrDefault(x => x.Id == vacancy.CityId);
             var creator = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecruiterId);
@@ -96,24 +87,19 @@ namespace CareerExplorer.Infrastructure.Services
             vacancy.Creator = creator;
             vacancy.CreatedDate = DateTime.Now;
             vacancy.Position = positionSelected;
-            vacancy.PositionId = positionIndex;
+            vacancy.PositionId = position;
             await _vacanciesRepository.AddAsync(vacancy);
             await _unitOfWork.SaveAsync();
         }
-        public async Task EditVacancy(string selectedSkills, Vacancy vacancy, string position)
+        public async Task EditVacancy(string[] tags, Vacancy vacancy, int position)
         {
-            if(selectedSkills== null)
+            if(tags == null || position == 0)
                 throw new ArgumentNullException();
-            string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
-            if (!int.TryParse(position, out int positionIndex))
+            if (vacancy.PositionId != position)
             {
-                throw new ArgumentException();
-            }
-            if (vacancy.PositionId != positionIndex)
-            {
-                var positionSelected = _positionsRepository.GetFirstOrDefault(x => x.Id == positionIndex);
+                var positionSelected = _positionsRepository.GetFirstOrDefault(x => x.Id == position);
                 vacancy.Position = positionSelected;
-                vacancy.PositionId = positionIndex;
+                vacancy.PositionId = position;
             }
             var existingSkillTags = vacancy.Requirements.Select(s => s.Title);
             var tagsToRemove = vacancy.Requirements.Where(x => !tags.Contains(x.Title)).ToList();

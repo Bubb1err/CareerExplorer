@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using System.Drawing;
 
 namespace CareerExplorer.Web.Controllers
@@ -28,6 +29,7 @@ namespace CareerExplorer.Web.Controllers
         private readonly IRepository<Position> _positionsRepository;
         private readonly ICountryRepository _countryRepository;
         private readonly IRepository<City> _cityRepository;
+
         public VacancyController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<IdentityUser> userManager,
             IRepository<AppUser> appUserRepository, IVacancyService vacancyService)
         {
@@ -46,14 +48,35 @@ namespace CareerExplorer.Web.Controllers
             _cityRepository = _unitOfWork.GetRepository<City>();
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll(int pageNumber = 1, string tagIds = "", string types = "")
+        public IActionResult GetAll(int pageNumber = 1, string tagIds = "", string types = "")
         {
             try
             {
                 int[] tagIdsArray = _vacancyService.GetIdsFromString(tagIds);
                 int[] typesArray = _vacancyService.GetTypesFromString(types);
                 const int pageSize = 3;
-                var vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(pageSize, pageNumber, out int totalVacancies, tagIdsArray, typesArray).ToList();
+                List<Vacancy> vacancies;
+                int totalVacancies;
+                if(tagIdsArray == null && typesArray == null)
+                {
+                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies
+                        (pageSize, pageNumber, out totalVacancies).ToList();
+                }
+                else if(tagIdsArray == null && typesArray != null)
+                {
+                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredByTypeVacancies
+                        (pageSize, pageNumber, out totalVacancies, typesArray).ToList();
+                }
+                else if(tagIdsArray != null && typesArray == null)
+                {
+                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies
+                        (pageSize, pageNumber, out totalVacancies, tagIdsArray).ToList();
+                }
+                else
+                {
+                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies
+                        (pageSize, pageNumber, out totalVacancies, tagIdsArray, typesArray).ToList();
+                }
 
                 var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
                 var tagsItems = _skillsTagRepository.GetAll().Select(tag => new SelectListItem
@@ -62,7 +85,8 @@ namespace CareerExplorer.Web.Controllers
                     Text = tag.Title
                 });
                 ViewBag.Tags = tagsItems;
-                var paginatedVacancies = PaginatedList<VacancyDTO>.Create(vacanciesDto, pageNumber, pageSize, totalVacancies);
+                var paginatedVacancies = PaginatedList<VacancyDTO>
+                    .Create(vacanciesDto, pageNumber, pageSize, totalVacancies);
 
                 return View(paginatedVacancies);
             }
@@ -117,7 +141,12 @@ namespace CareerExplorer.Web.Controllers
                 
                 if (currentRecruiterId == null) return BadRequest();
                 var vacancy = _mapper.Map<Vacancy>(vacancyDTO);
-                await _vacancyService.CreateVacancy(selectedSkills, position, currentRecruiterId, vacancy);
+                string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
+                if (!int.TryParse(position, out int positionIndex) || tags == null)
+                {
+                    return BadRequest();
+                }
+                await _vacancyService.CreateVacancy(tags, positionIndex, currentRecruiterId, vacancy);
                 return RedirectToAction(nameof(CreatedVacancies));
             }
             catch { return BadRequest(); }
@@ -132,7 +161,7 @@ namespace CareerExplorer.Web.Controllers
                 if (id == null)
                     return BadRequest();
                 var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id, "Requirements,Position,Country,City");
-                var vacancyDto = _mapper.Map<CreateOrEditVacancyDTO>(vacancy);
+                var vacancyDto = _mapper.Map<EditVacancyDTO>(vacancy);
                 ViewBag.PositionTitle = vacancy.Position.Name;
                 ViewBag.PositionId = vacancy.Position.Id;
                 ViewBag.Requirements = vacancy.Requirements.Select(x => x.Title).ToList();
@@ -143,7 +172,7 @@ namespace CareerExplorer.Web.Controllers
         }
         [HttpPost]
         [Authorize(Roles = UserRoles.Recruiter)]
-        public async Task<IActionResult> Edit(CreateOrEditVacancyDTO vacancyDto, string selectedSkills, string position)
+        public async Task<IActionResult> Edit(EditVacancyDTO vacancyDto, string selectedSkills, string position)
         {
             try
             {
@@ -162,7 +191,12 @@ namespace CareerExplorer.Web.Controllers
                 currentVacancy.Salary = vacancyDto.Salary;
                 currentVacancy.EnglishLevel= vacancyDto.EnglishLevel;
                 currentVacancy.WorkType= vacancyDto.WorkType;
-                await _vacancyService.EditVacancy(selectedSkills, currentVacancy, position);
+                string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
+                if (!int.TryParse(position, out int positionIndex))
+                {
+                    return BadRequest();
+                }
+                await _vacancyService.EditVacancy(tags, currentVacancy, positionIndex);
                 return RedirectToAction(nameof(CreatedVacancies));
             }
             catch { return BadRequest(); }

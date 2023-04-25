@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CareerExplorer.Web.DTO
 {
-    public class CreateOrEditVacancyDTO
+    public class EditVacancyDTO
     {
         public int Id { get; set; }
         public int CreatorId { get; set; }

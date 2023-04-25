@@ -22,6 +22,7 @@ namespace CareerExplorer.Api
                       .ReverseMap();
             CreateMap<SkillsTag, SkillTagDTO>().ReverseMap();
             CreateMap<Position, PositionDTO>().ReverseMap();
+            CreateMap<CreateVacancyDTO, Vacancy>().ReverseMap();
         }
     }
 }
