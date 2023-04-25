@@ -7,14 +7,18 @@
     <tbody>
         @foreach(var chat in Model)
         {
+
+            var appUser = @chat.Users.First(x => x.UserType == UserType.Recruiter);
+            var recruiter = appUser.RecruiterProfile;
+
             
-            <tr class="click-row" data-receiverid="@chat.Users.First(x => x.UserType == UserType.Recruiter).Id">
+            <tr class="click-row" data-receiverid="@appUser.Id">
                    <th>
-                       <h3 style="font-size:15px;">@chat.Users.First(x => x.UserType == UserType.Recruiter).Email</h3>
-                    <h2 style="font-size:20px;">@chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Company</h2>
+                       <h3 style="font-size:15px;">@appUser.Email</h3>
+                    <h2 style="font-size:20px;">@recruiter.Company</h2>
                        <span>
-                           @chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Name 
-                           @chat.Users.First(x => x.UserType == UserType.Recruiter).RecruiterProfile.Surname
+                           @recruiter.Name 
+                           @recruiter.Surname
                        </span>
                    </th>
                    <th>

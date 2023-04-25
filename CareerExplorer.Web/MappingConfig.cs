@@ -30,6 +30,7 @@ namespace CareerExplorer.Web
                 .ForMember(x => x.NickName,
                 m => m.MapFrom(a => a.AppUser.Email))
                 .ReverseMap();
+            CreateMap<CreateVacancyDTO, Vacancy>().ReverseMap();
         }
     }
 }

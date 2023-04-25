@@ -23,7 +23,6 @@ namespace CareerExplorer.Web.Controllers
         private readonly IVacanciesRepository _vacanciesRepository;
         private readonly IRecruiterProfileRepository _recruiterRepository;
         private readonly IJobSeekerProfileRepository _jobSeekerRepository;
-        
         private readonly IAdminService _adminService;
         public AdminController(IUnitOfWork unitOfWork, IMapper mapper,
             IAdminService adminService)

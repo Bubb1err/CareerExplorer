@@ -53,8 +53,10 @@ namespace CareerExplorer.Infrastructure.Services
                 }
                 else throw new Exception();
             }
-            var jobseekerVacancy = _jobSeekerVacancyRepository.GetFirstOrDefault(x => x.VacancyId == vacancyId && x.JobSeekerId == jobSeeker.Id);
-
+            var jobseekerVacancy = _jobSeekerVacancyRepository
+                .GetFirstOrDefault(x => x.VacancyId == vacancyId && x.JobSeekerId == jobSeeker.Id);
+            if(jobseekerVacancy == null)
+                throw new NullReferenceException();
             vacancyApplied.Applicants.Add(jobseekerVacancy);
             jobSeeker.VacanciesApplied.Add(jobseekerVacancy);
             await _unitOfWork.SaveAsync();

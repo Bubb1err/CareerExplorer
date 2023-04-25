@@ -31,7 +31,7 @@ namespace CareerExplorer.Web.DTO
         public int? DesiredPositionId { get; set; }
         public Position? DesiredPosition { get; set; }
         public int? ExperienceYears { get; set; }
-        public virtual ICollection<SkillsTag> Skills { get; set; } = new List<SkillsTag>();
+        public ICollection<SkillsTag> Skills { get; set; } = new List<SkillsTag>();
         public int? EnglishLevel { get; set; }
     }
 }

@@ -103,7 +103,7 @@ namespace CareerExplorer.Web.Controllers
         }
         [Authorize(Roles = UserRoles.Recruiter)]
         [HttpPost]
-        public async Task<IActionResult> Create(CreateOrEditVacancyDTO vacancyDTO, string selectedSkills, string position)
+        public async Task<IActionResult> Create(CreateVacancyDTO vacancyDTO, string selectedSkills, string position)
         {
             try
             {
@@ -117,10 +117,6 @@ namespace CareerExplorer.Web.Controllers
                 
                 if (currentRecruiterId == null) return BadRequest();
                 var vacancy = _mapper.Map<Vacancy>(vacancyDTO);
-                var country = _countryRepository.GetFirstOrDefault(x => x.Id == vacancyDTO.CountryId);
-                var city = _cityRepository.GetFirstOrDefault(x => x.Id == vacancyDTO.CityId);
-                vacancy.Country= country;
-                vacancy.City = city;
                 await _vacancyService.CreateVacancy(selectedSkills, position, currentRecruiterId, vacancy);
                 return RedirectToAction(nameof(CreatedVacancies));
             }

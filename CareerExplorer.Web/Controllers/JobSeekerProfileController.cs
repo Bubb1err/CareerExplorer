@@ -159,5 +159,17 @@ namespace CareerExplorer.Web.Controllers
             var cities = _countryRepository.GetFirstCitiesOfCountry(countryId, search).ToList();
             return Json(cities);
         }
+        //[HttpGet]
+        //public async Task<IActionResult> Start(string chatId)
+        //{
+        //    long chatIdToLong = long.Parse(chatId);
+
+        //    var user = await _userManager.GetUserAsync(User);
+        //    var userId = user.Id;
+        //    var jobSeeker = _jobSeekerRepository.GetFirstOrDefault(x => x.UserId == userId);
+        //    jobSeeker.TgChatId= chatIdToLong;
+        //    await _unitOfWork.SaveAsync();
+        //    return Ok();
+        //}
     }
 }
