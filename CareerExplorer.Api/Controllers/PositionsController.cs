@@ -11,55 +11,57 @@ using System.Net;
 namespace CareerExplorer.Api.Controllers
 {
     [ApiController]
-    public class SkillTagsController : ControllerBase
+    public class PositionsController : ControllerBase
     {
-        protected APIResponse _response;
-        private readonly IRepository<SkillsTag> _skillTagRepository;
-        private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        protected APIResponse _response;
+        private readonly IRepository<Position> _positionsRepository;
+        private readonly IMapper _mapper;
         private readonly IAdminRepository _adminRepository;
-        public SkillTagsController(IMapper mapper, IUnitOfWork unitOfWork)
+        public PositionsController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _response = new();
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _skillTagRepository = _unitOfWork.GetRepository<SkillsTag>();
+            _unitOfWork= unitOfWork;
+            _mapper= mapper;
+            _response= new APIResponse();
+            _positionsRepository = _unitOfWork.GetRepository<Position>();
             _adminRepository = (IAdminRepository)_unitOfWork.GetRepository<Admin>();
         }
         [HttpGet]
+        [Route("api/positions")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("api/skilltags")]
-        public ActionResult<APIResponse> GetAll(string? search, [FromQuery]int pageSize = 5,[FromQuery] int pageNumber = 1)
+        public ActionResult<APIResponse> GetAll(string? search, 
+            [FromQuery] int pageSize = 5, [FromQuery] int pageNumber = 1)
         {
             try
             {
-                IEnumerable<SkillsTag> skillTags;
-                if(!string.IsNullOrWhiteSpace(search))
+                IEnumerable<Position> positions;
+                if (!string.IsNullOrWhiteSpace(search))
                 {
-                    skillTags = _skillTagRepository.GetAll(x => x.Title.ToLower().Contains(search.ToLower()));
+                    positions = _positionsRepository.GetAll(x => x.Name.ToLower().Contains(search.ToLower()));
                 }
                 else
                 {
-                    skillTags = _skillTagRepository.GetAll();
+                    positions = _positionsRepository.GetAll();
                 }
 
-                if(skillTags == null)
+                if (positions == null)
                 {
                     _response.IsSuccess = false;
                     _response.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(_response);
                 }
-                var paginatedSkillTags = _skillTagRepository
-                    .Paginate(skillTags.AsQueryable(), pageSize, pageNumber).ToList();
-                var skillTagsDto = _mapper.Map<List<SkillTagDTO>>(paginatedSkillTags);
-                _response.Result = skillTagsDto;
+                var paginatedPositions = _positionsRepository
+                    .Paginate(positions.AsQueryable(), pageSize, pageNumber).ToList();
+                var positionsDto = _mapper.Map<List<PositionDTO>>(paginatedPositions);
+                _response.Result = positionsDto;
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
                 return Ok(_response);
 
-            } catch (Exception ex) 
+            }
+            catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -68,29 +70,26 @@ namespace CareerExplorer.Api.Controllers
             }
         }
         [HttpGet]
-        [Route("api/skilltags/{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<APIResponse> GetSkillTag(int id)
+        [Route("api/positions/{id:int}")]
+        public ActionResult<APIResponse> Get(int id)
         {
             try
             {
-                var skillTag = _skillTagRepository.GetFirstOrDefault(x => x.Id == id);
-                if(skillTag == null)
+                var position = _positionsRepository.GetFirstOrDefault(x => x.Id == id);
+                if (position == null)
                 {
                     _response.IsSuccess = false;
-                    _response.Errors = new List<string> { $"Skilltag with id {id} was not found." };
+                    _response.Errors = new List<string> { $"Position with id {id} was not found." };
                     _response.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(_response);
                 }
-                var skillTagDto = _mapper.Map<SkillTagDTO>(skillTag);
-                _response.Result = skillTagDto;
+                var positionDto = _mapper.Map<PositionDTO>(position);
+                _response.Result = positionDto;
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
                 return Ok(_response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -99,34 +98,34 @@ namespace CareerExplorer.Api.Controllers
             }
         }
         [HttpPost]
+        [Route("api/position")]
         [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Route("api/skilltag")]
-        public async Task<ActionResult<APIResponse>> Create([FromQuery]string title)
+        public async Task<ActionResult<APIResponse>> Create([FromQuery]string name)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(title))
+                if (string.IsNullOrWhiteSpace(name))
                 {
                     _response.IsSuccess = false;
-                    _response.Errors = new List<string> { "Title could not be empty." };
+                    _response.Errors = new List<string> { "Name could not be empty." };
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(_response);
                 }
-                SkillsTag skillTag = new SkillsTag
+                Position position = new Position
                 {
-                    Title = title
+                    Name= name
                 };
-                await _skillTagRepository.AddAsync(skillTag);
+                await _positionsRepository.AddAsync(position);
                 await _unitOfWork.SaveAsync();
 
                 _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.Created;
-                _response.Result = "Skilltag has been created successfully.";
+                _response.Result = "Position has been created successfully.";
                 return Ok(_response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.Errors = new List<string> { ex.Message };
@@ -135,37 +134,37 @@ namespace CareerExplorer.Api.Controllers
             }
         }
         [HttpPatch]
-        [Route("api/skilltag")]
+        [Route("api/position")]
         [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<APIResponse>> Edit([FromForm]SkillTagDTO skillTagDto)
+        public async Task<ActionResult<APIResponse>> Edit([FromForm]PositionDTO positionDto)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(skillTagDto.Title))
+                if (string.IsNullOrWhiteSpace(positionDto.Name))
                 {
                     _response.IsSuccess = false;
-                    _response.Errors = new List<string> { "Title could not be empty." };
+                    _response.Errors = new List<string> { "Name could not be empty." };
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(_response);
                 }
-                if(skillTagDto.Id == 0)
+                if (positionDto.Id == 0)
                 {
                     _response.IsSuccess = false;
                     _response.Errors = new List<string> { "Incorrect id." };
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(_response);
                 }
-                var skillTag = _mapper.Map<SkillsTag>(skillTagDto);
-                _adminRepository.UpdateSkillTag(skillTag);
+                var position = _mapper.Map<Position>(positionDto);
+                _adminRepository.UpdatePosition(position);
                 await _unitOfWork.SaveAsync();
                 _response.IsSuccess = true;
-                _response.Result = "Skilltag has been edited successfully.";
+                _response.Result = "Position has been edited successfully.";
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.BadRequest;
@@ -174,7 +173,7 @@ namespace CareerExplorer.Api.Controllers
             }
         }
         [HttpDelete]
-        [Route("api/skilltag/{id:int}")]
+        [Route("api/position/{id:int}")]
         [Authorize(Roles = UserRoles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -183,29 +182,29 @@ namespace CareerExplorer.Api.Controllers
         {
             try
             {
-                if(id == 0)
+                if (id == 0)
                 {
                     _response.IsSuccess = false;
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     _response.Errors = new List<string> { "Incorrect id." };
                     return BadRequest(_response);
                 }
-                var skillTag = _skillTagRepository.GetFirstOrDefault(x => x.Id == id);
-                if(skillTag == null)
+                var position = _positionsRepository.GetFirstOrDefault(x => x.Id == id);
+                if (position == null)
                 {
                     _response.IsSuccess = false;
                     _response.StatusCode = HttpStatusCode.NotFound;
-                    _response.Errors = new List<string> { $"Skill tag with id {id} was not found." };
+                    _response.Errors = new List<string> { $"Position with id {id} was not found." };
                     return NotFound(_response);
                 }
-                _skillTagRepository.Remove(skillTag);
+                _positionsRepository.Remove(position);
                 await _unitOfWork.SaveAsync();
                 _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.OK;
-                _response.Result = $"Skill tag with id {id} has been deleted successfully.";
+                _response.Result = $"Position with id {id} has been deleted successfully.";
                 return Ok(_response);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _response.IsSuccess = false;
                 _response.StatusCode = HttpStatusCode.BadRequest;

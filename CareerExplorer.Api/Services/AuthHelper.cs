@@ -2,14 +2,9 @@
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Enums;
 using CareerExplorer.Core.Interfaces;
-using CareerExplorer.Infrastructure.Data;
 using CareerExplorer.Shared;
-using MagicVilla_VillaAPI.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace CareerExplorer.Api.Services
 {

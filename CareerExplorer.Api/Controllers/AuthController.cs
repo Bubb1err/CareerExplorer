@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MagicVilla_VillaAPI.Models;
 using CareerExplorer.Core.Enums;
 using CareerExplorer.Shared;
 using CareerExplorer.Api.DTO;
 using System.Net;
 using CareerExplorer.Api.Services;
+using CareerExplorer.Web;
 
 namespace CareerExplorer.Api.Controllers
 {

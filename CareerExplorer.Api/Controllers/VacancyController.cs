@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
-using MagicVilla_VillaAPI.Models;
+using CareerExplorer.Web;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using CareerExplorer.Api.DTO;
