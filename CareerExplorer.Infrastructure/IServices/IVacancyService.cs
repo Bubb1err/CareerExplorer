@@ -11,7 +11,7 @@ namespace CareerExplorer.Infrastructure.IServices
     {
         int[]? GetIdsFromString(string ids);
         int[]? GetTypesFromString(string types);
-        Task CreateVacancy(string selectedSkills, string position, string currentRecruiterId, Vacancy vacancy);
-        Task EditVacancy(string selectedSkills, Vacancy vacancy, string position);
+        Task CreateVacancy(string[] tags, int position, string currentRecruiterId, Vacancy vacancy);
+        Task EditVacancy(string[] tags, Vacancy vacancy, int position);
     }
 }

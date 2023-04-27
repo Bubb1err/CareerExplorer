@@ -14,20 +14,23 @@ namespace CareerExplorer.Web.Controllers
     [Authorize(Roles = UserRoles.Recruiter)]
     public class RecruiterProfileController : Controller
     {
-
+        private readonly ILogger<RecruiterProfileController> _logger;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IRecruiterProfileRepository _recruiterRepository;
         private readonly IAdminService _adminService;
-        public RecruiterProfileController(UserManager<IdentityUser> userManager, IUnitOfWork unitOfWork,
-            IMapper mapper, IAdminService adminService)
+        public RecruiterProfileController(UserManager<IdentityUser> userManager,
+            IUnitOfWork unitOfWork,
+            IMapper mapper, IAdminService adminService,
+            ILogger<RecruiterProfileController> logger)
         {
             _adminService = adminService;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
+            _logger = logger;
         }
         [HttpGet]
         public IActionResult GetProfile()
@@ -46,7 +49,7 @@ namespace CareerExplorer.Web.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.Log(LogLevel.Error, ex.ToString());
             }
             return BadRequest();
             

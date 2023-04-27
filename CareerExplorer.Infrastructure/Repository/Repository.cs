@@ -1,4 +1,5 @@
-﻿using CareerExplorer.Core.Interfaces;
+﻿using CareerExplorer.Core.Entities;
+using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -54,6 +55,18 @@ namespace CareerExplorer.Infrastructure.Repository
                 return Filtering(query, filter, includeProperties);
             }
 
+        }
+        public IEnumerable<T> Paginate(IQueryable<T> collection, int pageSize, int pageNumber)
+        {
+            if (pageSize > 0)
+            {
+                if (pageSize > 100)
+                {
+                    pageSize = 100;
+                }
+                collection = collection.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+            }
+            return collection;
         }
 
         public void Remove(T entity)

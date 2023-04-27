@@ -19,6 +19,8 @@ namespace CareerExplorer.Infrastructure.Services
         private readonly IRepository<SkillsTag> _skillsTagRepository;
         private readonly IRecruiterProfileRepository _recruiterRepository;
         private readonly IVacanciesRepository _vacanciesRepository;
+        private readonly ICountryRepository _countryRepository;
+        private readonly IRepository<City> _cityRepository;
         public VacancyService(IUnitOfWork unitOfWork)
         {
             _unitOfWork= unitOfWork;
@@ -26,6 +28,8 @@ namespace CareerExplorer.Infrastructure.Services
             _skillsTagRepository = _unitOfWork.GetRepository<SkillsTag>();
             _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
             _vacanciesRepository = (IVacanciesRepository)_unitOfWork.GetRepository<Vacancy>();
+            _countryRepository = (ICountryRepository)_unitOfWork.GetRepository<Country>();
+            _cityRepository = _unitOfWork.GetRepository<City>();
         }
         public int[]? GetIdsFromString(string ids)
         {
@@ -35,9 +39,9 @@ namespace CareerExplorer.Infrastructure.Services
             int[] tagIdsArray = new int[tagIdsStr.Length];
             for (int i = 0; i < tagIdsStr.Length; i++)
             {
-                if (char.IsDigit(char.Parse(tagIdsStr[i])))
+                if(int.TryParse(tagIdsStr[i], out int tagId))
                 {
-                    tagIdsArray[i] = int.Parse(tagIdsStr[i]);
+                    tagIdsArray[i] = tagId;
                 }
                 else
                 {
@@ -57,9 +61,9 @@ namespace CareerExplorer.Infrastructure.Services
             int[] typesArray = new int[typesStr.Length];
             for(int i = 0; i < typesStr.Length;i++)
             {
-                if (char.IsDigit(char.Parse(typesStr[i])))
+                if (int.TryParse(typesStr[i], out int type))
                 {
-                    typesArray[i] = int.Parse(typesStr[i]);
+                    typesArray[i] = type;
                 }
                 else
                 {
@@ -71,58 +75,42 @@ namespace CareerExplorer.Infrastructure.Services
                 return null;
             return typesArray;
         }
-        public async Task CreateVacancy(string selectedSkills, string position, string currentRecruiterId, Vacancy vacancy)
+        public async Task CreateVacancy(string[] tags, int position, string currentRecruiterId, Vacancy vacancy)
         {
-            string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
-            if (!int.TryParse(position, out int positionIndex))
-            {
-                throw new ArgumentException();
-            }
-            var positionSelected = _positionsRepository.GetFirstOrDefault(x => x.Id == positionIndex);
-            var skills = new List<SkillsTag>();
-            foreach (var tag in tags)
-            {
-                skills.Add(_skillsTagRepository.GetFirstOrDefault(x => x.Title == tag));
-            }
+            var positionSelected = _positionsRepository.GetFirstOrDefault(x => x.Id == position);
+            var skills = _skillsTagRepository.GetAll(x => tags.Contains(x.Title)).ToList();
+            var country = _countryRepository.GetFirstOrDefault(x => x.Id == vacancy.CountryId);
+            var city = _cityRepository.GetFirstOrDefault(x => x.Id == vacancy.CityId);
             var creator = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecruiterId);
             vacancy.Requirements = skills;
             vacancy.CreatorId = creator.Id;
             vacancy.Creator = creator;
             vacancy.CreatedDate = DateTime.Now;
             vacancy.Position = positionSelected;
-            vacancy.PositionId = positionIndex;
+            vacancy.PositionId = position;
             await _vacanciesRepository.AddAsync(vacancy);
             await _unitOfWork.SaveAsync();
         }
-        public async Task EditVacancy(string selectedSkills, Vacancy vacancy, string position)
+        public async Task EditVacancy(string[] tags, Vacancy vacancy, int position)
         {
-            if(selectedSkills== null)
+            if(tags == null || position == 0)
                 throw new ArgumentNullException();
-            string[] tags = JsonConvert.DeserializeObject<string[]>(selectedSkills);
-            if (!int.TryParse(position, out int positionIndex))
+            if (vacancy.PositionId != position)
             {
-                throw new ArgumentException();
-            }
-            if (vacancy.PositionId != positionIndex)
-            {
-                var positionSelected = _positionsRepository.GetFirstOrDefault(x => x.Id == positionIndex);
+                var positionSelected = _positionsRepository.GetFirstOrDefault(x => x.Id == position);
                 vacancy.Position = positionSelected;
-                vacancy.PositionId = positionIndex;
+                vacancy.PositionId = position;
             }
-            List<SkillsTag> skillsToAdd = new List<SkillsTag>();
             var existingSkillTags = vacancy.Requirements.Select(s => s.Title);
-            var tagsToRemove = existingSkillTags.Except(tags).ToList();
-            for (int i = tagsToRemove.Count() - 1; i >= 0; i--)
+            var tagsToRemove = vacancy.Requirements.Where(x => !tags.Contains(x.Title)).ToList();
+            for (int i = tagsToRemove.Count()-1; i >= 0; i--)
             {
-                var skillTagToRemove = vacancy.Requirements.FirstOrDefault(s => s.Title == tagsToRemove[i]);
-                vacancy.Requirements.Remove(skillTagToRemove);
+                vacancy.Requirements.Remove(tagsToRemove[i]);
             }
-            foreach (var skillTag in tags.Except(existingSkillTags))
+            var skillsToAdd = _skillsTagRepository.GetAll(x => tags.Except(existingSkillTags).Contains(x.Title)).ToList();
+            for(int i = skillsToAdd.Count()-1; i >= 0;i--)
             {
-                var newSkillTag = _skillsTagRepository.GetFirstOrDefault(s => s.Title == skillTag)
-                    ?? new SkillsTag { Title = skillTag };
-
-                vacancy.Requirements.Add(newSkillTag);
+                vacancy.Requirements.Add(skillsToAdd[i]);
             }
             await _unitOfWork.SaveAsync();
         }

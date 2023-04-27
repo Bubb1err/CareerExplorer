@@ -19,7 +19,7 @@ namespace CareerExplorer.Infrastructure.Repository
         }
         public IEnumerable<Recruiter> GetRecruiterProfilesToAccept()
         {
-            return _context.Recruiters.AsNoTracking().Where(x => x.IsFilled && !x.IsAccepted).ToList();
+            return _context.Recruiters.AsNoTracking().Where(x => x.IsFilled && !x.IsAccepted);
         }
         public void Update(Recruiter entity)
         {

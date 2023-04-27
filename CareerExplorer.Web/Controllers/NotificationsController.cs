@@ -45,6 +45,7 @@ namespace CareerExplorer.Web.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             string userId = user.Id;
+            ViewBag.UserId = userId;
             var invitations = _notificationRepository.GetAll(x => x.ReceiverId == userId);
             return View(invitations);
 

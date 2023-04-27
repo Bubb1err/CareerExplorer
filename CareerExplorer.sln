@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerExplorer.Web", "CareerExplorer.Web\CareerExplorer.Web.csproj", "{A6263FA3-CAD5-4049-9F60-CA23509A913F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareerExplorer.Web", "CareerExplorer.Web\CareerExplorer.Web.csproj", "{A6263FA3-CAD5-4049-9F60-CA23509A913F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerExplorer.Core", "CareerExplorer.Core\CareerExplorer.Core.csproj", "{9A7753D9-51C0-478F-926B-8C4ECD0CBB26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareerExplorer.Core", "CareerExplorer.Core\CareerExplorer.Core.csproj", "{9A7753D9-51C0-478F-926B-8C4ECD0CBB26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerExplorer.Infrastructure", "CareerExplorer.Infrastructure\CareerExplorer.Infrastructure.csproj", "{D9F9E6B5-F98D-4507-9A23-9A49741E6AD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareerExplorer.Infrastructure", "CareerExplorer.Infrastructure\CareerExplorer.Infrastructure.csproj", "{D9F9E6B5-F98D-4507-9A23-9A49741E6AD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerExplorer.Shared", "CareerExplorer.Shared\CareerExplorer.Shared.csproj", "{16CAFBBD-B8B5-410F-97A6-BF5EF0687C2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareerExplorer.Shared", "CareerExplorer.Shared\CareerExplorer.Shared.csproj", "{16CAFBBD-B8B5-410F-97A6-BF5EF0687C2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerExplorer.Api", "CareerExplorer.Api\CareerExplorer.Api.csproj", "{6C48401F-D7A9-40BE-897E-DF5FA75338D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{16CAFBBD-B8B5-410F-97A6-BF5EF0687C2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16CAFBBD-B8B5-410F-97A6-BF5EF0687C2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16CAFBBD-B8B5-410F-97A6-BF5EF0687C2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C48401F-D7A9-40BE-897E-DF5FA75338D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C48401F-D7A9-40BE-897E-DF5FA75338D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C48401F-D7A9-40BE-897E-DF5FA75338D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C48401F-D7A9-40BE-897E-DF5FA75338D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -23,7 +23,6 @@ namespace CareerExplorer.Web.Controllers
         private readonly IVacanciesRepository _vacanciesRepository;
         private readonly IRecruiterProfileRepository _recruiterRepository;
         private readonly IJobSeekerProfileRepository _jobSeekerRepository;
-        
         private readonly IAdminService _adminService;
         public AdminController(IUnitOfWork unitOfWork, IMapper mapper,
             IAdminService adminService)
@@ -53,11 +52,13 @@ namespace CareerExplorer.Web.Controllers
             return View(skillsTagsDto);
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult CreateTag()
         {
             return View();
         }
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> CreateTag(SkillTagDTO skillTagDTO)
         {
             try
@@ -78,6 +79,7 @@ namespace CareerExplorer.Web.Controllers
 
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> EditTag(int? id)
         {
             try
@@ -92,6 +94,7 @@ namespace CareerExplorer.Web.Controllers
 
         }
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> EditTag(SkillTagDTO skillTagDto)
         {
             try
@@ -109,6 +112,7 @@ namespace CareerExplorer.Web.Controllers
 
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> DeleteTag(int? id)
         {
             try
@@ -134,11 +138,13 @@ namespace CareerExplorer.Web.Controllers
             return View(positionsDto);
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult CreatePosition()
         {
             return View();
         }
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> CreatePosition(PositionDTO positionDto)
         {
             try
@@ -157,6 +163,7 @@ namespace CareerExplorer.Web.Controllers
 
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> EditPosition(int? id)
         {
             try
@@ -171,6 +178,7 @@ namespace CareerExplorer.Web.Controllers
 
         }
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> EditPosition(PositionDTO positionDto)
         {
             try
@@ -188,6 +196,7 @@ namespace CareerExplorer.Web.Controllers
 
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> DeletePosition(int? id)
         {
             try
@@ -206,6 +215,7 @@ namespace CareerExplorer.Web.Controllers
         }
         #endregion
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult GetVacanciesToAccept()
         {
             var vacancies = _vacanciesRepository.GetVacanciesToAccept().ToList();
@@ -213,6 +223,7 @@ namespace CareerExplorer.Web.Controllers
             return View(vacanciesDto);
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> ViewVacancy(int id)
         {
             var vacancy = await _vacanciesRepository.GetVacancyAsync(id);
@@ -220,6 +231,7 @@ namespace CareerExplorer.Web.Controllers
             return View(vacancyDto);
         }
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> AcceptVacancy(int id)
         {
             try
@@ -234,6 +246,7 @@ namespace CareerExplorer.Web.Controllers
             }
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult GetRecruitersToAccept()
         {
             var recruiters = _recruiterRepository.GetRecruiterProfilesToAccept().ToList();
@@ -241,6 +254,7 @@ namespace CareerExplorer.Web.Controllers
             return View(recruitersDto);
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult ViewRecruiterProfile(int id)
         {
             var recruiter = _recruiterRepository.GetFirstOrDefault(x => x.Id == id);
@@ -248,6 +262,7 @@ namespace CareerExplorer.Web.Controllers
             return View(recruiterDto);
         }
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async  Task<IActionResult> AcceptRecruiterProfile(int id)
         {
             if(id == 0) return BadRequest();
@@ -255,6 +270,7 @@ namespace CareerExplorer.Web.Controllers
             return Ok();
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult GetJobSeekersToAccept()
         {
             var jobSeekers = _jobSeekerRepository.GetJobSeekersToAccept().ToList();
@@ -262,6 +278,7 @@ namespace CareerExplorer.Web.Controllers
             return View(jobSeekersDto);
         }
         [HttpGet]
+        [Authorize(Roles = UserRoles.Admin)]
         public IActionResult ViewJobSeekerProfile(int id)
         {
             if(id == 0) return BadRequest();
@@ -270,6 +287,7 @@ namespace CareerExplorer.Web.Controllers
             return View(jobSeekerDto);
         }
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> AcceptJobSeekerProfile(int id)
         {
             if(id == 0) return BadRequest();
