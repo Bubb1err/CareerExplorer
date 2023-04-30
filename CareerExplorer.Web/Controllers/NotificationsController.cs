@@ -5,6 +5,7 @@ using CareerExplorer.Web.Hubs;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.SignalR;
@@ -18,14 +19,19 @@ namespace CareerExplorer.Web.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<MeetingNotification> _notificationRepository;
         private readonly IHubContext<NotificationHub> _notificationHub;
+        private readonly IEmailSender _emailSender;
+        private readonly IRepository<AppUser> _appUserRepository;
         public NotificationsController(UserManager<IdentityUser> userManager, 
             IUnitOfWork unitOfWork,      
-            IHubContext<NotificationHub> notificationHub)
+            IHubContext<NotificationHub> notificationHub,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _notificationRepository = _unitOfWork.GetRepository<MeetingNotification>();
             _notificationHub = notificationHub;
+            _emailSender = emailSender;
+            _appUserRepository = _unitOfWork.GetRepository<AppUser>();
         }
 
         [HttpPost]
@@ -53,20 +59,30 @@ namespace CareerExplorer.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AcceptInvitation(int invitationId)
         {
+            
+            var user = await _userManager.GetUserAsync(User);
+            var email = user.Email;
             if (invitationId == 0)
                 return BadRequest();
             var invitation = _notificationRepository.GetFirstOrDefault(x => x.Id == invitationId);
             invitation.IsAccepted = true;
             await _unitOfWork.SaveAsync();
+
+            var recruiterUser = _appUserRepository.GetFirstOrDefault(x => x.Id == invitation.SenderId, "RecruiterProfile");
+            var recruiter = recruiterUser.RecruiterProfile;
             BackgroundJob.Schedule(()
                 => SendNotification(invitation.ReceiverId, invitation.MeetingLink),
                 invitation.Date - DateTime.Now);
+            BackgroundJob.Schedule(() =>
+            _emailSender.SendEmailAsync(email, "Notification",
+            $"<p>You have a meeting</p><br/><a href={invitation.MeetingLink}>{invitation.MeetingLink}</a><br/><p>{recruiter.Name} " +
+            $"{recruiter.Surname} {recruiter.Company}</p>"), invitation.Date - DateTime.Now);
             return Ok();
         }
-        public void SendNotification(string receiverId, string content)
+        public async Task SendNotification(string receiverId, string content)
         {
             var hubContext = _notificationHub.Clients.User(receiverId);
-            hubContext.SendAsync("ReceiveNotification", receiverId, content);
+            await hubContext.SendAsync("ReceiveNotification", receiverId, content);
         }
     }
 }
