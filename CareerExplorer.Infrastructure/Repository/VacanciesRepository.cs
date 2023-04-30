@@ -25,7 +25,7 @@ namespace CareerExplorer.Infrastructure.Repository
                 .Include(x => x.Requirements)
                 .Include(x => x.Position);
             countVacancies = vacancies.Count();
-            Paginate(vacancies, pageSize, pageNumber);
+            vacancies = (IQueryable<Vacancy>)Paginate(vacancies, pageSize, pageNumber);
             return vacancies;
         }
         public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies
@@ -42,7 +42,7 @@ namespace CareerExplorer.Infrastructure.Repository
                 .Include(x => x.Requirements)
                 .Include(x => x.Position);
             countVacancies = vacancies.Count();
-            Paginate(vacancies, pageSize, pageNumber);
+            vacancies = (IQueryable<Vacancy>)Paginate(vacancies, pageSize, pageNumber);
             return vacancies;
         }
         public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredByTypeVacancies
@@ -59,7 +59,7 @@ namespace CareerExplorer.Infrastructure.Repository
                 .Include(x => x.Requirements)
                 .Include(x => x.Position);
             countVacancies = vacancies.Count();
-            Paginate(vacancies, pageSize, pageNumber);
+            vacancies = (IQueryable<Vacancy>)Paginate(vacancies, pageSize, pageNumber);
             return vacancies;
         }
         public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies
@@ -76,7 +76,7 @@ namespace CareerExplorer.Infrastructure.Repository
                             .Include(x => x.Requirements)
                             .Include(x => x.Position);
             countVacancies = vacancies.Count();
-            Paginate(vacancies, pageSize, pageNumber); 
+            vacancies = (IQueryable<Vacancy>)Paginate(vacancies, pageSize, pageNumber); 
             return vacancies;
         }
         public IEnumerable<Vacancy> GetCreatedVacancies(string userId)

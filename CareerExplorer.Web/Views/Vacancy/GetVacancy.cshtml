@@ -1,4 +1,5 @@
-﻿@using CareerExplorer.Web.DTO;
+﻿@using CareerExplorer.Core.Entities;
+@using CareerExplorer.Web.DTO;
 @using Microsoft.AspNetCore.Identity;
 @using CareerExplorer.Shared;
 @using Microsoft.AspNetCore.Mvc.Localization
@@ -49,6 +50,31 @@
         </div>
     </div>
 </div>
+@if(User.IsInRole(UserRoles.JobSeeker))
+{
+    var user = await UserManager.GetUserAsync(User);
+    if(user is AppUser)
+    {
+        var jobSeekerProfile = ((AppUser)user).JobSeekerProfile;
+        if(!jobSeekerProfile.IsSubscribedToNotification)
+        {
+            <div class="modal" id="notification-modal">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <p>Subscribe to receive new vacancies.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="subscribe-btn">Subscribe</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -83,6 +109,7 @@
                         $('#apply-btn').text('@Localizer["Sent"]');
                         $('#apply-btn').prop('disabled', true);
                         $('#file-input').prop('disabled', true);
+                        $('#notification-modal').modal('show');
                     },
                     error: function () {
                         alert('An error occurred while submitting your application. Please try again later.');
@@ -91,6 +118,20 @@
             } else {
                 alert('Please select a file to upload.');
             }
+        });
+    });
+    $(document).ready(function () {
+        $("#subscribe-btn").click(function () {
+            $.ajax({
+                url: '/Notifications/Subscribe',
+                type: 'POST',
+                success: function (response) {
+                    $('#notification-modal').modal('hide');
+                },
+                error: function () {
+                    alert('An error occurred while subscribing to notifications. Please try again later.');
+                }
+            });
         });
     });
 </script>

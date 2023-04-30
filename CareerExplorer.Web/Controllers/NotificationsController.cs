@@ -1,5 +1,6 @@
 ﻿using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
+using CareerExplorer.Infrastructure.IServices;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.Hubs;
 using Hangfire;
@@ -7,9 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.SignalR;
-using NuGet.Protocol.Plugins;
 
 namespace CareerExplorer.Web.Controllers
 {
@@ -21,10 +20,12 @@ namespace CareerExplorer.Web.Controllers
         private readonly IHubContext<NotificationHub> _notificationHub;
         private readonly IEmailSender _emailSender;
         private readonly IRepository<AppUser> _appUserRepository;
+        private readonly IRecommendVacanciesByEmailService _recommendVacanciesService;
         public NotificationsController(UserManager<IdentityUser> userManager, 
             IUnitOfWork unitOfWork,      
             IHubContext<NotificationHub> notificationHub,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IRecommendVacanciesByEmailService recommendVacanciesByEmailService)
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
@@ -32,6 +33,7 @@ namespace CareerExplorer.Web.Controllers
             _notificationHub = notificationHub;
             _emailSender = emailSender;
             _appUserRepository = _unitOfWork.GetRepository<AppUser>();
+            _recommendVacanciesService = recommendVacanciesByEmailService;
         }
 
         [HttpPost]
@@ -78,6 +80,29 @@ namespace CareerExplorer.Web.Controllers
             $"<p>You have a meeting</p><br/><a href={invitation.MeetingLink}>{invitation.MeetingLink}</a><br/><p>{recruiter.Name} " +
             $"{recruiter.Surname} {recruiter.Company}</p>"), invitation.Date - DateTime.Now);
             return Ok();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Subscribe()
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                var appUser = _appUserRepository.GetFirstOrDefault(x => x.Id == user.Id, "JobSeekerProfile");
+                if (appUser.JobSeekerProfile != null)
+                {
+                    appUser.JobSeekerProfile.IsSubscribedToNotification= true;
+                    await _unitOfWork.SaveAsync();
+                }
+                else return BadRequest();
+                RecurringJob.AddOrUpdate(() => 
+                _recommendVacanciesService.SendVacanciesToUsersByEmail(TimeSpan.FromMinutes(15)), "*/15 * * * *");
+                return Ok();
+                
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
         public async Task SendNotification(string receiverId, string content)
         {
