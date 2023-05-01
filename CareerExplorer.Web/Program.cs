@@ -7,21 +7,23 @@ using System.Globalization;
 using CareerExplorer.Web.Hubs;
 using Hangfire;
 using Microsoft.AspNetCore.SignalR;
+using System.Drawing.Text;
+using CareerExplorer.Infrastructure.IServices;
 
 namespace CareerExplorer.Web
 {
     public class Program
     {
+        
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            
             // Add services to the container.
             builder.Services.AddMvc()
                 .AddDataAnnotationsLocalization()
                 .AddViewLocalization();
             builder.Services.AddRazorPages();
-
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext(connectionString);
             builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
@@ -69,6 +71,7 @@ namespace CareerExplorer.Web
 
             var app = builder.Build();
 
+                         
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -76,7 +79,6 @@ namespace CareerExplorer.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseRequestLocalization();
             app.UseStaticFiles();
@@ -88,6 +90,14 @@ namespace CareerExplorer.Web
             app.UseAuthorization();
             app.UseHangfireDashboard();
 
+            using (var serviceScope = app.Services.CreateScope())
+            {
+                var services = serviceScope.ServiceProvider;
+                var recommendVacanciesService = services.GetService<IRecommendVacanciesByEmailService>();
+                RecurringJob.AddOrUpdate(() =>
+                recommendVacanciesService.SendVacanciesToUsersByEmail(TimeSpan.FromMinutes(15)), Cron.Daily);
+
+            }
             app.MapRazorPages();
             app.MapHub<ChatHub>("/chatHub");
             app.MapHub<NotificationHub>("/notificationHub");

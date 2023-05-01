@@ -94,8 +94,6 @@ namespace CareerExplorer.Web.Controllers
                     await _unitOfWork.SaveAsync();
                 }
                 else return BadRequest();
-                RecurringJob.AddOrUpdate(() => 
-                _recommendVacanciesService.SendVacanciesToUsersByEmail(TimeSpan.FromMinutes(15)), "*/15 * * * *");
                 return Ok();
                 
             }

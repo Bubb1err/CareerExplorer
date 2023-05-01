@@ -39,9 +39,10 @@ namespace CareerExplorer.Infrastructure
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IVacancyService, VacancyService>();
             services.AddScoped<IApplyOnVacancyService, ApplyOnVacancyService>();
-            services.AddSingleton<IEmailSender, EmailSender>();
+            services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IRecommendVacanciesByEmailService, RecommendVacanciesByEmailService>();
         }
+
     }
 
 }

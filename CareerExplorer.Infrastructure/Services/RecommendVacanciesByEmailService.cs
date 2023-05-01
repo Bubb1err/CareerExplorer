@@ -45,7 +45,7 @@ namespace CareerExplorer.Infrastructure.Services
                             vacanciesToSend.Add(vacancies[j]);
                         }
                     }
-                    if(vacanciesToSend.Count > 0)
+                    if (vacanciesToSend.Count > 0)
                     {
                         var textToSend = new StringBuilder();
                         foreach (var vacancy in vacanciesToSend)
