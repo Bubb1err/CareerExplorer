@@ -126,11 +126,20 @@
   <data name="Choose skills" xml:space="preserve">
     <value>Виберіть необхідні навички</value>
   </data>
+  <data name="City" xml:space="preserve">
+    <value>Місто</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Країна</value>
+  </data>
   <data name="Create" xml:space="preserve">
     <value>Створити</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>Опис</value>
+  </data>
+  <data name="English level" xml:space="preserve">
+    <value>Рівень англійської</value>
   </data>
   <data name="Header" xml:space="preserve">
     <value>Створити нову вакансію</value>
@@ -138,10 +147,19 @@
   <data name="Not Available" xml:space="preserve">
     <value>Неактивна</value>
   </data>
+  <data name="Salary" xml:space="preserve">
+    <value>Заробітня плата</value>
+  </data>
   <data name="Skills" xml:space="preserve">
     <value>Навички</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Назва</value>
+  </data>
+  <data name="Work Location" xml:space="preserve">
+    <value>Місце роботи</value>
+  </data>
+  <data name="Years of Experience" xml:space="preserve">
+    <value>Роки досвіду</value>
   </data>
 </root>

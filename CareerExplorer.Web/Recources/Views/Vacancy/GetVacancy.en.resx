@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="About company" xml:space="preserve">
+    <value>About company</value>
+  </data>
   <data name="Applied" xml:space="preserve">
     <value>Applied</value>
   </data>
@@ -126,10 +129,43 @@
   <data name="Attach" xml:space="preserve">
     <value>Attach your CV (.pdf)</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="English level" xml:space="preserve">
+    <value>English level</value>
+  </data>
+  <data name="Experience" xml:space="preserve">
+    <value>Experience</value>
+  </data>
+  <data name="Go to profile" xml:space="preserve">
+    <value>Go to profile</value>
+  </data>
+  <data name="Published" xml:space="preserve">
+    <value>Published</value>
+  </data>
+  <data name="Salary" xml:space="preserve">
+    <value>Salary</value>
+  </data>
   <data name="Sent" xml:space="preserve">
     <value>Sent</value>
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Submit</value>
+  </data>
+  <data name="Subscribe" xml:space="preserve">
+    <value>Subscribe</value>
+  </data>
+  <data name="Subscribe to receive new vacancies." xml:space="preserve">
+    <value>Subscribe to receive new vacancies.</value>
+  </data>
+  <data name="To apply fill your profile." xml:space="preserve">
+    <value>To apply fill your profile.</value>
+  </data>
+  <data name="Work Location" xml:space="preserve">
+    <value>Work Location</value>
+  </data>
+  <data name="years" xml:space="preserve">
+    <value>years</value>
   </data>
 </root>

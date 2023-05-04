@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="About company" xml:space="preserve">
+    <value>Про компанію</value>
+  </data>
   <data name="Applied" xml:space="preserve">
     <value>Відправлено</value>
   </data>
@@ -126,10 +129,43 @@
   <data name="Attach" xml:space="preserve">
     <value>Прикріпіть своє резюме (.pdf)</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрити</value>
+  </data>
+  <data name="English level" xml:space="preserve">
+    <value>Рівень англійської</value>
+  </data>
+  <data name="Experience" xml:space="preserve">
+    <value>Досвід</value>
+  </data>
+  <data name="Go to profile" xml:space="preserve">
+    <value>Перейти до профілю.</value>
+  </data>
+  <data name="Published" xml:space="preserve">
+    <value>Відправлено</value>
+  </data>
+  <data name="Salary" xml:space="preserve">
+    <value>Заробітня плата</value>
+  </data>
   <data name="Sent" xml:space="preserve">
     <value>Відправлено</value>
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Відправити</value>
+  </data>
+  <data name="Subscribe" xml:space="preserve">
+    <value>Підписатися</value>
+  </data>
+  <data name="Subscribe to receive new vacancies." xml:space="preserve">
+    <value>Підпишіться щоб отримувати нові вакансії.</value>
+  </data>
+  <data name="To apply fill your profile." xml:space="preserve">
+    <value>Щоб відповісти на вакансію заповніть свій профіль.</value>
+  </data>
+  <data name="Work Location" xml:space="preserve">
+    <value>Місце роботи</value>
+  </data>
+  <data name="years" xml:space="preserve">
+    <value>років</value>
   </data>
 </root>

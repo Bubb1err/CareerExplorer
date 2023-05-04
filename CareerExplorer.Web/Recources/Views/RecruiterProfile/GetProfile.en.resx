@@ -126,10 +126,19 @@
   <data name="Enter your surname" xml:space="preserve">
     <value>Enter your surname</value>
   </data>
+  <data name="Fill your profile to send it for review and start posting vacancies." xml:space="preserve">
+    <value>Fill your profile to send it for review and start posting vacancies.</value>
+  </data>
   <data name="Information" xml:space="preserve">
     <value>Provide some information about your company</value>
   </data>
+  <data name="Profile is verified!" xml:space="preserve">
+    <value>Profile is verified!</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
+  </data>
+  <data name="Your profile is on review." xml:space="preserve">
+    <value>Your profile is on review.</value>
   </data>
 </root>

@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Chats" xml:space="preserve">
+    <value>Чати</value>
+  </data>
+  <data name="JobSeekers" xml:space="preserve">
+    <value>Шукачі</value>
+  </data>
   <data name="Login" xml:space="preserve">
     <value>Увійти</value>
   </data>
@@ -129,10 +135,16 @@
   <data name="Profile" xml:space="preserve">
     <value>Профіль</value>
   </data>
+  <data name="Recruiters" xml:space="preserve">
+    <value>Рекрутери</value>
+  </data>
   <data name="Register" xml:space="preserve">
     <value>Зареєструватись</value>
   </data>
   <data name="Tags" xml:space="preserve">
     <value>Навички</value>
+  </data>
+  <data name="Vacancies" xml:space="preserve">
+    <value>Вакансії</value>
   </data>
 </root>

@@ -23,12 +23,12 @@
             <p class="mb-3">@Model.CreatorNickName</p>
             <p>@Model.Description</p>
             <h6 style="font-size:15px;">
-                About company
+                @Localizer["About company"]
             </h6>
             <p>
                 @Model.CompanyDesciprion
             </p>
-            <span>Published: @Model.CreatedDate.ToShortDateString()</span>
+            <span>@Localizer["Published"]: @Model.CreatedDate.ToShortDateString()</span>
             @if (User.IsInRole(UserRoles.JobSeeker))
             {
                     @if(!Model.IsApplied)
@@ -47,8 +47,8 @@
                         }
                         else
                         {
-                            <p class="text-danger mt-2">To apply fill your profile.</p>
-                            <a style="display:inline-block" class="btn btn-primary" asp-controller="JobSeekerProfile" asp-action="GetProfile">Go to profile</a>
+                        <p class="text-danger mt-2">@Localizer["To apply fill your profile."]</p>
+                        <a style="display:inline-block" class="btn btn-primary" asp-controller="JobSeekerProfile" asp-action="GetProfile">@Localizer["Go to profile"]</a>
                         }
 
                     }
@@ -81,20 +81,20 @@
                             @if (Model.WorkType != null)
                             {
                                 <li>
-                                <p>Work Location: @((WorkType)Model.WorkType)</p>
+                                <p>@Localizer["Work Location"]: @((WorkType)Model.WorkType)</p>
                                 </li>
                             }
                             @if (Model.Salary != null)
                             {
                                 <li>
-                                <p>Salary: @Model.Salary$</p>
+                                <p>@Localizer["Salary"]: @Model.Salary$</p>
                                 </li>
                             }
             
                             @if (Model.EnglishLevel != null)
                             {
                                 <li>
-                                <p>English level: @((EnglishLevel)Model.EnglishLevel)</p>
+                                <p>@Localizer["English level"]: @((EnglishLevel)Model.EnglishLevel)</p>
                                 </li>
                             }
                             @if (Model.ExperienceYears != null)
@@ -102,11 +102,13 @@
                                 <li>
                                 @if (Model.ExperienceYears == 6)
                                 {
-                                    <p>Experience: 6+ years</p>
+                                    <p>
+                                        @Localizer["Experience"]: 6+ @Localizer["years"]
+                                    </p>
                                 }
                                 else
                                 {
-                                    <p>Experience: @Model.ExperienceYears years</p>
+                                    <p>@Localizer["Experience"]: @Model.ExperienceYears @Localizer["years"]</p>
                                 }
                                 </li>
                             }
@@ -136,11 +138,11 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <p>Subscribe to receive new vacancies.</p>
+                            <p>@Localizer["Subscribe to receive new vacancies."]</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="subscribe-btn">Subscribe</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+                            <button type="button" class="btn btn-primary" id="subscribe-btn">@Localizer["Subscribe"]</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localizer["Close"]</button>
                         </div>
                     </div>
                 </div>

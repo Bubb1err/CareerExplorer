@@ -33,5 +33,7 @@ namespace CareerExplorer.Web.DTO
         public int? ExperienceYears { get; set; }
         public ICollection<SkillsTag> Skills { get; set; } = new List<SkillsTag>();
         public int? EnglishLevel { get; set; }
+        public bool IsFilled { get; set; }
+        public bool IsAccepted { get; set; }
     }
 }

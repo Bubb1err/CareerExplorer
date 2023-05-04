@@ -117,64 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Choose skills" xml:space="preserve">
-    <value>Виберіть навички із запропонованих</value>
+  <data name="Chats" xml:space="preserve">
+    <value>Чати</value>
   </data>
-  <data name="Choose your city" xml:space="preserve">
-    <value>Виберіть своє місто</value>
-  </data>
-  <data name="Choose your country" xml:space="preserve">
-    <value>Виберіть свою країну</value>
-  </data>
-  <data name="City" xml:space="preserve">
-    <value>Місто</value>
-  </data>
-  <data name="Country" xml:space="preserve">
-    <value>Країна</value>
-  </data>
-  <data name="Desired Salary" xml:space="preserve">
-    <value>Бажана заробітня плата</value>
-  </data>
-  <data name="English level" xml:space="preserve">
-    <value>Рівень англійької</value>
-  </data>
-  <data name="Experience" xml:space="preserve">
-    <value>Досвід</value>
-  </data>
-  <data name="Fill your profile to send it for review and start applying on vacancies." xml:space="preserve">
-    <value>Заповніть свій профіль щоб відправити його на розгляд та почати відгукуватися на вакансії.</value>
-  </data>
-  <data name="GitHub" xml:space="preserve">
-    <value>Вставте посилання на ваш GitHub</value>
-  </data>
-  <data name="LinkedIn" xml:space="preserve">
-    <value>LinkedIn</value>
-  </data>
-  <data name="Name" xml:space="preserve">
-    <value>Введіть ваше ім'я</value>
-  </data>
-  <data name="Phone" xml:space="preserve">
-    <value>Введіть ваш номер телефону</value>
-  </data>
-  <data name="Profile is verified!" xml:space="preserve">
-    <value>Ваш профіль верифіковано!</value>
-  </data>
-  <data name="Save" xml:space="preserve">
-    <value>Зберегти</value>
-  </data>
-  <data name="Select desired position" xml:space="preserve">
-    <value>Виберіть бажану посаду</value>
-  </data>
-  <data name="Skills" xml:space="preserve">
-    <value>Навички</value>
-  </data>
-  <data name="Surname" xml:space="preserve">
-    <value>Введіть ваше прізвище</value>
-  </data>
-  <data name="Years of Experience" xml:space="preserve">
-    <value>Роки досвіду</value>
-  </data>
-  <data name="Your profile is on review." xml:space="preserve">
-    <value>Ваш профіль зараз розглядається.</value>
+  <data name="Profile" xml:space="preserve">
+    <value>Профіль</value>
   </data>
 </root>
