@@ -27,6 +27,7 @@ namespace CareerExplorer.Infrastructure.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Chat> Chat { get; set; }
         public DbSet<MeetingNotification> MeetingNotifications { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);

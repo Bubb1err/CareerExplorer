@@ -33,6 +33,7 @@ namespace CareerExplorer.Infrastructure
             services.AddScoped<IRepository<Country>, CountryRepository>();
             services.AddScoped<IRepository<City>, Repository<City>>();
             services.AddScoped<IRepository<MeetingNotification>, Repository<MeetingNotification>>();
+            services.AddScoped<IRepository<RefreshToken>, Repository<RefreshToken>>();
         }
         public static void RegisterServices(this IServiceCollection services)
         {

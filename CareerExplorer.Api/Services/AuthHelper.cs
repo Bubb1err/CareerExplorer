@@ -5,6 +5,12 @@ using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace CareerExplorer.Api.Services
 {
@@ -21,6 +27,10 @@ namespace CareerExplorer.Api.Services
         private readonly IRepository<AppUser> _userRepository;
         private readonly IJobSeekerProfileRepository _jobSeekerRepository;
         private readonly IRecruiterProfileRepository _recruiterRepository;
+        private readonly TokenValidationParameters _tokenValidationParameters;
+        private readonly IRepository<RefreshToken> _refreshTokenRepository;
+        private readonly IConfiguration _config;
+        private readonly IRepository<AppUser> _appUserRepository;
 
         public AuthHelper(
             UserManager<IdentityUser> userManager,
@@ -28,7 +38,9 @@ namespace CareerExplorer.Api.Services
             SignInManager<IdentityUser> signInManager,
             IEmailSender emailSender,
             RoleManager<IdentityRole> roleManager,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            TokenValidationParameters tokenValidationParameters,
+            IConfiguration config)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -40,6 +52,10 @@ namespace CareerExplorer.Api.Services
             _userRepository = _unitOfWork.GetRepository<AppUser>();
             _jobSeekerRepository = (IJobSeekerProfileRepository)_unitOfWork.GetRepository<JobSeeker>();
             _recruiterRepository = (IRecruiterProfileRepository)_unitOfWork.GetRepository<Recruiter>();
+            _tokenValidationParameters = tokenValidationParameters;
+            _refreshTokenRepository = _unitOfWork.GetRepository<RefreshToken>();
+            _config = config;
+            _appUserRepository = _unitOfWork.GetRepository<AppUser>();
         }
         public AppUser CreateUser()
         {
@@ -118,6 +134,78 @@ namespace CareerExplorer.Api.Services
                 throw new NotSupportedException();
             }
             return (IUserEmailStore<IdentityUser>)_userStore;
+        }
+        private async Task<AuthResultDTO> VerifyAndGenerateTokenAsync(TokenRequestDTO tokenRequestDto)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            var storedToken = _refreshTokenRepository.GetFirstOrDefault(x => x.Token == tokenRequestDto.Token);
+            var appUser = _appUserRepository.GetFirstOrDefault(x => x.Id == storedToken.UserId);
+            try
+            {
+                var tokenCheckResult = jwtTokenHandler.ValidateToken(tokenRequestDto.Token,
+                    _tokenValidationParameters, out var validateToken);
+
+                return await GenerateJWTTokenAsync(appUser, storedToken);
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                if (storedToken.DateExpired >= DateTime.UtcNow)
+                {
+                    return await GenerateJWTTokenAsync(appUser, storedToken);
+                }
+                else
+                {
+                    return await GenerateJWTTokenAsync(appUser, null);
+                }
+            }
+        }
+        public async Task<AuthResultDTO> GenerateJWTTokenAsync(AppUser user, RefreshToken rToken)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, roles.FirstOrDefault())
+            };
+
+            var authSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["JWT:Secret"]));
+            var token = new JwtSecurityToken(issuer: _config["JWT:Issuer"],
+                audience: _config["JWT:Audience"],
+                expires: DateTime.UtcNow.AddMinutes(15),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
+            var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
+            if (rToken != null)
+            {
+                var rTokenResponse = new AuthResultDTO()
+                {
+                    Token = jwtToken,
+                    RefreshToken = rToken.Token,
+                    ExpiresAt = token.ValidTo
+                };
+                return rTokenResponse;
+            }
+            var refreshToken = new RefreshToken()
+            {
+                JwtId = token.Id,
+                IsRevoked = false,
+                UserId = user.Id,
+                DateAdded = DateTime.UtcNow,
+                DateExpired = DateTime.UtcNow.AddMonths(6),
+                Token = Guid.NewGuid().ToString() + "-" + Guid.NewGuid().ToString(),
+            };
+            await _refreshTokenRepository.AddAsync(refreshToken);
+            await _unitOfWork.SaveAsync();
+            var result = new AuthResultDTO()
+            {
+                Token = jwtToken,
+                RefreshToken = refreshToken.Token,
+                ExpiresAt = token.ValidTo
+            };
+            return result;
         }
     }
 }

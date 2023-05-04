@@ -9,6 +9,7 @@ using Hangfire;
 using Microsoft.AspNetCore.SignalR;
 using System.Drawing.Text;
 using CareerExplorer.Infrastructure.IServices;
+using System.Net;
 
 namespace CareerExplorer.Web
 {
@@ -49,13 +50,22 @@ namespace CareerExplorer.Web
                 options.LoginPath = "/Identity/Account/Login";
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
             });
-
+            builder.Services.AddHttpsRedirection(options =>
+            {
+                options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
+                options.HttpsPort = 443;
+            });
+            builder.Services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(60);
+            });
             builder.Services.RegisterRepositories();
             builder.Services.RegisterServices();
 
             builder.Services.AddAutoMapper(typeof(MappingConfig));
             builder.Services.AddSignalR();
-
             builder.Services.AddLocalization(options => options.ResourcesPath = "Recources");
             builder.Services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -68,7 +78,7 @@ namespace CareerExplorer.Web
                 options.SupportedCultures = supported;
                 options.SupportedUICultures= supported;
             });
-
+            
             var app = builder.Build();
 
                          
@@ -80,6 +90,7 @@ namespace CareerExplorer.Web
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
+            app.UseHsts();
             app.UseRequestLocalization();
             app.UseStaticFiles();
 

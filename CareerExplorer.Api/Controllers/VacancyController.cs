@@ -10,9 +10,12 @@ using Microsoft.AspNetCore.Identity;
 using CareerExplorer.Infrastructure.IServices;
 using CareerExplorer.Shared;
 using CareerExplorer.Infrastructure.Repository;
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Cors;
 
 namespace CareerExplorer.Api.Controllers
 {
+    [EnableCors("LocalPolicy, Other")]
     [ApiController]
     public class VacancyController : ControllerBase
     {
@@ -50,27 +53,22 @@ namespace CareerExplorer.Api.Controllers
             try
             {
                 List<Vacancy> vacancies;
-                int totalVacancies;
-                if ((tagIds == null || tagIds.Length == 0) && (types == null || types.Length == 0))
-                {   
-                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies
-                        (pageSize, pageNumber, out totalVacancies).ToList();
-                }
-                else if ((tagIds == null || tagIds.Length == 0) && (types != null && types.Length > 0))
+                Expression<Func<Vacancy, bool>> filter = null;
+                if (tagIds == null && types != null)
                 {
-                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredByTypeVacancies
-                        (pageSize, pageNumber, out totalVacancies, types).ToList();
+                    filter = x => x.WorkType != null && types.Contains((int)x.WorkType);
                 }
-                else if ((tagIds != null && tagIds.Length > 0) && (types == null || types.Length == 0))
+                else if (tagIds != null && types == null)
                 {
-                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies
-                        (pageSize, pageNumber, out totalVacancies, tagIds).ToList();
+                    filter = x => x.Requirements.Any(x => types.Contains(x.Id));
                 }
-                else
+                else if (tagIds != null && types != null)
                 {
-                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies
-                        (pageSize, pageNumber, out totalVacancies, tagIds, types).ToList();
+                    filter = x => x.WorkType != null && types.Contains((int)x.WorkType)
+                            && x.Requirements.Any(x => types.Contains(x.Id));
                 }
+                vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(StaticData.GetAllVacanciesPageSize,
+                    pageNumber, out int totalVacancies, filter).ToList();
                 if(vacancies == null)
                 {
                     _response.IsSuccess= false;

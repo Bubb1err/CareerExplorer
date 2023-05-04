@@ -10,5 +10,6 @@ namespace CareerExplorer.Api.Services
         Task CreateAdminUser();
         Task HandleUserRegistration(AppUser user, RegisterDTO registerDto);
         IUserEmailStore<IdentityUser> GetEmailStore();
+        Task<AuthResultDTO> GenerateJWTTokenAsync(AppUser user, RefreshToken rToken);
    }
 }

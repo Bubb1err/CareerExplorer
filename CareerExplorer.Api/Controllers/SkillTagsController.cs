@@ -5,11 +5,13 @@ using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Shared;
 using CareerExplorer.Web;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace CareerExplorer.Api.Controllers
 {
+    [EnableCors("LocalPolicy, Other")]
     [ApiController]
     public class SkillTagsController : ControllerBase
     {
