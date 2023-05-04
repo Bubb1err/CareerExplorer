@@ -2,11 +2,6 @@
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Services;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CareerExplorer.Tests.Services.Tests
 {

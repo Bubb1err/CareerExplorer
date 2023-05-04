@@ -95,7 +95,7 @@ namespace CareerExplorer.Web
                 var services = serviceScope.ServiceProvider;
                 var recommendVacanciesService = services.GetService<IRecommendVacanciesByEmailService>();
                 RecurringJob.AddOrUpdate(() =>
-                recommendVacanciesService.SendVacanciesToUsersByEmail(TimeSpan.FromMinutes(15)), Cron.Daily);
+                recommendVacanciesService.SendVacanciesToUsersByEmail(TimeSpan.FromDays(1)), Cron.Daily);
 
             }
             app.MapRazorPages();

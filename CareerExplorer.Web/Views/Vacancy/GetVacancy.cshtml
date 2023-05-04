@@ -1,4 +1,5 @@
 ﻿@using CareerExplorer.Core.Entities;
+@using CareerExplorer.Core.Enums;
 @using CareerExplorer.Web.DTO;
 @using Microsoft.AspNetCore.Identity;
 @using CareerExplorer.Shared;
@@ -10,10 +11,23 @@
 <div class="container-md">
     <div class="row">
         <div class="col-md-8">
-
-            <h1>@Model.Position.Name</h1>
-            <span>@Model.CreatorNickName</span>
+            <div class="row">
+                <div class="col-10">
+                    <h1>@Model.Position.Name</h1>
+                </div>
+                <div class="col-2">
+                    <i class="bi bi-people-fill"></i> @ViewBag.ApplicantsCount <i class="bi bi-eye-fill"></i> @Model.Views
+                </div>
+            </div>   
+            <h4 style="font-size:15px;" class="mb-0">@Model.CompanyName</h4>
+            <p class="mb-3">@Model.CreatorNickName</p>
             <p>@Model.Description</p>
+            <h6 style="font-size:15px;">
+                About company
+            </h6>
+            <p>
+                @Model.CompanyDesciprion
+            </p>
             <span>Published: @Model.CreatedDate.ToShortDateString()</span>
             @if (User.IsInRole(UserRoles.JobSeeker))
             {
@@ -46,7 +60,67 @@
             }
         </div>
         <div class="col-md-4">
+            <div class="card bg-secondary mb-3" style="max-width: 20rem;">
+                <div class="card-body">
+                    
 
+                    <ul>
+                            @if (Model.Country != null && Model.City != null)
+                            {
+                                <li>
+                                <p><i class="bi bi-geo-alt-fill"></i>@Model.Country.Name, @Model.City.Name</p>
+                                </li>
+                            }
+                            else if (Model.Country != null)
+                            {
+                                <li>
+                                <p><i class="bi bi-geo-alt-fill"></i>@Model.Country.Name</p>
+                                </li>
+                            }
+            
+                            @if (Model.WorkType != null)
+                            {
+                                <li>
+                                <p>Work Location: @((WorkType)Model.WorkType)</p>
+                                </li>
+                            }
+                            @if (Model.Salary != null)
+                            {
+                                <li>
+                                <p>Salary: @Model.Salary$</p>
+                                </li>
+                            }
+            
+                            @if (Model.EnglishLevel != null)
+                            {
+                                <li>
+                                <p>English level: @((EnglishLevel)Model.EnglishLevel)</p>
+                                </li>
+                            }
+                            @if (Model.ExperienceYears != null)
+                            {
+                                <li>
+                                @if (Model.ExperienceYears == 6)
+                                {
+                                    <p>Experience: 6+ years</p>
+                                }
+                                else
+                                {
+                                    <p>Experience: @Model.ExperienceYears years</p>
+                                }
+                                </li>
+                            }
+            
+            
+                    </ul>
+                    <div>
+                        @foreach (var skillTag in Model.Requirements)
+                        {
+                            <span class="badge rounded-pill bg-primary">@skillTag.Title</span>
+                        }
+                    </div>
+            </div>
+            </div>
         </div>
     </div>
 </div>

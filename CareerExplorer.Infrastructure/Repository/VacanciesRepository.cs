@@ -4,6 +4,7 @@ using CareerExplorer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace CareerExplorer.Infrastructure.Repository
 {
@@ -15,8 +16,8 @@ namespace CareerExplorer.Infrastructure.Repository
         {
             _context = context;
         }
-        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies
-            (int pageSize, int pageNumber, out int countVacancies)
+        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies(int pageSize, int pageNumber, out int countVacancies,
+            Expression<Func<Vacancy, bool>> filter)
         {
             IQueryable<Vacancy> vacancies = dbSet;
             vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable == true && x.IsAccepted == true)
@@ -24,59 +25,14 @@ namespace CareerExplorer.Infrastructure.Repository
                     .ThenInclude(x => x.AppUser)
                 .Include(x => x.Requirements)
                 .Include(x => x.Position);
-            countVacancies = vacancies.Count();
-            vacancies = (IQueryable<Vacancy>)Paginate(vacancies, pageSize, pageNumber);
-            return vacancies;
-        }
-        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies
-            (int pageSize, int pageNumber, out int countVacancies, int[] tagIds)
-        {
-            if (tagIds == null)
-                throw new ArgumentNullException();
 
-            IQueryable<Vacancy> vacancies = dbSet;
-            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable
-                && x.IsAccepted == true && x.Requirements.Any(x => tagIds.Contains(x.Id)))
-                .Include(x => x.Creator)
-                    .ThenInclude(x => x.AppUser)
-                .Include(x => x.Requirements)
-                .Include(x => x.Position);
-            countVacancies = vacancies.Count();
-            vacancies = (IQueryable<Vacancy>)Paginate(vacancies, pageSize, pageNumber);
-            return vacancies;
-        }
-        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredByTypeVacancies
-            (int pageSize, int pageNumber, out int countVacancies, int[] types)
-        {
-            if (types == null)
-                throw new ArgumentNullException();
+            if (filter != null)
+            {
+                vacancies = vacancies.Where(filter);
+            }
 
-            IQueryable<Vacancy> vacancies = dbSet;
-            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true
-                && x.WorkType != null && types.Contains((int)x.WorkType))
-                .Include(x => x.Creator)
-                    .ThenInclude(x => x.AppUser)
-                .Include(x => x.Requirements)
-                .Include(x => x.Position);
             countVacancies = vacancies.Count();
             vacancies = (IQueryable<Vacancy>)Paginate(vacancies, pageSize, pageNumber);
-            return vacancies;
-        }
-        public IEnumerable<Vacancy> GetAvailablePaginatedAndFilteredVacancies
-            (int pageSize, int pageNumber, out int countVacancies, int[] tagsIds, int[] types)
-        {
-            IQueryable<Vacancy> vacancies = dbSet;
-            if(tagsIds== null || types ==null)
-                throw new ArgumentNullException();
-            vacancies = vacancies.AsNoTracking().Where(x => x.IsAvailable && x.IsAccepted == true
-            && x.WorkType != null && types.Contains((int)x.WorkType) 
-            && x.Requirements.Any(x => tagsIds.Contains(x.Id)))
-                            .Include(x => x.Creator)
-                                .ThenInclude(x => x.AppUser)
-                            .Include(x => x.Requirements)
-                            .Include(x => x.Position);
-            countVacancies = vacancies.Count();
-            vacancies = (IQueryable<Vacancy>)Paginate(vacancies, pageSize, pageNumber); 
             return vacancies;
         }
         public IEnumerable<Vacancy> GetCreatedVacancies(string userId)
@@ -97,6 +53,9 @@ namespace CareerExplorer.Infrastructure.Repository
                 .Include(x => x.Creator)
                 .ThenInclude(x => x.AppUser)
                 .Include(x => x.Position)
+                .Include(x => x.Requirements)
+                .Include(x => x.City)
+                .Include(x => x.Country)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if(vacancy == null)
                 throw new NullReferenceException();
@@ -110,6 +69,11 @@ namespace CareerExplorer.Infrastructure.Repository
                 .Include(x => x.Position)
                 .Where(x => !x.IsAccepted);
             return vacancies;
+        }
+        public int CountApplicantsOnVacancy (int vacancyId)
+        {
+            int vacanciesCount = _context.JobSeekerVacancies.Where(x  => x.VacancyId == vacancyId).Count();
+            return vacanciesCount;
         }
         public void Update(Vacancy entity)
         {

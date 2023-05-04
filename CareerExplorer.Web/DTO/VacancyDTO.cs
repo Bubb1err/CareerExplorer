@@ -23,5 +23,12 @@ namespace CareerExplorer.Web.DTO
         public ICollection<SkillsTag> Requirements { get; set; } = new List<SkillsTag>();
         public DateTime CreatedDate { get; set; } 
         public bool IsApplied { get; set; }
+        public int Views { get; set; }
+        public Country? Country { get; set; }
+        public City? City { get; set; }
+        public int? Salary { get; set; }
+        public int? WorkType { get; set; }
+        public int? EnglishLevel { get; set; }
+        public int? ExperienceYears { get; set; }
     }
 }
