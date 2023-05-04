@@ -2,23 +2,39 @@
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Services;
 using Moq;
+using System.Linq.Expressions;
 
 namespace CareerExplorer.Tests.Services.Tests
 {
     public class AdminServiceTests
     {
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+        private readonly Mock<IVacanciesRepository> _vacanciesRepositoryMock;
+        private readonly Mock<IJobSeekerProfileRepository> _jobSeekerProfileRepositoryMock;
+        private readonly Mock<IRecruiterProfileRepository> _recruiterProfileRepositoryMock;
+        private readonly AdminService _adminService;
+
+        public AdminServiceTests()
+        {
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
+            _vacanciesRepositoryMock = new Mock<IVacanciesRepository>();
+            _jobSeekerProfileRepositoryMock = new Mock<IJobSeekerProfileRepository>();
+            _recruiterProfileRepositoryMock = new Mock<IRecruiterProfileRepository>();
+
+            _unitOfWorkMock.Setup(x => x.GetRepository<Vacancy>()).Returns(_vacanciesRepositoryMock.Object);
+            _unitOfWorkMock.Setup(x => x.GetRepository<JobSeeker>()).Returns(_jobSeekerProfileRepositoryMock.Object);
+            _unitOfWorkMock.Setup(x => x.GetRepository<Recruiter>()).Returns(_recruiterProfileRepositoryMock.Object);
+            _unitOfWorkMock.Setup(x => x.SaveAsync());
+            _adminService = new AdminService(_unitOfWorkMock.Object);
+        }
         [Fact]
         public async Task AcceptVacancy_ShouldSetPropertyToTrue()
         {
-            var vacanciesRepo = new Mock<IVacanciesRepository>();
-            var unitOfWork = new Mock<IUnitOfWork>();
-            unitOfWork.Setup(x => x.GetRepository<Vacancy>()).Returns(vacanciesRepo.Object);
-            unitOfWork.Setup(x => x.SaveAsync());
             var vacancyId = 1;
             var vacancy = new Vacancy
             {
                 Id = vacancyId,
-                IsAvailable = true,
+                IsAccepted= false,
                 Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit," +
                 " sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
                 "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip " +
@@ -28,99 +44,87 @@ namespace CareerExplorer.Tests.Services.Tests
                 Applicants = new List<JobSeekerVacancy>(),
                 CreatorId = 1
             };
-            vacanciesRepo.Setup(x => x.GetFirstOrDefault(x => x.Id == vacancyId, null, true)).Returns(vacancy);
-            var adminService = new AdminService(unitOfWork.Object);
+            _vacanciesRepositoryMock.Setup(x => x.GetFirstOrDefault
+            (It.IsAny<Expression<Func<Vacancy, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(vacancy);
 
-            await adminService.AcceptVacancy(vacancyId);
+            await _adminService.AcceptVacancy(vacancyId);
 
             Assert.True(vacancy.IsAccepted);
         }
         [Fact]
         public async Task AcceptVacancyWithInvalidId_ShouldThrowAnException()
         {
-            var vacanciesRepo = new Mock<IVacanciesRepository>();
-            var unitOfWork = new Mock<IUnitOfWork>();
-            unitOfWork.Setup(x => x.GetRepository<Vacancy>()).Returns(vacanciesRepo.Object);
             int vacancyId = 0;
-            vacanciesRepo.Setup(x => x.GetFirstOrDefault(x => x.Id == vacancyId, null, true)).Returns(null as Vacancy);
-            var adminService = new AdminService(unitOfWork.Object);
+            _vacanciesRepositoryMock.Setup(x => x.GetFirstOrDefault
+            (It.IsAny<Expression<Func<Vacancy, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(null as Vacancy);
 
-            async Task action() => await adminService.AcceptVacancy(vacancyId);
+            async Task action() => await _adminService.AcceptVacancy(vacancyId);
 
             await Assert.ThrowsAsync<NullReferenceException>(action);
         }
         [Fact]
         public async Task AcceptJobSeeker_ShouldSetPropToTrue()
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
-            var jobSeekerProfileRepo = new Mock<IJobSeekerProfileRepository>();
-            unitOfWork.Setup(x => x.GetRepository<JobSeeker>()).Returns(jobSeekerProfileRepo.Object);
-            unitOfWork.Setup(x => x.SaveAsync());
             int jobSeekerId = 1;
             var jobseeker = new JobSeeker
             {
                 Id = jobSeekerId,
                 IsAccepted = false
             };
-            jobSeekerProfileRepo.Setup(x => x.GetFirstOrDefault(x => x.Id == jobSeekerId, null, true)).Returns(jobseeker);
-            var adminService = new AdminService(unitOfWork.Object);
+            _jobSeekerProfileRepositoryMock.Setup(x => x.GetFirstOrDefault
+            (It.IsAny<Expression<Func<JobSeeker, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(jobseeker);
 
-            await adminService.AcceptJobSeekerProfile(jobSeekerId);
+            await _adminService.AcceptJobSeekerProfile(jobSeekerId);
 
             Assert.True(jobseeker.IsAccepted);
         }
         [Fact]
         public async Task AcceptJobSeekerProfileWithInvalidId_ShouldThrowAnException()
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
-            var jobSeekerProfileRepo = new Mock<IJobSeekerProfileRepository>();
-            unitOfWork.Setup(x => x.GetRepository<JobSeeker>()).Returns(jobSeekerProfileRepo.Object);
             int jobSeekerId = 0;
-            jobSeekerProfileRepo.Setup(x => x.GetFirstOrDefault(x => x.Id == jobSeekerId, null, true)).Returns(null as JobSeeker);
-            var adminService = new AdminService(unitOfWork.Object);
+            _jobSeekerProfileRepositoryMock.Setup(x => x.GetFirstOrDefault
+            (It.IsAny<Expression<Func<JobSeeker, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(null as JobSeeker);
 
-            async Task action() => await adminService.AcceptJobSeekerProfile(jobSeekerId);
+            async Task action() => await _adminService.AcceptJobSeekerProfile(jobSeekerId);
 
             await Assert.ThrowsAsync<NullReferenceException>(action);
         }
         [Fact]
         public async Task AcceptRecruiterProfile_ShouldSetPropToTrue()
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
-            var recruiterProfileRepo = new Mock<IRecruiterProfileRepository>();
-            unitOfWork.Setup(x => x.GetRepository<Recruiter>()).Returns(recruiterProfileRepo.Object);
-            unitOfWork.Setup(x => x.SaveAsync());
             int recruiterId = 1;
             var recruiter = new Recruiter
             {
                 Id = recruiterId,
                 IsAccepted=true
             };
-            recruiterProfileRepo.Setup(x => x.GetFirstOrDefault(x => x.Id == recruiterId, null, true)).Returns(recruiter);
-            var adminService = new AdminService(unitOfWork.Object);
+            _recruiterProfileRepositoryMock.Setup(x => x.GetFirstOrDefault
+            (It.IsAny<Expression<Func<Recruiter, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(recruiter);
 
-            await adminService.AcceptRecruiterProfile(recruiterId);
+            await _adminService.AcceptRecruiterProfile(recruiterId);
 
             Assert.True(recruiter.IsAccepted);
         }
         [Fact]
         public async Task AcceptRecruiterProfileWithInvalidId_ShouldThrowAnException()
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
-            var recruiterProfileRepo = new Mock<IRecruiterProfileRepository>();
-            unitOfWork.Setup(x => x.GetRepository<Recruiter>()).Returns(recruiterProfileRepo.Object);
             int recruiterId = 0;
-            recruiterProfileRepo.Setup(x => x.GetFirstOrDefault(x => x.Id == recruiterId, null, true)).Returns(null as Recruiter);
-            var adminService = new AdminService(unitOfWork.Object);
+            _recruiterProfileRepositoryMock.Setup(x => x.GetFirstOrDefault
+            (It.IsAny<Expression<Func<Recruiter, bool>>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(null as Recruiter);
 
-            async Task action() => await adminService.AcceptRecruiterProfile(recruiterId);
+            async Task action() => await _adminService.AcceptRecruiterProfile(recruiterId);
 
             await Assert.ThrowsAsync<NullReferenceException>(action);
         }
         [Fact]
         public void IsJobSeekerProfileFilled_ShouldReturnTrue()
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
             var jobSeeker = new JobSeeker
             {
                 Id = 1,
@@ -141,16 +145,14 @@ namespace CareerExplorer.Tests.Services.Tests
                 Country= new Country(),
                 City= new City()
             };
-            var adminService = new AdminService(unitOfWork.Object);
 
-            bool result = adminService.IsJobSeekerProfileFilled(jobSeeker);
+            bool result = _adminService.IsJobSeekerProfileFilled(jobSeeker);
 
             Assert.True(result);
         }
         [Fact]
         public void IsJobSeekerProfileFilled_ShouldReturnFalse()
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
             var jobSeeker = new JobSeeker
             {
                 Id = 1,
@@ -159,16 +161,14 @@ namespace CareerExplorer.Tests.Services.Tests
                 Experience = "too short string",
                 Phone = string.Empty
             };
-            var adminService = new AdminService(unitOfWork.Object);
 
-            bool result = adminService.IsJobSeekerProfileFilled(jobSeeker);
+            bool result = _adminService.IsJobSeekerProfileFilled(jobSeeker);
 
             Assert.False(result);
         }
         [Fact]
         public void IsRecruiterProfileFilled_ShoulReturnTrue()
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
             var recruiter = new Recruiter
             {
                 Id = 1,
@@ -180,16 +180,14 @@ namespace CareerExplorer.Tests.Services.Tests
                 "consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur" +
                 " sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
             };
-            var adminService = new AdminService(unitOfWork.Object);
 
-            bool result = adminService.IsRecuiterProfileFilled(recruiter);
+            bool result = _adminService.IsRecuiterProfileFilled(recruiter);
 
             Assert.True(result);
         }
         [Fact]
         public void IsRecruiterProfileFilled_ShouldRetrunFalse()
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
             var recruiter = new Recruiter
             {
                 Id = 1,
@@ -198,9 +196,8 @@ namespace CareerExplorer.Tests.Services.Tests
                 Company = string.Empty,
                 CompanyDescription = "too short string"
             };
-            var adminService = new AdminService(unitOfWork.Object);
 
-            bool result = adminService.IsRecuiterProfileFilled(recruiter);
+            bool result = _adminService.IsRecuiterProfileFilled(recruiter);
 
             Assert.False(result);
         }

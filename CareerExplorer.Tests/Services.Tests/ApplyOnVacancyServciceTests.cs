@@ -5,6 +5,7 @@ using CareerExplorer.Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Org.BouncyCastle.Bcpg;
+using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,16 +18,31 @@ namespace CareerExplorer.Tests.Services.Tests
 {
     public class ApplyOnVacancyServciceTests
     {
+        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+        private readonly Mock<IFormFile> _formFileMock;
+        private readonly Mock<IJobSeekerProfileRepository> _jobSeekerProfileRepositoryMock;
+        private readonly Mock<IVacanciesRepository> _vacanciesRepositoryMock;
+        private readonly Mock<IJobSeekerVacancyRepository> _jobSeekerVacancyRepositoryMock;
+        private readonly ApplyOnVacancyService _applyOnVacancyService;
+        public ApplyOnVacancyServciceTests()
+        {
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
+            _formFileMock= new Mock<IFormFile>();
+            _jobSeekerProfileRepositoryMock = new Mock<IJobSeekerProfileRepository>();
+            _vacanciesRepositoryMock= new Mock<IVacanciesRepository>();
+            _jobSeekerVacancyRepositoryMock = new Mock<IJobSeekerVacancyRepository>();
+
+            _unitOfWorkMock.Setup(x => x.GetRepository<Vacancy>()).Returns(_vacanciesRepositoryMock.Object);
+            _unitOfWorkMock.Setup(x => x.GetRepository<JobSeeker>()).Returns(_jobSeekerProfileRepositoryMock.Object);
+            _unitOfWorkMock.Setup(x => x.GetRepository<JobSeekerVacancy>()).Returns(_jobSeekerVacancyRepositoryMock.Object);
+            _unitOfWorkMock.Setup(x => x.SaveAsync());
+            _formFileMock.Setup(x => x.OpenReadStream()).Returns(new MemoryStream());
+            _applyOnVacancyService = new ApplyOnVacancyService(_unitOfWorkMock.Object);
+        }
         [Fact]
         public async Task Apply_WithValidInputs_ShouldAddJobSeekerVacancyAndVacancyApplicant()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            var formFileMock = new Mock<IFormFile>();
-            var jobSeekerRepoMock = new Mock<IJobSeekerProfileRepository>();
-            var vacanciesRepoMock = new Mock<IVacanciesRepository>();
-            var jobSeekerVacancyRepoMock = new Mock<IJobSeekerVacancyRepository>();
-            formFileMock.Setup(x => x.Length).Returns(277831);
-            formFileMock.Setup(x => x.OpenReadStream()).Returns(new MemoryStream());
+            _formFileMock.Setup(x => x.Length).Returns(277831);            
             string userId = Guid.NewGuid().ToString();
             int jobSeekerVacancyId = 1;
             var testUser = new JobSeeker
@@ -35,7 +51,8 @@ namespace CareerExplorer.Tests.Services.Tests
                 UserId = userId,
                 VacanciesApplied = new List<JobSeekerVacancy>()
             };
-            jobSeekerRepoMock.Setup(r => r.GetFirstOrDefault(x => x.UserId == userId, null, true))
+            _jobSeekerProfileRepositoryMock.Setup(r => r.GetFirstOrDefault(It.IsAny<Expression<Func<JobSeeker, bool>>>(),
+                It.IsAny<string?>(), It.IsAny<bool>()))
                 .Returns(testUser);
             var vacancyId = 1;
             var vacancy = new Vacancy
@@ -57,7 +74,7 @@ namespace CareerExplorer.Tests.Services.Tests
                 JobSeekerId = testUser.Id,
                 Id = jobSeekerVacancyId
             };
-            jobSeekerVacancyRepoMock.Setup(x => x.AddAsync(It.IsAny<JobSeekerVacancy>()))
+            _jobSeekerVacancyRepositoryMock.Setup(x => x.AddAsync(It.IsAny<JobSeekerVacancy>()))
                 .Callback((JobSeekerVacancy jobSeekerVacancy) => {
                     jobSeekerVacancy.VacancyId= vacancyId;
                     jobSeekerVacancy.JobSeekerId = testUser.Id;
@@ -65,16 +82,13 @@ namespace CareerExplorer.Tests.Services.Tests
                     vacancy.Applicants.Add(jobSeekerVacancy);
                     testUser.VacanciesApplied.Add(jobSeekerVacancy);
                 });
-            jobSeekerVacancyRepoMock.Setup(r => r.GetFirstOrDefault(x => x.VacancyId == vacancyId && x.JobSeekerId == testUser.Id, null, true))
+            _jobSeekerVacancyRepositoryMock.Setup(r => r.GetFirstOrDefault(It.IsAny<Expression<Func<JobSeekerVacancy, bool>>>(),
+                It.IsAny<string?>(), It.IsAny<bool>()))
                 .Returns(jobSeekerVacancy);
-            vacanciesRepoMock.Setup(r => r.GetFirstOrDefault(x => x.Id == vacancyId, null, true)).Returns(vacancy);
-            unitOfWorkMock.Setup(r => r.GetRepository<JobSeeker>()).Returns(jobSeekerRepoMock.Object);
-            unitOfWorkMock.Setup(r => r.GetRepository<Vacancy>()).Returns(vacanciesRepoMock.Object);
-            unitOfWorkMock.Setup(r => r.GetRepository<JobSeekerVacancy>()).Returns(jobSeekerVacancyRepoMock.Object);
-            unitOfWorkMock.Setup(r => r.SaveAsync());
-            var applyOnVacancyService = new ApplyOnVacancyService(unitOfWorkMock.Object);
+            _vacanciesRepositoryMock.Setup(r => r.GetFirstOrDefault(It.IsAny<Expression<Func<Vacancy, bool>>>(),
+                It.IsAny<string?>(), It.IsAny<bool>())).Returns(vacancy);;
 
-            await applyOnVacancyService.Apply(testUser.UserId, vacancyId, formFileMock.Object);
+            await _applyOnVacancyService.Apply(testUser.UserId, vacancyId, _formFileMock.Object);
 
             Assert.Contains(jobSeekerVacancyId, vacancy.Applicants.Select(x => x.Id));
             Assert.Contains(jobSeekerVacancyId, testUser.VacanciesApplied.Select(x => x.Id));
@@ -82,28 +96,21 @@ namespace CareerExplorer.Tests.Services.Tests
         [Fact]
         public async Task ApplyOnVacancyWithInvalidInputs_ShouldThrowAnException()
         {
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            var formFileMock = new Mock<IFormFile>();
-            var jobSeekerRepoMock = new Mock<IJobSeekerProfileRepository>();
-            var vacanciesRepoMock = new Mock<IVacanciesRepository>();
-            var jobSeekerVacancyRepoMock = new Mock<IJobSeekerVacancyRepository>();
-            formFileMock.Setup(x => x.Length).Returns(2097153);
-            formFileMock.Setup(x => x.OpenReadStream()).Returns(new MemoryStream());
+            _formFileMock.Setup(x => x.Length).Returns(2097153);           
             int vacancyId = 0;
             string userId = string.Empty;
             int jobSeekerId = 0;
-            jobSeekerRepoMock.Setup(r => r.GetFirstOrDefault(x => x.UserId == userId, null, true))
+            _jobSeekerProfileRepositoryMock
+                .Setup(r => r.GetFirstOrDefault(It.IsAny<Expression<Func<JobSeeker, bool>>>(),
+                It.IsAny<string?>(), It.IsAny<bool>()))
                 .Returns(null as JobSeeker);
-            jobSeekerVacancyRepoMock.Setup(r => r.GetFirstOrDefault(x => x.VacancyId == vacancyId && x.JobSeekerId == jobSeekerId, null, true))
+            _jobSeekerVacancyRepositoryMock.Setup(r => r.GetFirstOrDefault(It.IsAny<Expression<Func<JobSeekerVacancy, bool>>>(),
+                It.IsAny<string?>(), It.IsAny<bool>()))
                 .Returns(null as JobSeekerVacancy);
-            vacanciesRepoMock.Setup(r => r.GetFirstOrDefault(x => x.Id == vacancyId, null, true)).Returns(null as Vacancy);
-            unitOfWorkMock.Setup(r => r.GetRepository<JobSeeker>()).Returns(jobSeekerRepoMock.Object);
-            unitOfWorkMock.Setup(r => r.GetRepository<Vacancy>()).Returns(vacanciesRepoMock.Object);
-            unitOfWorkMock.Setup(r => r.GetRepository<JobSeekerVacancy>()).Returns(jobSeekerVacancyRepoMock.Object);
-            unitOfWorkMock.Setup(r => r.SaveAsync());
-            var applyOnVacancyService = new ApplyOnVacancyService(unitOfWorkMock.Object);
+            _vacanciesRepositoryMock.Setup(r => r.GetFirstOrDefault(It.IsAny<Expression<Func<Vacancy, bool>>>(),
+                It.IsAny<string?>(), It.IsAny<bool>())).Returns(null as Vacancy);
 
-            async Task action() => await applyOnVacancyService.Apply(userId, vacancyId, formFileMock.Object);
+            async Task action() => await _applyOnVacancyService.Apply(userId, vacancyId, _formFileMock.Object);
 
             await Assert.ThrowsAsync<Exception>(action);
         }
