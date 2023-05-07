@@ -10,18 +10,21 @@ using Microsoft.AspNetCore.SignalR;
 using System.Drawing.Text;
 using CareerExplorer.Infrastructure.IServices;
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CareerExplorer.Web
 {
     public class Program
     {
-        
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             
             // Add services to the container.
-            builder.Services.AddMvc()
+            builder.Services.AddMvc(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            })
                 .AddDataAnnotationsLocalization()
                 .AddViewLocalization();
             builder.Services.AddRazorPages();
@@ -60,6 +63,12 @@ namespace CareerExplorer.Web
                 options.Preload = true;
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(60);
+            });
+            builder.Services.AddAntiforgery(options =>
+            {
+                options.SuppressXFrameOptionsHeader = false;
+                options.HeaderName = "X-CSRF-TOKEN";
+                options.FormFieldName= "Antiforgery";
             });
             builder.Services.RegisterRepositories();
             builder.Services.RegisterServices();
@@ -106,7 +115,7 @@ namespace CareerExplorer.Web
                 var services = serviceScope.ServiceProvider;
                 var recommendVacanciesService = services.GetService<IRecommendVacanciesByEmailService>();
                 RecurringJob.AddOrUpdate(() =>
-                recommendVacanciesService.SendVacanciesToUsersByEmail(TimeSpan.FromDays(1)), Cron.Daily);
+                recommendVacanciesService.SendVacanciesToUsersByEmail(TimeSpan.FromMinutes(10)), "*/10 * * * *");
 
             }
             app.MapRazorPages();
