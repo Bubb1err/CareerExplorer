@@ -45,35 +45,12 @@ namespace CareerExplorer.Infrastructure.Services
                 }
                 else
                 {
-                    break;
-                    throw new ArgumentException();   
+                    throw new ArgumentException();                  
                 }
             }
             if (tagIdsArray.Length == 0)
                 return null;
             return tagIdsArray;
-        }
-        public int[]? GetTypesFromString(string types)
-        {
-            if(types.IsNullOrEmpty()) 
-                return null;
-            string[] typesStr = types.Split(',');
-            int[] typesArray = new int[typesStr.Length];
-            for(int i = 0; i < typesStr.Length;i++)
-            {
-                if (int.TryParse(typesStr[i], out int type))
-                {
-                    typesArray[i] = type;
-                }
-                else
-                {
-                    break; 
-                    throw new ArgumentException();
-                }
-            }
-            if(typesArray.Length == 0)
-                return null;
-            return typesArray;
         }
         public async Task CreateVacancy(string[] tags, int position, string currentRecruiterId, Vacancy vacancy)
         {

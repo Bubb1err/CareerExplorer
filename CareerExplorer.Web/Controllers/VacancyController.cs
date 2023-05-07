@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Drawing;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace CareerExplorer.Web.Controllers
 {
@@ -53,40 +55,34 @@ namespace CareerExplorer.Web.Controllers
             try
             {
                 int[] tagIdsArray = _vacancyService.GetIdsFromString(tagIds);
-                int[] typesArray = _vacancyService.GetTypesFromString(types);
-                const int pageSize = 3;
+                int[] typesArray = _vacancyService.GetIdsFromString(types);
                 List<Vacancy> vacancies;
-                int totalVacancies;
-                if(tagIdsArray == null && typesArray == null)
+                Expression<Func<Vacancy, bool>> filter = null; 
+                if(tagIdsArray == null && typesArray != null)
                 {
-                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies
-                        (pageSize, pageNumber, out totalVacancies).ToList();
-                }
-                else if(tagIdsArray == null && typesArray != null)
-                {
-                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredByTypeVacancies
-                        (pageSize, pageNumber, out totalVacancies, typesArray).ToList();
+                    filter = x => x.WorkType != null && typesArray.Contains((int)x.WorkType);
                 }
                 else if(tagIdsArray != null && typesArray == null)
                 {
-                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies
-                        (pageSize, pageNumber, out totalVacancies, tagIdsArray).ToList();
+                    filter = x => x.Requirements.Any(x => tagIdsArray.Contains(x.Id));
                 }
-                else
+                else if(tagIdsArray != null && typesArray != null)
                 {
-                    vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies
-                        (pageSize, pageNumber, out totalVacancies, tagIdsArray, typesArray).ToList();
+                    filter = x => x.WorkType != null && typesArray.Contains((int)x.WorkType)
+                            && x.Requirements.Any(x => tagIdsArray.Contains(x.Id));
                 }
-
+                vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(StaticData.GetAllVacanciesPageSize,
+                    pageNumber, out int totalVacancies, filter).ToList();
                 var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
                 var tagsItems = _skillsTagRepository.GetAll().Select(tag => new SelectListItem
                 {
                     Value = tag.Id.ToString(),
                     Text = tag.Title
                 });
+
                 ViewBag.Tags = tagsItems;
                 var paginatedVacancies = PaginatedList<VacancyDTO>
-                    .Create(vacanciesDto, pageNumber, pageSize, totalVacancies);
+                    .Create(vacanciesDto, pageNumber, StaticData.GetAllVacanciesPageSize, totalVacancies);
 
                 return View(paginatedVacancies);
             }
@@ -228,6 +224,9 @@ namespace CareerExplorer.Web.Controllers
                 if (id == 0)
                     return BadRequest();
                 var vacancy = await _vacanciesRepository.GetVacancyAsync(id);
+                vacancy.Views++;
+                await _unitOfWork.SaveAsync();
+                ViewBag.ApplicantsCount = _vacanciesRepository.CountApplicantsOnVacancy(id);
                 var vacancyDto = _mapper.Map<VacancyDTO>(vacancy);
 
                 var currentUserId = _userManager.GetUserId(User);

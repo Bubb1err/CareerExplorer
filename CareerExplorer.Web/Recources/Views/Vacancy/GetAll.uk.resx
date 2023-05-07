@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Read Less" xml:space="preserve">
-    <value>Сховати</value>
+  <data name="Filter by skills" xml:space="preserve">
+    <value>Фільтрувати за навичками</value>
   </data>
-  <data name="Read More" xml:space="preserve">
-    <value>Читати далі</value>
+  <data name="Filter by work location" xml:space="preserve">
+    <value>Фільтрувати за місцем роботи</value>
   </data>
 </root>

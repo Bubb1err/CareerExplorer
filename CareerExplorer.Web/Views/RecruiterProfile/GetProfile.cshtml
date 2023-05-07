@@ -10,19 +10,19 @@
     <div class="col-md-10">
         @if(!Model.IsFilled)
         {
-            <span class="text-danger">Fill your profile to send it for review and start posting vacancies.</span>
+            <span class="text-danger">@Localizer["Fill your profile to send it for review and start posting vacancies."]</span>
         }
         else if(Model.IsFilled && !Model.IsAccepted)
         {
             <span>
                 <i class="bi bi-clock"></i>
-                Your profile is on review.
+                @Localizer["Your profile is on review."]
             </span>
         }
         else
         {
             <span><i class="bi bi-check2"></i>
-                Profile is verified!</span>
+                @Localizer["Profile is verified!"]</span>
         }
         <form method="post" asp-action="GetProfile">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
@@ -48,7 +48,7 @@
                     <textarea rows="7" asp-for="CompanyDescription" class="form-control"></textarea>
                     <span asp-validation-for="CompanyDescription" class="text-danger"></span>
                 </div>
-            <button asp-controller="RecruiterProfile" asp-action="GetProfile" type="submit" class="w-50 btn btn btn-primary">@Localizer["Save"]</button>
+            <button asp-controller="RecruiterProfile" asp-action="GetProfile" type="submit" class="btn btn btn-primary">@Localizer["Save"]</button>
         </form>
     </div>
 </div>

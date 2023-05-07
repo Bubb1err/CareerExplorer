@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Services
 {
-    internal sealed class RecommendVacanciesByEmailService : IRecommendVacanciesByEmailService
+    public sealed class RecommendVacanciesByEmailService : IRecommendVacanciesByEmailService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IVacanciesRepository _vacanciesRepository;

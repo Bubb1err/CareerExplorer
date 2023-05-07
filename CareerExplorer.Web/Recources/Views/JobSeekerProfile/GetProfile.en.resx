@@ -120,11 +120,35 @@
   <data name="Choose skills" xml:space="preserve">
     <value>Choose skills</value>
   </data>
+  <data name="Choose your city" xml:space="preserve">
+    <value>Choose your city</value>
+  </data>
+  <data name="Choose your country" xml:space="preserve">
+    <value>Choose your country</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="Desired Salary" xml:space="preserve">
+    <value>Desired Salary</value>
+  </data>
+  <data name="English level" xml:space="preserve">
+    <value>English level</value>
+  </data>
   <data name="Experience" xml:space="preserve">
     <value>Experience</value>
   </data>
+  <data name="Fill your profile to send it for review and start applying on vacancies." xml:space="preserve">
+    <value>Fill your profile to send it for review and start applying on vacancies.</value>
+  </data>
   <data name="GitHub" xml:space="preserve">
     <value>Enter link to your GitHub profile</value>
+  </data>
+  <data name="LinkedIn" xml:space="preserve">
+    <value>LinkedIn</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Enter your name</value>
@@ -132,13 +156,25 @@
   <data name="Phone" xml:space="preserve">
     <value>Enter your phone number</value>
   </data>
+  <data name="Profile is verified!" xml:space="preserve">
+    <value>Profile is verified!</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
+  </data>
+  <data name="Select desired position" xml:space="preserve">
+    <value>Select desired position</value>
   </data>
   <data name="Skills" xml:space="preserve">
     <value>Skills</value>
   </data>
   <data name="Surname" xml:space="preserve">
     <value>Enter your surname</value>
+  </data>
+  <data name="Years of Experience" xml:space="preserve">
+    <value>Years of Experience</value>
+  </data>
+  <data name="Your profile is on review." xml:space="preserve">
+    <value>Your profile is on review.</value>
   </data>
 </root>

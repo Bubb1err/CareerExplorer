@@ -1,6 +1,8 @@
 ﻿@using CareerExplorer.Core.Entities;
 @using CareerExplorer.Shared;
 @using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @model IEnumerable<Message>
 @{
     var jobSeekerInfo = ViewBag.JobSeeker as JobSeeker;
@@ -72,9 +74,9 @@
             }
         </div>
         <form id="sendForm" style="position:static;">
-            <input class="form-control" style="width:85%;display:inline-block" type="text" id="messageInput"
-            placeholder="Message"/>
-            <button class="btn btn-primary" id="sendButton" type="submit" disabled>Send</button>
+            <input class="form-control" style="width:75%;display:inline-block" type="text" id="messageInput"
+            placeholder="@Localizer["Message"]"/>
+            <button class="btn btn-primary" id="sendButton" type="submit" disabled>@Localizer["Send"]</button>
         </form>
     </div>
 </div>

@@ -126,11 +126,23 @@
   <data name="Choose skills" xml:space="preserve">
     <value>Choose skills</value>
   </data>
+  <data name="City" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country</value>
+  </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
   </data>
+  <data name="English level" xml:space="preserve">
+    <value>English level</value>
+  </data>
   <data name="Not Available" xml:space="preserve">
     <value>Not Available</value>
+  </data>
+  <data name="Salary" xml:space="preserve">
+    <value>Salary</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
@@ -140,5 +152,8 @@
   </data>
   <data name="Title" xml:space="preserve">
     <value>Title</value>
+  </data>
+  <data name="Work Location" xml:space="preserve">
+    <value>Work Location</value>
   </data>
 </root>

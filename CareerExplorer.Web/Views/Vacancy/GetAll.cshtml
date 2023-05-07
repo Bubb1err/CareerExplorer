@@ -40,13 +40,14 @@
     </div>
     <div class="col-md-4">
         <div class="filtering-box mb-2">
-            <span style="color:#fff;" >Filter by skills</span><br />
+            <span style="color:#fff;" >@Localizer["Filter by skills"]</span><br />
             @foreach(var tag in ViewBag.Tags)
             {
                 <button data-tag-id=@tag.Value style="display:inline-block;margin:0.1rem;border-radius:5%;" class="btn btn-light tag-btn">@tag.Text</button>
             }
         </div>
         <div class="filtering-box">
+            <span style="color:#fff;">@Localizer["Filter by work location"]</span><br />
             <button class="btn btn-light type-btn" data-type=@((int)WorkType.Remote)>Remote</button>
             <button class="btn btn-light type-btn" data-type=@((int)WorkType.Office)>Office</button>
             <button class="btn btn-light type-btn" data-type=@((int)WorkType.OfficeRemote)>Remote/Office</button>

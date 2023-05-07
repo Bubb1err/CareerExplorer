@@ -28,5 +28,6 @@ namespace CareerExplorer.Core.Entities
         public int? WorkType { get; set; }
         public int? EnglishLevel { get; set; }
         public int? ExperienceYears { get; set; }
+        public int Views { get; set; }
     }
 }

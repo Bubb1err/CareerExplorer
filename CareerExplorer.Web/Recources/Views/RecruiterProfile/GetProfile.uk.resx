@@ -126,10 +126,19 @@
   <data name="Enter your surname" xml:space="preserve">
     <value>Введіть ваше прізвище</value>
   </data>
+  <data name="Fill your profile to send it for review and start posting vacancies." xml:space="preserve">
+    <value>Заповніть свій профіль щоб відправити його на перевірку та почати створювати вакансії.</value>
+  </data>
   <data name="Information" xml:space="preserve">
     <value>Опишіть вашу компанію</value>
   </data>
+  <data name="Profile is verified!" xml:space="preserve">
+    <value>Ваш профіль верифіковано!</value>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Зберегти</value>
+  </data>
+  <data name="Your profile is on review." xml:space="preserve">
+    <value>Ваш профіль зараз розглядається.</value>
   </data>
 </root>

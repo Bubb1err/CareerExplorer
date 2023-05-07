@@ -30,7 +30,7 @@
                         @if(User.IsInRole(UserRoles.JobSeeker))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Chat" asp-action="GetJobSeekerChats">Chat</a>
+                                <a class="nav-link" asp-controller="Chat" asp-action="GetJobSeekerChats">@Localizer["Chat"]</a>
                             </li>
                              <li class="nav-item">
                                 <a class="nav-link" asp-controller="Notifications" asp-action="GetInvitations"><i class="bi bi-calendar"></i></a>
@@ -39,7 +39,7 @@
                         else if (User.IsInRole(UserRoles.Recruiter))
                         {
                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Chat" asp-action="GetRecruiterChats">Chat</a>
+                                <a class="nav-link" asp-controller="Chat" asp-action="GetRecruiterChats">@Localizer["Chat"]</a>
                             </li> 
                         }
 

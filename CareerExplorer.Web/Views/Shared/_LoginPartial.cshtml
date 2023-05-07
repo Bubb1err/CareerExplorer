@@ -14,7 +14,7 @@
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"> @UserManager.GetUserName(User)</a>
           <div class="dropdown-menu">
                     <a class="dropdown-item" asp-controller="JobSeekerProfile" asp-action="GetProfile">@Localizer["Profile"]</a>
-                    <a class="dropdown-item" asp-controller="Chat" asp-action="GetJobSeekerChats">Chats</a>
+                    <a class="dropdown-item" asp-controller="Chat" asp-action="GetJobSeekerChats">@Localizer["Chats"]</a>
             
             <div class="dropdown-divider"></div>
                     <form class="dropdown-item" id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("GetAll", "Vacancy", new { area = "" })">
@@ -30,7 +30,7 @@
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"> @UserManager.GetUserName(User)</a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" asp-controller="RecruiterProfile" asp-action="GetProfile">@Localizer["Profile"]</a>
-                    <a class="dropdown-item" asp-controller="Vacancy" asp-action="CreatedVacancies">Vacancies</a>
+                    <a class="dropdown-item" asp-controller="Vacancy" asp-action="CreatedVacancies">@Localizer["Vacancies"]</a>
                     <div class="dropdown-divider"></div>
                     <form class="dropdown-item" id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("GetAll", "Vacancy", new { area = "" })">
                         <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">@Localizer["Logout"]</button>
@@ -45,9 +45,9 @@
                 <div class="dropdown-menu">
                     <a class="dropdown-item" asp-controller="Admin" asp-action="GetSkillsTags">@Localizer["Tags"]</a>
                     <a class="dropdown-item" asp-controller="Admin" asp-action="GetPositions">@Localizer["Positions"]</a>
-                    <a class="dropdown-item" asp-controller="Admin" asp-action="GetVacanciesToAccept">Vacancies</a>
-                    <a class="dropdown-item" asp-controller="Admin" asp-action="GetRecruitersToAccept">Recruiters</a>
-                    <a class="dropdown-item" asp-controller="Admin" asp-action="GetJobSeekersToAccept">JobSeekers</a>
+                    <a class="dropdown-item" asp-controller="Admin" asp-action="GetVacanciesToAccept">@Localizer["Vacancies"]</a>
+                    <a class="dropdown-item" asp-controller="Admin" asp-action="GetRecruitersToAccept">@Localizer["Recruiters"]</a>
+                    <a class="dropdown-item" asp-controller="Admin" asp-action="GetJobSeekersToAccept">@Localizer["JobSeekers"]</a>
                     <div class="dropdown-divider"></div>
                     <form class="dropdown-item" id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("GetAll", "Vacancy", new { area = "" })">
                         <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">@Localizer["Logout"]</button>

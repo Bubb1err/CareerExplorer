@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareerExplorer.Infrastructu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareerExplorer.Shared", "CareerExplorer.Shared\CareerExplorer.Shared.csproj", "{16CAFBBD-B8B5-410F-97A6-BF5EF0687C2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerExplorer.Api", "CareerExplorer.Api\CareerExplorer.Api.csproj", "{6C48401F-D7A9-40BE-897E-DF5FA75338D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CareerExplorer.Api", "CareerExplorer.Api\CareerExplorer.Api.csproj", "{6C48401F-D7A9-40BE-897E-DF5FA75338D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerExplorer.Tests", "CareerExplorer.Tests\CareerExplorer.Tests.csproj", "{1E899399-846E-45EE-BEC5-DDED9281C86A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{6C48401F-D7A9-40BE-897E-DF5FA75338D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C48401F-D7A9-40BE-897E-DF5FA75338D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C48401F-D7A9-40BE-897E-DF5FA75338D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E899399-846E-45EE-BEC5-DDED9281C86A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E899399-846E-45EE-BEC5-DDED9281C86A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E899399-846E-45EE-BEC5-DDED9281C86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E899399-846E-45EE-BEC5-DDED9281C86A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -26,18 +26,30 @@ namespace CareerExplorer.Infrastructure.Services
         public async Task AcceptVacancy(int id)
         {
             var vacancy = _vacanciesRepository.GetFirstOrDefault(x => x.Id == id);
+            if(vacancy == null)
+            {
+                throw new NullReferenceException();
+            }
             vacancy.IsAccepted = true;
             await _unitOfWork.SaveAsync();
         }
         public async Task AcceptRecruiterProfile(int id)
         {
             var recruiter = _recruiterProfileRepository.GetFirstOrDefault(x => x.Id == id);
+            if(recruiter == null)
+            {
+                throw new NullReferenceException();
+            }
             recruiter.IsAccepted = true;
             await _unitOfWork.SaveAsync();
         }
         public async Task AcceptJobSeekerProfile(int id)
         {
             var jobSeeker = _jobSeekerRepository.GetFirstOrDefault(x => x.Id == id);
+            if(jobSeeker == null)
+            {
+                throw new NullReferenceException();
+            }
             jobSeeker.IsAccepted = true;
             await _unitOfWork.SaveAsync();
         }
@@ -47,7 +59,12 @@ namespace CareerExplorer.Infrastructure.Services
             if (string.IsNullOrWhiteSpace(jobSeeker.Surname)) return false;
             if (string.IsNullOrWhiteSpace(jobSeeker.Experience) || jobSeeker.Experience.Length < 200) return false;
             if (string.IsNullOrWhiteSpace(jobSeeker.Phone)) return false;
+            if (jobSeeker.EnglishLevel == null) return false;
+            if(jobSeeker.ExperienceYears== null) return false;
+            if(jobSeeker.DesiredPosition == null) return false;
             if(jobSeeker.Skills.Count == 0) return false;
+            if(jobSeeker.Country== null) return false;
+            if(jobSeeker.City== null) return false;
             return true;
         }
         public bool IsRecuiterProfileFilled(Recruiter recruiter)

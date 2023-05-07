@@ -26,7 +26,7 @@
         </div>
         <div class="mb-3 skill-tags-display" id="skill-tags-display"></div>
         <div class="form-group">
-            <label asp-for="Salary" class="form-label mt-4">Salary</label>
+            <label asp-for="Salary" class="form-label mt-4">@Localizer["Salary"]</label>
             <div class="input-group mb-3">
                 <span class="input-group-text">$</span>
                 <input asp-for="Salary" type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
@@ -36,7 +36,7 @@
             <span asp-validation-for="Salary" class="text-danger"></span>
         </div>
         <fieldset class="form-group mb-3">
-            <legend class="mt-4">English level</legend>
+            <legend class="mt-4">@Localizer["English level"]</legend>
             <div class="form-check">
                 <input asp-for="@Model.EnglishLevel" class="form-check-input" type="radio"
                        value=@((int)EnglishLevel.NoEnglish) checked="">
@@ -77,12 +77,12 @@
         </fieldset>
        
         <fieldset class="form-group">
-            <label asp-for="ExperienceYears" class="form-label">Years of Experience: <span style="font-size:20px;font-weight:bold;" id="range-value">0</span></label>
+            <label asp-for="ExperienceYears" class="form-label">@Localizer["Years of Experience"]: <span style="font-size:20px;font-weight:bold;" id="range-value">0</span></label>
             <input asp-for="ExperienceYears" type="range" class="form-range" min="0" max="6" step="1" oninput="updateValue(this.value)">
         </fieldset>
         @* WorkType*@
         <fieldset class="form-group mb-3">
-            <legend class="mt-4">Work Location</legend>
+            <legend class="mt-4">@Localizer["Work Location"]</legend>
             <div class="form-check">
                 <input asp-for="@Model.WorkType" class="form-check-input" type="radio"
                        value=@((int)WorkType.Remote) checked="">
@@ -106,14 +106,14 @@
         @*Country*@
         <div class="mb-3">
             <input asp-for="CountryId" id="countriesId" hidden />
-            <label>Country</label>
+            <label>@Localizer["Country"]</label>
             <input type="text" class="form-control mb-3" id="countries" placeholder="Choose country" />
             <div class="mt-3" id="searchCountryResults"></div>
         </div>
         @*City*@
         <div class="mb-3">
             <input asp-for="CityId" id="citiesId" hidden />
-            <label>City</label>
+            <label>@Localizer["City"]</label>
             <input type="text" class="form-control mb-3" id="cities" placeholder="Choose city" />
             <div id="searchCityResults"></div>
         </div>
