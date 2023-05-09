@@ -14,6 +14,7 @@
     <PackageReference Include="Hangfire" Version="1.7.34" />
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="4.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.4" />
@@ -31,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CareerExplorer.Core\CareerExplorer.Core.csproj" />
     <ProjectReference Include="..\CareerExplorer.Infrastructure\CareerExplorer.Infrastructure.csproj" />
     <ProjectReference Include="..\CareerExplorer.Shared\CareerExplorer.Shared.csproj" />
   </ItemGroup>

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Immutable;
 using System.Data;
 
 namespace CareerExplorer.Web.Controllers
@@ -42,12 +43,12 @@ namespace CareerExplorer.Web.Controllers
         [HttpGet]
         public IActionResult GetSkillTags(string search)
         {
-            var tags = _skillsRepository.GetAll(t => t.Title.StartsWith(search)).ToList();
+            var tags = _skillsRepository.GetAll(t => t.Title.StartsWith(search)).ToImmutableList();
             return Ok(tags);
         }
         public IActionResult GetSkillsTags()
         {
-            var skillsTags = _skillsRepository.GetAll();
+            var skillsTags = _skillsRepository.GetAll().ToImmutableList();
             var skillsTagsDto = _mapper.Map<List<SkillTagDTO>>(skillsTags);
             return View(skillsTagsDto);
         }
@@ -133,7 +134,7 @@ namespace CareerExplorer.Web.Controllers
         #region PositionControl
         public IActionResult GetPositions()
         {
-            var positions = _positionRepository.GetAll();
+            var positions = _positionRepository.GetAll().ToImmutableList();
             var positionsDto = _mapper.Map<List<PositionDTO>>(positions);
             return View(positionsDto);
         }
@@ -218,7 +219,7 @@ namespace CareerExplorer.Web.Controllers
         [Authorize(Roles = UserRoles.Admin)]
         public IActionResult GetVacanciesToAccept()
         {
-            var vacancies = _vacanciesRepository.GetVacanciesToAccept().ToList();
+            var vacancies = _vacanciesRepository.GetVacanciesToAccept().ToImmutableList();
             var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
             return View(vacanciesDto);
         }
@@ -249,7 +250,7 @@ namespace CareerExplorer.Web.Controllers
         [Authorize(Roles = UserRoles.Admin)]
         public IActionResult GetRecruitersToAccept()
         {
-            var recruiters = _recruiterRepository.GetRecruiterProfilesToAccept().ToList();
+            var recruiters = _recruiterRepository.GetRecruiterProfilesToAccept().ToImmutableList();
             var recruitersDto = _mapper.Map<List<RecruiterProfileDTO>>(recruiters);
             return View(recruitersDto);
         }
@@ -273,7 +274,7 @@ namespace CareerExplorer.Web.Controllers
         [Authorize(Roles = UserRoles.Admin)]
         public IActionResult GetJobSeekersToAccept()
         {
-            var jobSeekers = _jobSeekerRepository.GetJobSeekersToAccept().ToList();
+            var jobSeekers = _jobSeekerRepository.GetJobSeekersToAccept().ToImmutableList();
             var jobSeekersDto = _mapper.Map<List<JobSeekerViewProfileDTO>>(jobSeekers);
             return View(jobSeekersDto);
         }

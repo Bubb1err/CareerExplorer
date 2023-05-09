@@ -10,10 +10,7 @@ namespace CareerExplorer.Infrastructure.Data
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
-            //Database.EnsureDeleted();
-            //Database.EnsureCreated();
         }
-        public DbSet<Company> Companies { get; set; }
         public DbSet<JobSeeker> JobSeekers { get; set; }
         public DbSet<Recruiter> Recruiters { get; set; }
         public DbSet<Vacancy> Vacancies { get; set; }
@@ -28,37 +25,11 @@ namespace CareerExplorer.Infrastructure.Data
         public DbSet<Chat> Chat { get; set; }
         public DbSet<MeetingNotification> MeetingNotifications { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override async void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
             base.OnModelCreating(builder);
-
-            var response = SeedData.GetCountriesFromExternalAPI();
-            if (response != null && response.Error == false)
-            {
-                var countries = new List<Country>();
-                var cities = new List<City>();
-                int countryId = 1;
-                int cityId = 1;
-                foreach (var countryData in response.Data)
-                {
-                    var country = new Country { Id = countryId, Name = countryData.Country ?? "" };
-                    countries.Add(country);
-
-                    if (countryData.Cities != null)
-                    {
-                        foreach (var cityName in countryData.Cities)
-                        {
-                            var city = new City { Id = cityId, Name = cityName ?? "", CountryId = countryId };
-                            cities.Add(city);
-                            cityId++;
-                        }
-                    }
-                    countryId++;
-                }
-                builder.Entity<Country>().HasData(countries);
-                builder.Entity<City>().HasData(cities);
-            }
+            await SeedData.SeedDataToDb(builder);
         }
     }
 }

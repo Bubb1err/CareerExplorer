@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.Linq;
 using System.Linq.Expressions;
@@ -56,7 +57,7 @@ namespace CareerExplorer.Web.Controllers
             {
                 int[] tagIdsArray = _vacancyService.GetIdsFromString(tagIds);
                 int[] typesArray = _vacancyService.GetIdsFromString(types);
-                List<Vacancy> vacancies;
+                ImmutableList<Vacancy> vacancies;
                 Expression<Func<Vacancy, bool>> filter = null; 
                 if(tagIdsArray == null && typesArray != null)
                 {
@@ -72,7 +73,7 @@ namespace CareerExplorer.Web.Controllers
                             && x.Requirements.Any(x => tagIdsArray.Contains(x.Id));
                 }
                 vacancies = _vacanciesRepository.GetAvailablePaginatedAndFilteredVacancies(StaticData.GetAllVacanciesPageSize,
-                    pageNumber, out int totalVacancies, filter).ToList();
+                    pageNumber, out int totalVacancies, filter).ToImmutableList();
                 var vacanciesDto = _mapper.Map<List<VacancyDTO>>(vacancies);
                 var tagsItems = _skillsTagRepository.GetAll().Select(tag => new SelectListItem
                 {
@@ -102,7 +103,7 @@ namespace CareerExplorer.Web.Controllers
                 if (currentRecruiterId == null)
                     return NotFound();
 
-                var vacancies = _vacanciesRepository.GetCreatedVacancies(currentRecruiterId).ToList();
+                var vacancies = _vacanciesRepository.GetCreatedVacancies(currentRecruiterId).ToImmutableList();
                 bool isProfileAccepted = _recruiterRepository.GetFirstOrDefault(x => x.UserId == currentRecruiterId).IsAccepted;
                 ViewBag.IsAccepted = isProfileAccepted;
                 var vacanciesDTO = _mapper.Map<List<VacancyDTO>>(vacancies);
@@ -118,7 +119,7 @@ namespace CareerExplorer.Web.Controllers
         }
         public IActionResult Search(string search)
         {
-            var positions = _positionsRepository.GetAll(x => x.Name.ToLower().StartsWith(search.ToLower()));
+            var positions = _positionsRepository.GetAll(x => x.Name.ToLower().StartsWith(search.ToLower())).ToImmutableList();
             return Json(positions);
         }
         [Authorize(Roles = UserRoles.Recruiter)]
@@ -258,7 +259,7 @@ namespace CareerExplorer.Web.Controllers
         {
             try
             {
-                var jobSeekers = _jobSeekerVacancyRepository.GetApplicantsForVacancy(id);
+                var jobSeekers = _jobSeekerVacancyRepository.GetApplicantsForVacancy(id).ToImmutableList();
                 var applicants = _mapper.Map<List<ApplicantDTO>>(jobSeekers);
                 foreach (var applicant in applicants)
                     applicant.VacancyId = id;

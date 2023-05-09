@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using CareerExplorer.Web.Hubs;
 using Hangfire;
-using Microsoft.AspNetCore.SignalR;
-using System.Drawing.Text;
 using CareerExplorer.Infrastructure.IServices;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +34,32 @@ namespace CareerExplorer.Web
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<AppDbContext>();
+            builder.Services.AddIdentityServer(options =>
+            {
+                options.Events.RaiseSuccessEvents = true;
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+
+                options.UserInteraction = new IdentityServer4.Configuration.UserInteractionOptions
+                {
+                    LoginUrl = "/Identity/Account/Login",
+                    LogoutUrl = "/Identity/Account/Logout",
+                    LoginReturnUrlParameter = "returnUrl"
+                };
+            })
+                .AddAspNetIdentity<IdentityUser>()
+                .AddConfigurationStore(options =>
+                {
+                    options.ConfigureDbContext = db => db.UseSqlServer(connectionString);
+                })
+                .AddOperationalStore(options =>
+                {
+                    options.ConfigureDbContext = db => db.UseSqlServer(connectionString);
+                    options.EnableTokenCleanup = true;
+                })
+                .AddDeveloperSigningCredential();
+
             builder.Services.AddAuthentication()
                 .AddGoogle(options =>
                 {
@@ -47,7 +71,7 @@ namespace CareerExplorer.Web
                     options.ClientId = builder.Configuration["Authentication:LinkedIn:ClientId"];
                     options.ClientSecret = builder.Configuration["Authentication:LinkedIn:ClientSecret"];
                 });
-                
+
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Identity/Account/Login";
@@ -104,7 +128,7 @@ namespace CareerExplorer.Web
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseIdentityServer();
             app.UseAuthentication();
                 
             app.UseAuthorization();
