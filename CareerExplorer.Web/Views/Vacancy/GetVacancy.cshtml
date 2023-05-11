@@ -40,7 +40,7 @@
                     <form id="application-form" style="display:none;">
                         <input id="id-input" name="vacancyId" value="@Model.Id" type="hidden">
                             <label for="file-input" class="form-label mt-4">@Localizer["Attach"]</label>
-                            <input class="form-control" type="file" id="file-input">
+                            <input class="form-control" type="file" id="file-input" accept=".pdf"/>
                             <button style="display:block" class="btn btn-primary mt-3" id="apply-btn" type="post">@Localizer["Submit"]</button>
                     </form>
                     </div>

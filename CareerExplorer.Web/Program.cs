@@ -21,10 +21,7 @@ namespace CareerExplorer.Web
             var builder = WebApplication.CreateBuilder(args);
             
             // Add services to the container.
-            builder.Services.AddMvc(options =>
-            {
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            })
+            builder.Services.AddMvc()
                 .AddDataAnnotationsLocalization()
                 .AddViewLocalization();
             builder.Services.AddRazorPages();
@@ -52,23 +49,6 @@ namespace CareerExplorer.Web
             {
                 options.LoginPath = "/Identity/Account/Login";
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-            });
-            builder.Services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
-                options.HttpsPort = 443;
-            });
-            builder.Services.AddHsts(options =>
-            {
-                options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(60);
-            });
-            builder.Services.AddAntiforgery(options =>
-            {
-                options.SuppressXFrameOptionsHeader = false;
-                options.HeaderName = "X-CSRF-TOKEN";
-                options.FormFieldName= "Antiforgery";
             });
             builder.Services.RegisterRepositories();
             builder.Services.RegisterServices();
@@ -99,7 +79,6 @@ namespace CareerExplorer.Web
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
-            app.UseHsts();
             app.UseRequestLocalization();
             app.UseStaticFiles();
 
