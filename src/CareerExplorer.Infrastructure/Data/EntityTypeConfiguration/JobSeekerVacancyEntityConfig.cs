@@ -18,12 +18,7 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
             builder.HasOne(x => x.Vacancy)
                 .WithMany(x => x.Applicants)
                 .HasForeignKey(x => x.VacancyId)
-                .OnDelete(DeleteBehavior.NoAction); ;
-
-            //builder.HasOne(x => x.CvPath)
-            //    .WithOne(x => x.JobSeekerVacancy)
-            //    .HasPrincipalKey<CvPath>(x => x.JobSeekerVacancyId)
-            //    .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

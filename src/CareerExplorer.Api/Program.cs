@@ -92,7 +92,7 @@ namespace CareerExplorer.Api
                     policy.WithOrigins("https://localhost/7001/")
                     .AllowAnyHeader()
                     .AllowAnyMethod();
-                    
+
                 });
                 options.AddPolicy("Other", policy =>
                 {

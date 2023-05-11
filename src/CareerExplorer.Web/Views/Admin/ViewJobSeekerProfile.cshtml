@@ -9,27 +9,49 @@
         <span>@Model.NickName</span>
         <p>@Model.Experience</p>
         <p>@Model.Phone</p>
-        <button style="display:block" onclick="acceptButtonClick()" id="accept" class="btn btn-primary mt-2">Accept</button>
+        <a asp-controller="Admin" asp-action="AcceptJobSeekerProfile" asp-route-id=@Model.Id class="btn btn-primary mt-2">Accept</a>
     </div>
 </div>
-@section scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        function acceptButtonClick() {
-            var id = @Model.Id;
-            $.ajax({
-                type: "POST",
-                url: "/Admin/AcceptJobSeekerProfile",
-                data: { id: id },
-                success: function (response) {
-                    console.log(response);
-                    $("#accept").text("Accepted");
-                    $('#accept').prop('disabled', true);
-                },
-                error: function () {
-                    alert("Failed to accept");
-                }
-            });
-        }
-    </script>
-}
+32771
+@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    //todo:remove
+    //$(document).ready(function () {
+    //    $("#accept").click(function () {
+    //        $.ajax({
+    //            url: '/Admin/AcceptJobSeekerProfile',
+    //            type: 'POST',
+    //            data: { id: id },
+    //            success: function (response) {
+    //                console.log(response);
+    //                $("#accept").text("Accepted");
+    //                $('#accept').prop('disabled', true);
+    //            },
+    //            error: function (error) {
+    //                alert(error.message);
+    //                alert("Failed to accept");
+    //            }
+    //        });
+    //    });
+    //});
+
+
+    function acceptButtonClick() {
+        var id = @Model.Id;
+        console.log("clicked");
+        $.ajax({
+        url: '/Admin/AcceptJobSeekerProfile',
+            type: 'POST',                
+            data: { id: id },
+            success: function (response) {
+                console.log(response);
+                $("#accept").text("Accepted");
+                $('#accept').prop('disabled', true);
+            },
+            error: function (error) {
+                alert(error.message);
+                alert("Failed to accept");
+            }
+        });
+    }
+</script>*@

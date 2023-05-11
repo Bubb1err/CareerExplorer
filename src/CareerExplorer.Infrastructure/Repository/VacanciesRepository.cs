@@ -2,8 +2,6 @@
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace CareerExplorer.Infrastructure.Repository
@@ -38,7 +36,7 @@ namespace CareerExplorer.Infrastructure.Repository
         public IEnumerable<Vacancy> GetCreatedVacancies(string userId)
         {
             if(userId== null)
-                throw new ArgumentNullException("userId");
+                throw new ArgumentNullException(nameof(userId));
             var recruiter = _context.Recruiters.AsNoTracking().FirstOrDefault(x => x.UserId == userId);
             if (recruiter == null)
                 throw new Exception();

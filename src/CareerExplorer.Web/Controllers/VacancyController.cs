@@ -119,7 +119,7 @@ namespace CareerExplorer.Web.Controllers
         }
         public IActionResult Search(string search)
         {
-            var positions = _positionsRepository.GetAll(x => x.Name.ToLower().StartsWith(search.ToLower())).ToImmutableList();
+            var positions = _positionsRepository.GetAll(x => x.Name.ToLower().Contains(search.ToLower())).ToList();
             return Json(positions);
         }
         [Authorize(Roles = UserRoles.Recruiter)]

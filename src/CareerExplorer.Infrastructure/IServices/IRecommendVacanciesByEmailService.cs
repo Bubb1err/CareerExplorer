@@ -1,5 +1,4 @@
 ﻿
-
 namespace CareerExplorer.Infrastructure.IServices
 {
     public interface IRecommendVacanciesByEmailService

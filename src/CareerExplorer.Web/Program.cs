@@ -26,7 +26,7 @@ namespace CareerExplorer.Web
                 .AddDataAnnotationsLocalization()
                 .AddViewLocalization();
             builder.Services.AddRazorPages();
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
             builder.Services.AddDbContext(connectionString);
             builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
             builder.Services.AddHangfireServer();
@@ -111,6 +111,15 @@ namespace CareerExplorer.Web
                 options.SupportedCultures = supported;
                 options.SupportedUICultures= supported;
             });
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyHeader()
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod();
+                });
+            });
             
             var app = builder.Build();
 
@@ -123,6 +132,7 @@ namespace CareerExplorer.Web
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
+            app.UseCors();
             app.UseHsts();
             app.UseRequestLocalization();
             app.UseStaticFiles();

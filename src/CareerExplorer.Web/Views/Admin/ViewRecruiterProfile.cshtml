@@ -8,14 +8,15 @@
         <h1>@Model.Name @Model.Surname</h1>
         <h2>@Model.Company</h2>
         <p>@Model.CompanyDescription</p>
-        <button style="display:block" onclick="acceptButtonClick()" id="accept" class="btn btn-primary mt-2">Accept</button>
+        <a asp-controller="Admin" asp-action="AcceptRecruiterProfile" asp-route-id=@Model.Id class="btn btn-primary mt-2">Accept</a>
     </div>
 </div>
-@section scripts {
+@*@section scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function acceptButtonClick() {
             var id = @Model.Id; 
+            console.log("clicked");
             $.ajax({
                 type: "POST",
                 url: "/Admin/AcceptRecruiterProfile",
@@ -31,4 +32,4 @@
             });
         }
     </script>
-}
+}*@

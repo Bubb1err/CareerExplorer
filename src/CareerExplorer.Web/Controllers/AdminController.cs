@@ -231,7 +231,7 @@ namespace CareerExplorer.Web.Controllers
             var vacancyDto = _mapper.Map<VacancyDTO>(vacancy);
             return View(vacancyDto);
         }
-        [HttpPost]
+        [HttpGet]
         [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> AcceptVacancy(int id)
         {
@@ -239,7 +239,7 @@ namespace CareerExplorer.Web.Controllers
             {
                 if(id==0) return BadRequest();
                 await _adminService.AcceptVacancy(id);
-                return Ok();
+                return RedirectToAction(nameof(GetVacanciesToAccept));
             }
             catch 
             {
@@ -262,19 +262,19 @@ namespace CareerExplorer.Web.Controllers
             var recruiterDto = _mapper.Map<RecruiterProfileDTO>(recruiter);
             return View(recruiterDto);
         }
-        [HttpPost]
+        [HttpGet]
         [Authorize(Roles = UserRoles.Admin)]
         public async  Task<IActionResult> AcceptRecruiterProfile(int id)
         {
             if(id == 0) return BadRequest();
             await _adminService.AcceptRecruiterProfile(id);
-            return Ok();
+            return RedirectToAction(nameof(GetRecruitersToAccept));
         }
         [HttpGet]
         [Authorize(Roles = UserRoles.Admin)]
         public IActionResult GetJobSeekersToAccept()
         {
-            var jobSeekers = _jobSeekerRepository.GetJobSeekersToAccept().ToImmutableList();
+            var jobSeekers = _jobSeekerRepository.GetJobSeekersToAccept().ToList();
             var jobSeekersDto = _mapper.Map<List<JobSeekerViewProfileDTO>>(jobSeekers);
             return View(jobSeekersDto);
         }
@@ -287,13 +287,13 @@ namespace CareerExplorer.Web.Controllers
             var jobSeekerDto = _mapper.Map<JobSeekerViewProfileDTO>(jobSeeker);
             return View(jobSeekerDto);
         }
-        [HttpPost]
+        [HttpGet]
         [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> AcceptJobSeekerProfile(int id)
         {
             if(id == 0) return BadRequest();
             await _adminService.AcceptJobSeekerProfile(id);
-            return Ok();
+            return RedirectToAction(nameof(GetJobSeekersToAccept));
         }
     }
 }

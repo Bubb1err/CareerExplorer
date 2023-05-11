@@ -11,11 +11,10 @@
         <hr />
         <p>@Model.Description</p>
         <span>@(Model.IsAvailable ? "Available" : "Not available")</span>
-        <button style="display:block" onclick="acceptButtonClick()" id="accept" class="btn btn-primary mt-2">Accept</button>
+        <a asp-controller="Admin" asp-action="AcceptVacancy" asp-route-id=@Model.Id class="btn btn-primary mt-2">Accept</a>
     </div>
 </div>
-@section scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@section Scripts {
     <script>
         function acceptButtonClick() {
             var id = @Model.Id; 
