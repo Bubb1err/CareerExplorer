@@ -2,7 +2,7 @@ name: Сборка и развертывание приложения .NET Core 
 on:
   push:
     branches:
-    - feature/12
+    - dev
 env:
   AZURE_WEBAPP_NAME: CareerExplorerWeb20230511162738
   AZURE_WEBAPP_PACKAGE_PATH: CareerExplorer.Web\published
