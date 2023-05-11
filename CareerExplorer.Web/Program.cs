@@ -25,7 +25,7 @@ namespace CareerExplorer.Web
                 .AddDataAnnotationsLocalization()
                 .AddViewLocalization();
             builder.Services.AddRazorPages();
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = builder.Configuration.GetConnectionString("AzureConnection");
             builder.Services.AddDbContext(connectionString);
             builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
             builder.Services.AddHangfireServer();

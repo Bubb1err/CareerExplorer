@@ -1,7 +1,7 @@
 ﻿
 namespace CareerExplorer.Core.Entities
 {
-    public class JobSeeker 
+    public class JobSeeker
     {
         public int Id { get; set; }
         public string? Name { get; set; }
