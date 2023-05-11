@@ -1,11 +1,6 @@
 ﻿using CareerExplorer.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
 {
@@ -19,7 +14,7 @@ namespace CareerExplorer.Infrastructure.Data.EntityTypeConfiguration
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(x => x.Position)
                 .WithMany(x => x.Vacancies)
-                .HasForeignKey(x=>x.PositionId)
+                .HasForeignKey(x => x.PositionId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasOne(x => x.Country)
                 .WithMany(x => x.Vacancies)
