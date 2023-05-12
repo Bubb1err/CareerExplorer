@@ -11,26 +11,30 @@
             @foreach (var chat in Model)
             {
 
-                var appUser = @chat.Users.First(x => x.UserType == UserType.Recruiter);
-                var recruiter = appUser.RecruiterProfile;
+                var appUser = @chat.Users.FirstOrDefault(x => x.UserType == UserType.Recruiter);
+                if(appUser != null)
+                {
+                    var recruiter = appUser.RecruiterProfile;
 
 
-                <tr class="click-row" data-receiverid="@appUser.Id">
-                    <th>
-                        <h3 style="font-size:15px;">@appUser.Email</h3>
-                        <h2 style="font-size:20px;">@recruiter.Company</h2>
-                        <span>
-                            @recruiter.Name
-                            @recruiter.Surname
-                        </span>
-                    </th>
-                    <th>
-                        <p>@chat.Messages.LastOrDefault()?.Text</p>
-                    </th>
-                    <th style="padding-bottom: 3rem;padding-left: 3rem;padding-right: 0.5rem;">
-                        <i data-chatid="@chat.Id" class="bi bi-trash3-fill" style="font-size:20px;"></i>
-                    </th>
-                </tr>
+                    <tr class="click-row" data-receiverid="@appUser.Id">
+                        <th>
+                            <h3 style="font-size:15px;">@appUser.Email</h3>
+                            <h2 style="font-size:20px;">@recruiter.Company</h2>
+                            <span>
+                                @recruiter.Name
+                                @recruiter.Surname
+                            </span>
+                        </th>
+                        <th>
+                            <p>@chat.Messages.LastOrDefault()?.Text</p>
+                        </th>
+                        <th style="padding-bottom: 3rem;padding-left: 3rem;padding-right: 0.5rem;">
+                            <i data-chatid="@chat.Id" class="bi bi-trash3-fill" style="font-size:20px;"></i>
+                        </th>
+                    </tr>
+                }
+                
             }
         }
     </tbody>
