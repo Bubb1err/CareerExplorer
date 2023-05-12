@@ -11,6 +11,10 @@ using System.Drawing.Text;
 using CareerExplorer.Infrastructure.IServices;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
 
 namespace CareerExplorer.Web
 {
@@ -25,24 +29,28 @@ namespace CareerExplorer.Web
                 .AddDataAnnotationsLocalization()
                 .AddViewLocalization();
             builder.Services.AddRazorPages();
-            var connectionString = builder.Configuration.GetConnectionString("AzureConnection");
+
+            //key vault
+            string kvUrl = builder.Configuration["KeyVaultConfig:KVUrl"];
+            builder.Configuration.AddAzureKeyVault(new Uri(kvUrl), new DefaultAzureCredential());
+            var connectionString = builder.Configuration.GetSection("AzureConnectionDb").Value;
+
             builder.Services.AddDbContext(connectionString);
             builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
             builder.Services.AddHangfireServer();
-
             builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<AppDbContext>();
             builder.Services.AddAuthentication()
                 .AddGoogle(options =>
                 {
-                    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-                    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                    options.ClientId = builder.Configuration.GetSection("GoggleCliientId").Value;
+                    options.ClientSecret = builder.Configuration.GetSection("GoogleClientSecret").Value;
                 })
                 .AddLinkedIn(options =>
                 {
-                    options.ClientId = builder.Configuration["Authentication:LinkedIn:ClientId"];
-                    options.ClientSecret = builder.Configuration["Authentication:LinkedIn:ClientSecret"];
+                    options.ClientId = builder.Configuration.GetSection("LinkedinClientId").Value;
+                    options.ClientSecret = builder.Configuration.GetSection("LinkedinClientSecret").Value;
                 });
                 
             builder.Services.ConfigureApplicationCookie(options =>

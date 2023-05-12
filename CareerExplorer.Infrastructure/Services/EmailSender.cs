@@ -28,7 +28,7 @@ namespace CareerExplorer.Infrastructure.Services
             try
             {
                 var mailMessage = new MimeMessage();
-                mailMessage.From.Add(MailboxAddress.Parse(_config.GetSection("Email:Sender").Value));
+                mailMessage.From.Add(MailboxAddress.Parse(_config.GetSection("EmailSender").Value));
                 mailMessage.Subject = subject;
                 mailMessage.To.Add(MailboxAddress.Parse(email));
                 mailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -38,8 +38,8 @@ namespace CareerExplorer.Infrastructure.Services
                 using (SmtpClient client = new SmtpClient())
                 {
                     await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                    await client.AuthenticateAsync(_config.GetSection("Email:Sender").Value, 
-                        _config.GetSection("Email:Password").Value);
+                    await client.AuthenticateAsync(_config.GetSection("EmailSender").Value, 
+                        _config.GetSection("EmailPass").Value);
                     await client.SendAsync(mailMessage);
                     await client.DisconnectAsync(true);
                 }
