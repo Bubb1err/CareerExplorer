@@ -5,10 +5,6 @@ using CareerExplorer.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Immutable;
-using System.Linq;
 
 namespace CareerExplorer.Web.Controllers
 {

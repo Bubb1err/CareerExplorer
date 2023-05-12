@@ -3,11 +3,7 @@ using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.IServices;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CareerExplorer.Infrastructure.Services
 {

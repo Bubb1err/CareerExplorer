@@ -2,7 +2,6 @@
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.IServices;
-using CareerExplorer.Infrastructure.Services;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
 using Microsoft.AspNetCore.Authorization;

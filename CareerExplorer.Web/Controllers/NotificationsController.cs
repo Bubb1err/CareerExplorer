@@ -72,13 +72,14 @@ namespace CareerExplorer.Web.Controllers
 
             var recruiterUser = _appUserRepository.GetFirstOrDefault(x => x.Id == invitation.SenderId, "RecruiterProfile");
             var recruiter = recruiterUser.RecruiterProfile;
+            TimeSpan delay = invitation.Date - DateTime.Now;
             BackgroundJob.Schedule(()
                 => SendNotification(invitation.ReceiverId, invitation.MeetingLink),
-                invitation.Date - DateTime.Now);
+                delay);
             BackgroundJob.Schedule(() =>
             _emailSender.SendEmailAsync(email, "Notification",
             $"<p>You have a meeting</p><br/><a href={invitation.MeetingLink}>{invitation.MeetingLink}</a><br/><p>{recruiter.Name} " +
-            $"{recruiter.Surname} {recruiter.Company}</p>"), invitation.Date - DateTime.Now);
+            $"{recruiter.Surname} {recruiter.Company}</p>"), delay);
             return Ok();
         }
         [HttpPost]

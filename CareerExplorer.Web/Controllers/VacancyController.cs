@@ -2,7 +2,6 @@
 using CareerExplorer.Core.Entities;
 using CareerExplorer.Core.Interfaces;
 using CareerExplorer.Infrastructure.IServices;
-using CareerExplorer.Infrastructure.Repository;
 using CareerExplorer.Shared;
 using CareerExplorer.Web.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -10,8 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-using System.Drawing;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace CareerExplorer.Web.Controllers

@@ -1,20 +1,12 @@
 using CareerExplorer.Infrastructure;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using CareerExplorer.Infrastructure.Data;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using CareerExplorer.Web.Hubs;
 using Hangfire;
-using Microsoft.AspNetCore.SignalR;
-using System.Drawing.Text;
 using CareerExplorer.Infrastructure.IServices;
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
 using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using Azure.Extensions.AspNetCore.Configuration.Secrets;
-using Microsoft.Extensions.Configuration.AzureKeyVault;
 
 namespace CareerExplorer.Web
 {
