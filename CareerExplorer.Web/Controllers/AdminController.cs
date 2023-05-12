@@ -42,7 +42,7 @@ namespace CareerExplorer.Web.Controllers
         [HttpGet]
         public IActionResult GetSkillTags(string search)
         {
-            var tags = _skillsRepository.GetAll(t => t.Title.StartsWith(search)).ToList();
+            var tags = _skillsRepository.GetAll(t => t.Title.ToLower().Contains(search.ToLower())).ToList();
             return Ok(tags);
         }
         public IActionResult GetSkillsTags()

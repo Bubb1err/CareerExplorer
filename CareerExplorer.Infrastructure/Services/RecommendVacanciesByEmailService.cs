@@ -51,7 +51,7 @@ namespace CareerExplorer.Infrastructure.Services
                         foreach (var vacancy in vacanciesToSend)
                         {
                             textToSend
-                                .Append($"<div><a href=\"https://localhost:7001/Vacancy/GetVacancy/{vacancy.Id}\">{vacancy.Position.Name}</a><p>{vacancy.Creator.Company}</p></div>");
+                                .Append($"<div><a href=\"https://careerexplorer.azurewebsites.net/Vacancy/GetVacancy/{vacancy.Id}\">{vacancy.Position.Name}</a><p>{vacancy.Creator.Company}</p></div>");
                         }
                         await _emailSender.SendEmailAsync(jobSeekers[i].AppUser.Email, "New vacancies", textToSend.ToString());
                     }

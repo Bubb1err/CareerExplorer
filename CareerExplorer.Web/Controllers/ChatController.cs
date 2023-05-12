@@ -86,7 +86,7 @@ namespace CareerExplorer.Web.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             var appUser = _appUserRepository
                 .GetFirstOrDefault(x => x.Id == currentUser.Id);
-            var chats = _chatRepository.GetRecruiterChats(appUser).ToImmutableList();
+            var chats = _chatRepository.GetRecruiterChats(appUser).ToList();
             return View(chats);
         }
         public async Task<IActionResult> DeleteChat(int chatId)
