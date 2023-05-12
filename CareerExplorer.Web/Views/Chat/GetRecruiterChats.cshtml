@@ -5,8 +5,10 @@
 
 <table class="table table-hover">
     <tbody>
-        @foreach (var chat in Model)
+        @if(Model.Count() > 0)
         {
+            @foreach (var chat in Model)
+            {
             var appUser = chat.Users.First(x => x.UserType == UserType.JobSeeker);
             var jobSeeker = appUser.JobSeekerProfile;
             <tr class="click-row" data-receiverid="@appUser.Id">
@@ -20,13 +22,15 @@
                               
                 </th>
                 <th>
-                    <p>@chat.Messages.Last().Text</p>
+                    <p>@chat.Messages.LastOrDefault()?.Text</p>
                 </th>
                 <th style="padding-bottom: 3rem;padding-left: 3rem;padding-right: 0.5rem;">
                     <i data-chatid="@chat.Id" class="bi bi-trash3-fill" style="font-size:20px;"></i>
                 </th>
             </tr>
+            }
         }
+        
     </tbody>
 </table>
  @*-----------Modal--------*@
