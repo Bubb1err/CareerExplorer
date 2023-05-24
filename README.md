@@ -1,26 +1,4 @@
 # CareerExplorer
-Application is available at:
-https://careerexplorer.azurewebsites.net/ 
-
-# Test credentials
-
--Admin
-
-    -Email: admin@mail.com
-  
-    -Password: Admin123!
-  
--Recruiter
-
-     -Email: recr1@mail.com
-  
-     -Password: 123Qwe@
-  
--Jobseeker
-
-    -Email: seek1@mail.com
-  
-    -Password: 123Qwe@
   
 # Description  
 The project is a platform where recruiters and job seekers can find each other.
